@@ -23,4 +23,6 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+
+	//이거 끝나고 담타 ㄱㄱ
 }
