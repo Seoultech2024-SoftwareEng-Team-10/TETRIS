@@ -28,6 +28,10 @@ public class HelloApplication extends Application {
     public static double fontSize = SizeConstants.fontSize;
     public static int[][] MESH = SizeConstants.MESH;
     private static Pane group = new Pane();
+    {
+        group.setStyle("-fx-background-color: black;");
+    }
+
     private static Form object;
 
     private static Scene scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
@@ -52,16 +56,18 @@ public class HelloApplication extends Application {
         drawGridLines();
 
         Line line = new Line(XMAX, 0, XMAX, YMAX);
-        Text scoretext = new Text("Score: ");
+        Text scoretext = new Text("SCORE: ");
         scoretext.setUserData("scoretext");
-        scoretext.setStyle("-fx-font: 20 arial;");
+        scoretext.setFill(Color.WHITE);
+        scoretext.setStyle("-fx-font: 20  Lato;");
         scoretext.setY(50);
-        scoretext.setX(XMAX + 5);
-        Text level = new Text("Lines: ");//scoretext,level userdata추가
+        scoretext.setX(XMAX + 30);
+        scoretext.setY(300);
+        Text level = new Text("LINES: ");//scoretext,level userdata추가
         level.setUserData("level");
-        level.setStyle("-fx-font: 20 arial;");
-        level.setY(100);
-        level.setX(XMAX + 5);
+        level.setStyle("-fx-font: 20 Lato;");
+        level.setY(350);
+        level.setX(XMAX + 30);
         level.setFill(Color.GREEN);
         Form wait = waitObj;
 
@@ -116,16 +122,20 @@ public class HelloApplication extends Application {
         };
         timer.start();
     }
-
     private void drawGridLines() {
         for (int x = 0; x <= XMAX / SIZE; x++) {
             Line line = new Line(x * SIZE, 0, x * SIZE, YMAX);
-            line.setStroke(Color.LIGHTGRAY);
+            line.setStroke(Color.DARKGRAY);
+            line.setStrokeWidth(0.2);
+            if (x == XMAX / SIZE) { // 마지막 열에 굵은 선 추가
+                line.setStrokeWidth(5.0);
+            }
             group.getChildren().add(line);
         }
         for (int y = 0; y <= YMAX / SIZE; y++) {
             Line line = new Line(0, y * SIZE, XMAX, y * SIZE);
-            line.setStroke(Color.LIGHTGRAY);
+            line.setStroke(Color.DARKGRAY);
+            line.setStrokeWidth(0.2);
             group.getChildren().add(line);
         }
     }
@@ -561,7 +571,7 @@ public class HelloApplication extends Application {
         }
 
 
-        return moved; // 이동 여부를 반환
+        return moved; // 5이동 여부를 반환
     }
 
     private void DirectMoveDown(Form form) {
