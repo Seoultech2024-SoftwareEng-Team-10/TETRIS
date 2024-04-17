@@ -168,5 +168,6 @@ public class TetrisWindow extends Application {
 
     public static void main(String[] args) {
         launch(args);
+        //test주석
     }
 }
