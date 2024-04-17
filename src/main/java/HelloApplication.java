@@ -620,6 +620,9 @@ public class HelloApplication extends Application {
         return xb && yb && MESH[((int) text.getX() / SIZE) + x][((int) text.getY() / SIZE) - y] == 0;
     }//Text로 변경
 
+
+    //flishdlif_
+
     public static void main(String[] args) {
         launch();
     }
