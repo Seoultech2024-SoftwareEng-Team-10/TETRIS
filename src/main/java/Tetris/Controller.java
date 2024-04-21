@@ -49,7 +49,7 @@ public class Controller {
 
 
     public static Form makeText(boolean colorBlindMode) {
-        int block = (int) (Math.random() * 100);
+        int block = (int) (Math.random() * 105);
         String name;
         Text a = new Text(0, 0, "X"), b = new Text(0, 0, "X"), c = new Text(0, 0, "X"),
                 d = new Text(0, 0, "X");//Rectangle --> Text
