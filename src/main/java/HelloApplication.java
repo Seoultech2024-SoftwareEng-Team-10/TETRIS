@@ -679,7 +679,7 @@ public class HelloApplication extends Application {
     public void startAnimation() {
         running = true;
 
-        // 게임 재시작 및 종료 버튼 숨기기
+        // 게임 재시작 및 종료 버튼 숨김
         // 흑백 효과 해제
         clearGrayscaleEffect();
         for (Node node : group.getChildren()) {
