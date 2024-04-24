@@ -14,6 +14,10 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class KeySettingsWindow extends Application {
     private SettingsWindow settingsWindow;
 
@@ -64,6 +68,16 @@ public class KeySettingsWindow extends Application {
         spaceKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.SPACE));
         grid.add(spaceKeyLabel, 1, 4);
 
+        Button saveButton = new Button("Save");
+        saveButton.setOnAction(event -> {
+            if (isKeyCodeDuplicated()) {
+                showDuplicateKeyAlert();
+            } else {
+                stage.close(); // 저장 후 창 닫기
+            }
+        });
+        grid.add(saveButton, 0, 5, 2, 1); // 저장 버튼 GridPane에 추가
+
         Scene scene = new Scene(grid, 300, 200);
         stage.setScene(scene);
 
@@ -91,21 +105,13 @@ public class KeySettingsWindow extends Application {
         Label newKeyValueLabel = new Label();
         grid.add(newKeyValueLabel, 1, 1);
 
-        Label duplicateKeyLabel = new Label();
-        duplicateKeyLabel.setStyle("-fx-text-fill: red;");
-        grid.add(duplicateKeyLabel, 0, 2, 2, 1);
-
         Button saveButton = new Button("Save");
         saveButton.setOnAction(event -> {
             KeyCode newKeyCode = newKeyValueLabel.getText().isEmpty() ? keyCode : KeyCode.valueOf(newKeyValueLabel.getText());
-            if (isKeyCodeDuplicated(newKeyCode, keyCode)) {
-                duplicateKeyLabel.setText("The selected key is already in use. Please choose a different key.");
-            } else {
-                updateKeySettings(currentlyEditingKeyCode, newKeyCode);
-                updateKeyLabelText(currentlyEditingKeyCode, newKeyCode);
-                currentlyEditingKeyCode = null;
-                stage.close();
-            }
+            updateKeySettings(currentlyEditingKeyCode, newKeyCode);
+            updateKeyLabelText(currentlyEditingKeyCode, newKeyCode);
+            currentlyEditingKeyCode = null;
+            stage.close();
         });
         grid.add(saveButton, 0, 3, 2, 1);
 
@@ -115,24 +121,26 @@ public class KeySettingsWindow extends Application {
         scene.setOnKeyPressed(event -> {
             KeyCode newKeyCode = event.getCode();
             newKeyValueLabel.setText(newKeyCode.getName());
-            duplicateKeyLabel.setText("");
         });
         stage.showAndWait();
     }
 
-    private boolean isKeyCodeDuplicated(KeyCode newKeyCode, KeyCode currentKeyCode) {
-        return (newKeyCode.equals(KeySettings.getUpKey()) && !currentKeyCode.equals(KeyCode.UP)) ||
-                (newKeyCode.equals(KeySettings.getDownKey()) && !currentKeyCode.equals(KeyCode.DOWN)) ||
-                (newKeyCode.equals(KeySettings.getLeftKey()) && !currentKeyCode.equals(KeyCode.LEFT)) ||
-                (newKeyCode.equals(KeySettings.getRightKey()) && !currentKeyCode.equals(KeyCode.RIGHT)) ||
-                (newKeyCode.equals(KeySettings.getSpaceKey()) && !currentKeyCode.equals(KeyCode.SPACE));
+    private boolean isKeyCodeDuplicated() {
+        KeyCode rightKey = KeyCode.valueOf(KeySettings.getRightKey());
+        KeyCode downKey = KeyCode.valueOf(KeySettings.getDownKey());
+        KeyCode leftKey = KeyCode.valueOf(KeySettings.getLeftKey());
+        KeyCode upKey = KeyCode.valueOf(KeySettings.getUpKey());
+        KeyCode spaceKey = KeyCode.valueOf(KeySettings.getSpaceKey());
+
+        Set<KeyCode> keyCodes = new HashSet<>(Arrays.asList(rightKey, downKey, leftKey, upKey, spaceKey));
+        return keyCodes.size() != 5;
     }
 
     private void showDuplicateKeyAlert() {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Duplicate Key");
-        alert.setContentText("The selected key is already in use. Please choose a different key.");
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Duplicate Keys");
+        alert.setHeaderText(null);
+        alert.setContentText("중복되는 키가 있습니다! 다시 확인해주세요!");
         alert.showAndWait();
     }
 
