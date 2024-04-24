@@ -1,5 +1,6 @@
 package Tetris;
 
+import Setting.LevelConstants;
 import Setting.SizeConstants;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -10,9 +11,10 @@ public class Controller {
     public static int MOVE = SizeConstants.MOVE;
     public static int SIZE = SizeConstants.SIZE;
     public static int XMAX = SizeConstants.XMAX;
-    public static int YMAX = SizeConstants.YMAX;
+    //public static int YMAX = SizeConstants.YMAX;
     public static double fontSize = SizeConstants.fontSize;
     public static int[][] MESH = SizeConstants.MESH;
+    public static char difficultyLevel = LevelConstants.difficultyLevel;
 
 
     public static void MoveRight(Form form) {
@@ -48,16 +50,30 @@ public class Controller {
     }
 
 
-    public static Form makeText(boolean colorBlindMode) {
-        int block = (int) (Math.random() * 100);
+
+    public static Form makeText(boolean colorBlindMode, char difficultyLevel) {
+        fontSize = SizeConstants.fontSize;
+        System.out.println(fontSize);
+        XMAX = SizeConstants.XMAX;
+        SIZE = SizeConstants.SIZE;
+        int block = 0;
+        if(difficultyLevel == 'E'){
+            block = (int) (Math.random() * 72);
+
+        }else if(difficultyLevel == 'H'){
+            block = (int) (Math.random() * 68);
+
+        }else{
+            block = (int) (Math.random() * 70);
+        }
         String name;
-        Text a = new Text(0, 0, "X"), b = new Text(0, 0, "X"), c = new Text(0, 0, "X"),
-                d = new Text(0, 0, "X");//Rectangle --> Text
+        Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"), d = new Text(0, 0, "O");//Rectangle --> Text
+
         a.setFont(Font.font(fontSize));
         b.setFont(Font.font(fontSize));
         c.setFont(Font.font(fontSize));
         d.setFont(Font.font(fontSize));//fontsize설정
-        if (block < 15) {
+        if (block < 10) {
             a.setX(XMAX / 2 - SIZE);
             b.setX(XMAX / 2 - SIZE);
             b.setY(SIZE);
@@ -66,7 +82,7 @@ public class Controller {
             d.setX(XMAX / 2 + SIZE);
             d.setY(SIZE);
             name = "j";
-        } else if (block < 30) {
+        } else if (block < 20) {
             a.setX(XMAX / 2 + SIZE);
             b.setX(XMAX / 2 - SIZE);
             b.setY(SIZE);
@@ -75,7 +91,7 @@ public class Controller {
             d.setX(XMAX / 2 + SIZE);
             d.setY(SIZE);
             name = "l";
-        } else if (block < 45) {
+        } else if (block < 30) {
             a.setX(XMAX / 2 - SIZE);
             b.setX(XMAX / 2);
             c.setX(XMAX / 2 - SIZE);
@@ -83,7 +99,7 @@ public class Controller {
             d.setX(XMAX / 2);
             d.setY(SIZE);
             name = "o";
-        } else if (block < 60) {
+        } else if (block < 40) {
             a.setX(XMAX / 2 + SIZE);
             b.setX(XMAX / 2);
             c.setX(XMAX / 2);
@@ -91,14 +107,14 @@ public class Controller {
             d.setX(XMAX / 2 - SIZE);
             d.setY(SIZE);
             name = "s";
-        } else if (block < 75) {
+        } else if (block < 50) {
             a.setX(XMAX / 2 - SIZE);
             b.setX(XMAX / 2);
             c.setX(XMAX / 2);
             c.setY(SIZE);
             d.setX(XMAX / 2 + SIZE);
             name = "t";
-        } else if (block < 90) {
+        } else if (block < 60) {
             a.setX(XMAX / 2 + SIZE);
             b.setX(XMAX / 2);
             c.setX(XMAX / 2 + SIZE);
@@ -211,8 +227,12 @@ public class Controller {
         return new Form(a, b, c, d, name, colorBlindMode);
     }
     public static Form makeText(String name, boolean colorBlindMode) {
-        Text a = new Text(0, 0, "X"), b = new Text(0, 0, "X"), c = new Text(0, 0, "X"),
-                d = new Text(0, 0, "X");//Rectangle --> Text
+        fontSize = SizeConstants.fontSize;
+        System.out.println(fontSize);
+        XMAX = SizeConstants.XMAX;
+        SIZE = SizeConstants.SIZE;
+        Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
+                d = new Text(0, 0, "O");//Rectangle --> Text
         a.setFont(Font.font(fontSize));
         b.setFont(Font.font(fontSize));
         c.setFont(Font.font(fontSize));
@@ -363,8 +383,8 @@ public class Controller {
 
         return new Form(a, b, c, d, name, colorBlindMode);
     }
-    public static Form waitingTextMake(boolean colorBlindMode){
-        Form waitObj = makeText(colorBlindMode);
+    public static Form waitingTextMake(boolean colorBlindMode, char difficultyLevel){
+        Form waitObj = makeText(colorBlindMode, difficultyLevel);
 
         waitObj.a.setX(waitObj.a.getX()+SIZE*7);
         waitObj.b.setX(waitObj.b.getX()+SIZE*7);
