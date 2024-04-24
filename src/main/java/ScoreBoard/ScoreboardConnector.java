@@ -37,7 +37,7 @@ public class ScoreboardConnector {
             pstmt.setInt(2, scoreParam);
             pstmt.setString(3, "00:00:00");
             pstmt.setInt(4, linesCountParam);
-            pstmt.setDate(5, java.sql.Date.valueOf(LocalDate.now()));
+            pstmt.setDate(5, Date.valueOf(LocalDate.now()));
             pstmt.executeUpdate();
 
             System.out.println("insert data to scoreboard successfully");
