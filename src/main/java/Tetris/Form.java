@@ -127,8 +127,6 @@ public class Form {
         this.d.setFill(color);
     }
 
-
-    // 색맹 모드 설정 메서드
     public void setColorBlindMode(boolean colorBlindMode) {
         this.colorBlindMode = colorBlindMode;
         if(colorBlindMode){

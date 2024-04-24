@@ -24,19 +24,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 //1234
 public class HelloApplication extends Application {
+    private static AnimationTimer timer;
     public static boolean running = true;
-    public static final int MOVE = SizeConstants.MOVE;
-    public static final int SIZE = SizeConstants.SIZE;
+    public static int MOVE = SizeConstants.MOVE;
+    public static int SIZE = SizeConstants.SIZE;
     public static int XMAX = SizeConstants.XMAX;
     public static int YMAX = SizeConstants.YMAX;
-    public static double fontSize = SizeConstants.fontSize;
     public static int[][] MESH = SizeConstants.MESH;
+
+    private static Form object;
+
     private static Pane group = new Pane();
     {
         group.setStyle("-fx-background-color: black;");
     }
 
-    private static Form object;
     private static Scene scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
     public static int score = 0;
     private static int top = 0;
@@ -53,13 +55,21 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+        stage.close(); //stage초기화
+        group.getChildren().clear();
+        MOVE = SizeConstants.MOVE;
+        SIZE = SizeConstants.SIZE;
+        XMAX = SizeConstants.XMAX;
+        YMAX = SizeConstants.YMAX;
+        MESH = SizeConstants.MESH;
+        group = new Pane();
+        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+
+
         for (int[] a : MESH) {
             Arrays.fill(a, 0);
         }
-
         drawGridLines();
-
         Line line = new Line(XMAX, 0, XMAX, YMAX);
         Text scoretext = new Text("SCORE: ");
         scoretext.setUserData("scoretext");
@@ -75,7 +85,6 @@ public class HelloApplication extends Application {
         level.setX(XMAX + 30);
         level.setFill(Color.GREEN);
         Form wait = waitObj;
-
 
         group.getChildren().addAll(scoretext, line, level, wait.a, wait.b, wait.c, wait.d);
 
@@ -109,8 +118,7 @@ public class HelloApplication extends Application {
 
         // 그룹에 버튼 추가
         group.getChildren().addAll(restartButton, exitButton);
-
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
@@ -118,6 +126,10 @@ public class HelloApplication extends Application {
 
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
+
+                        stage.setOnCloseRequest(event -> {
+                            timer.stop();
+                        });
                         lastUpdate = now;
 
                         if (object.a.getY() == 0 || object.b.getY() == 0 || object.c.getY() == 0 || object.d.getY() == 0)
@@ -127,10 +139,13 @@ public class HelloApplication extends Application {
 
                         if (top == 2) {
                             GameOver();
+                            stage.close();
                         }
                         // Exit
                         if (top == 15) {
-                            System.exit(0);
+                            GameOver();
+                            stage.close();
+                            timer.stop();
                         }
 
                         if (game) {
@@ -912,8 +927,6 @@ public class HelloApplication extends Application {
     public void stopAnimation() {
         running = false;
 
-        // 게임 재시작 및 종료 버튼 보이게 설정
-        // 흑백 효과 적용
         applyGrayscaleEffect();
         for (Node node : group.getChildren()) {
             if (node instanceof Button) {
@@ -940,12 +953,6 @@ public class HelloApplication extends Application {
     public void GameOver(){
         running = false;
         applyGrayscaleEffect();
-        Text over = new Text("GAME OVER");
-        over.setFill(Color.RED);
-        over.setStyle("-fx-font: 70 arial;");
-        over.setY(250);
-        over.setX(10);
-        group.getChildren().add(over);
         ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
         game = false;
     }

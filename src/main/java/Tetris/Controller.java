@@ -13,7 +13,10 @@ public class Controller {
     public static int YMAX = SizeConstants.YMAX;
     public static double fontSize = SizeConstants.fontSize;
     public static int[][] MESH = SizeConstants.MESH;
-
+    private int x;
+    public Controller (int x){
+        this.x = x;
+    }
 
     public static void MoveRight(Form form) {
         if (form.a.getX() + MOVE <= XMAX - SIZE && form.b.getX() + MOVE <= XMAX - SIZE
