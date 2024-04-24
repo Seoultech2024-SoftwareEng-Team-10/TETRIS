@@ -1,5 +1,6 @@
 
 import ScoreBoard.ScoreboardConnector;
+import Setting.LevelConstants;
 import Setting.SizeConstants;
 import Tetris.Controller;
 import Tetris.Form;
@@ -40,9 +41,9 @@ public class HelloApplication extends Application {
     public static int score = 0;
     private static int top = 0;
     private static boolean game = true;
-
-    private static Form nextObj = Controller.makeText(true);//makeRect->makeText
-    private static Form waitObj = Controller.waitingTextMake(true);
+    private static char difficultylevel = LevelConstants.difficultyLevel;
+    private static Form nextObj = Controller.makeText(true,difficultylevel);//makeRect->makeText
+    private static Form waitObj = Controller.waitingTextMake(true,difficultylevel);
     private static int linesNo = 0;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
@@ -100,7 +101,7 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
-        nextObj = Controller.makeText(true);//색맹 모드가 아님을 의미
+        nextObj = Controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -146,7 +147,7 @@ public class HelloApplication extends Application {
                         else
                             top = 0;
 
-                        if (top == 2) {
+                         if (top == 2) {
                             GameOver();
 
                         }
@@ -859,7 +860,7 @@ public class HelloApplication extends Application {
             // 새 블록 생성
             Form a = Controller.makeText(waitObj.getName(), true);
             group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-            waitObj = Controller.waitingTextMake(true);
+            waitObj = Controller.waitingTextMake(true,difficultylevel);
             object = a;
             group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a);
@@ -898,7 +899,7 @@ public class HelloApplication extends Application {
         RemoveRows(group);
         Form a = Controller.makeText(waitObj.getName(), true);
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        waitObj = Controller.waitingTextMake(true);
+        waitObj = Controller.waitingTextMake(true,difficultylevel);
         object = a;
         group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         moveOnKeyPress(a);
