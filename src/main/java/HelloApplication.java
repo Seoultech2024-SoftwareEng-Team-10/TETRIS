@@ -1,6 +1,7 @@
 
 import ScoreBoard.ScoreboardConnector;
 import Setting.SizeConstants;
+import Tetris.BlockColor;
 import Tetris.Controller;
 import Tetris.Form;
 import javafx.animation.AnimationTimer;
@@ -45,6 +46,7 @@ public class HelloApplication extends Application {
     private static int linesNo = 0;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
+    private static BlockColor color;
 
     private ScoreboardConnector scoreboardDataInserter;
 
@@ -53,6 +55,8 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        nextObj = Controller.makeText(color.colorBlindMode);//makeRect->makeText
+        waitObj = Controller.waitingTextMake(color.colorBlindMode);
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         for (int[] a : MESH) {
             Arrays.fill(a, 0);

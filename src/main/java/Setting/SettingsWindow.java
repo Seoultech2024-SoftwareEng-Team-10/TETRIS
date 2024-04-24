@@ -12,13 +12,11 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import Tetris.BlockColor;
 
 
 
@@ -117,6 +115,12 @@ public class SettingsWindow extends Stage {
 
         Scene scene = new Scene(root);
         setScene(scene);
+
+        colorBlindModeToggle.setOnAction(event -> {
+            isColorBlindModeOn = !isColorBlindModeOn;
+            colorBlindModeToggle.setText(isColorBlindModeOn ? "on" : "off");
+            BlockColor.setColorBlindMode(isColorBlindModeOn); // BlockColor의 colorBlindMode 값 설정
+        });
     }
 
     private void handleButtonClick(ActionEvent event) {
