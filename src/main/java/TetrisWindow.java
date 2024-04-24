@@ -31,44 +31,25 @@ public class TetrisWindow extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setTitle("TETRIS GAME");
 
         BorderPane root = new BorderPane();
 
+        // 로고 생성
         Text logoText = new Text("TETRIS");
-        logoText.setFont(Font.font("Arial", FontWeight.BOLD, 50));
+        logoText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         logoText.setFill(Color.BLACK);
-
-        // 로고를 담을 BorderPane 생성
-        BorderPane logoPane = new BorderPane();
-        logoPane.setCenter(logoText);
-        BorderPane.setAlignment(logoText, Pos.CENTER);
-
-        // Scene 생성
-        Scene scene2 = new Scene(logoPane, 400, 300);
-        scene2.setFill(Color.BLACK);
-
-        // Stage 설정
-        primaryStage.setTitle("TETRIS Logo");
-        primaryStage.setScene(scene2);
-        primaryStage.show();
+        VBox logoPane = new VBox(logoText);
+        logoPane.setPadding(new Insets(10));
+        logoPane.setStyle("-fx-background-color: #800080;");
 
         // 버튼 생성
-        VBox buttonPane = new VBox(20);
+        VBox buttonPane = new VBox(10);
         buttonPane.setAlignment(Pos.CENTER);
         Button gameStartButton = new Button("게임시작");
         Button scoreBoardButton = new Button("스코어보드");
         Button settingsButton = new Button("설정");
         Button exitButton = new Button("게임종료");
-        gameStartButton.setPrefSize(1000, 50);
-        scoreBoardButton.setPrefSize(1000,50);
-        settingsButton.setPrefSize(1000, 50);
-        exitButton.setPrefSize(1000, 50);
-        Font font = Font.font("Arial", FontWeight.BOLD, 40);
-        gameStartButton.setFont(font);
-        scoreBoardButton.setFont(font);
-        settingsButton.setFont(font);
-        exitButton.setFont(font);
-
 
 
 
@@ -144,7 +125,6 @@ public class TetrisWindow extends Application {
             }
         });
 
-
         root.setTop(logoPane);
         root.setCenter(buttonPane);
 
@@ -188,6 +168,5 @@ public class TetrisWindow extends Application {
 
     public static void main(String[] args) {
         launch(args);
-        //test주석
     }
 }
