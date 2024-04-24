@@ -85,7 +85,7 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
-        nextObj = Controller.makeText(true);//색맹 모드가 아님을 의미
+        nextObj = Controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
