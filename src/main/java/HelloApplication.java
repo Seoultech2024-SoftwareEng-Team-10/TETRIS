@@ -9,18 +9,22 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.effect.ColorAdjust;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 //1234
 public class HelloApplication extends Application {
+    public static boolean running = true;
     public static final int MOVE = SizeConstants.MOVE;
     public static final int SIZE = SizeConstants.SIZE;
     public static int XMAX = SizeConstants.XMAX;
@@ -33,7 +37,6 @@ public class HelloApplication extends Application {
     }
 
     private static Form object;
-
     private static Scene scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
     public static int score = 0;
     private static int top = 0;
@@ -43,7 +46,9 @@ public class HelloApplication extends Application {
     private static int linesNo = 0;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
-
+    private ColorAdjust colorAdjust = new ColorAdjust();
+    private Button restartButton;
+    private Button exitButton;
     private ScoreboardConnector scoreboardDataInserter;
 
     @Override
@@ -83,43 +88,78 @@ public class HelloApplication extends Application {
         stage.setTitle("T E T R I S");
         stage.show();
 
+        // 흑백 효과 초기 설정
+        colorAdjust.setSaturation(-1);
+        colorAdjust.setBrightness(-0.3);
+
+        // 게임 재시작 및 종료 버튼 추가
+        restartButton = new Button("게임 재시작");
+        restartButton.setLayoutX(170);
+        restartButton.setLayoutY(240);
+        restartButton.setVisible(false); // 초기에는 보이지 않게 설정
+
+        exitButton = new Button("게임 종료");
+        exitButton.setLayoutX(176);
+        exitButton.setLayoutY(270);
+        exitButton.setVisible(false); // 초기에는 보이지 않게 설정
+
+        // 버튼 이벤트 핸들러 설정
+        restartButton.setOnAction(e -> startAnimation());
+        exitButton.setOnAction(e -> System.exit(0));
+
+        // 그룹에 버튼 추가
+        group.getChildren().addAll(restartButton, exitButton);
+
         AnimationTimer timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
-                if (now - lastUpdate >= Frame) { // 1초마다 실행
-                    lastUpdate = now;
-                    if (object.a.getY() == 0 || object.b.getY() == 0 || object.c.getY() == 0 || object.d.getY() == 0)
-                        top++;
-                    else
-                        top = 0;
-                    if (top == 2) {
-                        // GAME OVER
-                        Text over = new Text("GAME OVER");
-                        over.setFill(Color.RED);
-                        over.setStyle("-fx-font: 70 arial;");
-                        over.setY(250);
-                        over.setX(10);
-                        group.getChildren().add(over);
-                        ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
-                        game = false;
-                    }
-                    // Exit
-                    if (top == 15) {
-                        System.exit(0);
-                    }
 
-                    if (game) {
-                        MoveDown(object);
-                        scoretext.setText("Score: " + Integer.toString(score));
-                        level.setText("Lines: " + Integer.toString(linesNo));
+                if (running) {
+                    if (now - lastUpdate >= Frame) { // 1초마다 실행
+                        lastUpdate = now;
+
+                        if (object.a.getY() == 0 || object.b.getY() == 0 || object.c.getY() == 0 || object.d.getY() == 0)
+                            top++;
+                        else
+                            top = 0;
+
+                        if (top == 2) {
+                            GameOver();
+                        }
+                        // Exit
+                        if (top == 15) {
+                            System.exit(0);
+                        }
+
+                        if (game) {
+                            MoveDown(object);
+                            scoretext.setText("Score: " + Integer.toString(score));
+                            level.setText("Lines: " + Integer.toString(linesNo));
+                        }
+
                     }
                 }
             }
         };
         timer.start();
     }
+
+
+    private void bringButtonsToFront() {
+        if (restartButton != null) restartButton.toFront();
+        if (exitButton != null) exitButton.toFront();
+    }
+
+    public void applyGrayscaleEffect() {
+        group.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
+    }
+
+    public void clearGrayscaleEffect() {
+        group.setEffect(null); // 흑백 효과 해제
+    }
+
     private void drawGridLines() {
         for (int x = 0; x <= XMAX / SIZE; x++) {
             Line line = new Line(x * SIZE, 0, x * SIZE, YMAX);
@@ -142,24 +182,34 @@ public class HelloApplication extends Application {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                switch (event.getCode()) {
-                    case RIGHT:
-                        Controller.MoveRight(form);
-                        break;
-                    case DOWN:
-                        MoveDown(form);
-                        score += scoreMultiplier;
-                        break;
-                    case LEFT:
-                        Controller.MoveLeft(form);
-                        break;
-                    case UP:
-                        MoveTurn(form);
-                        break;
-                    case SPACE:
-                        DirectMoveDown(form);
-                        score += scoreMultiplier;
-                        break;
+
+                if(running) {
+                    switch (event.getCode()) {
+                        case RIGHT:
+                            Controller.MoveRight(form);
+                            break;
+                        case DOWN:
+                            MoveDown(form);
+                            break;
+                        case LEFT:
+                            Controller.MoveLeft(form);
+                            break;
+                        case UP:
+                            MoveTurn(form);
+                            break;
+                        case SPACE:
+                            DirectMoveDown(form);
+                            break;
+                        case ESCAPE:
+                            stopAnimation();
+                            break;
+                    }
+                }
+                else{
+                    if(event.getCode() == KeyCode.ESCAPE) {
+                        startAnimation();
+                    }
+
                 }
             }
         });
@@ -859,7 +909,47 @@ public class HelloApplication extends Application {
     }//Text로 변경
 
 
-    //flishdlif_
+    public void stopAnimation() {
+        running = false;
+
+        // 게임 재시작 및 종료 버튼 보이게 설정
+        // 흑백 효과 적용
+        applyGrayscaleEffect();
+        for (Node node : group.getChildren()) {
+            if (node instanceof Button) {
+                node.setVisible(true);
+            }
+        }
+        bringButtonsToFront();
+    }
+
+    public void startAnimation() {
+        running = true;
+
+        // 게임 재시작 및 종료 버튼 숨김
+        // 흑백 효과 해제
+        clearGrayscaleEffect();
+        for (Node node : group.getChildren()) {
+            if (node instanceof Button) {
+                node.setVisible(false);
+            }
+        }
+        bringButtonsToFront();
+    }
+
+    public void GameOver(){
+        running = false;
+        applyGrayscaleEffect();
+        Text over = new Text("GAME OVER");
+        over.setFill(Color.RED);
+        over.setStyle("-fx-font: 70 arial;");
+        over.setY(250);
+        over.setX(10);
+        group.getChildren().add(over);
+        ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
+        game = false;
+    }
+
 
     public static void main(String[] args) {
         launch();
