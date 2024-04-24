@@ -20,6 +20,8 @@ public class SettingsWindow extends Stage {
     private Stage mainWindow;
     private boolean isColorBlindModeOn;
     private Button[] buttons;
+    private MenuButton levelButton;
+    private LevelConstants levelConstants = new LevelConstants();
 
     public SettingsWindow(Stage mainWindow) {
         this.mainWindow = mainWindow;
@@ -44,6 +46,33 @@ public class SettingsWindow extends Stage {
         colorBlindModeToggle.setFocusTraversable(false);
         isColorBlindModeOn = false;
         modePanel.getChildren().addAll(colorBlindModeLabel, colorBlindModeToggle);
+
+
+        FlowPane levelPanel = new FlowPane();
+        levelPanel.setAlignment(Pos.CENTER);
+        levelPanel.setHgap(10);
+        Label levelLable = new Label("난이도 조절");
+        levelButton = new MenuButton();
+        levelButton.setFocusTraversable(false);
+        MenuItem leveItem1 = new MenuItem("Normal");
+        leveItem1.setOnAction(event -> {
+            levelButton.setText("Normal");
+            LevelConstants.setLevel('N');
+        });
+        MenuItem leveItem2 = new MenuItem("Easy");
+        leveItem2.setOnAction(event -> {
+            levelButton.setText("Easy");
+            LevelConstants.setLevel('E');
+        });
+        MenuItem leveItem3 = new MenuItem("Hard");
+        leveItem3.setOnAction(event -> {
+            levelButton.setText("Hard");
+            LevelConstants.setLevel('H');
+        });
+        levelButton.getItems().addAll(leveItem1,leveItem2,leveItem3);
+        levelButton.setText("Normal");
+        levelPanel.getChildren().addAll(levelLable,levelButton);
+
 
         FlowPane resizePanel = new FlowPane();
         resizePanel.setAlignment(Pos.CENTER);
@@ -73,7 +102,7 @@ public class SettingsWindow extends Stage {
 
         resizePanel.getChildren().addAll(resizeLabel, resizeMenuButton);
 
-        buttonBox.getChildren().addAll(modePanel, resizePanel);
+        buttonBox.getChildren().addAll(modePanel,levelPanel, resizePanel);
 
         Button keySettingsButton = new Button("키 설정");
         Button resetScoreButton = new Button("기록 초기화");
