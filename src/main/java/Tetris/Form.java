@@ -22,10 +22,10 @@ public class Form {
         if(colorBlindMode){
             switch (name) {
                 case "j":
-                    this.a.setFill(Color.GRAY);
-                    this.b.setFill(Color.GRAY);
-                    this.c.setFill(Color.GRAY);
-                    this.d.setFill(Color.GRAY);
+                    this.a.setFill(Color.RED);
+                    this.b.setFill(Color.RED);
+                    this.c.setFill(Color.RED);
+                    this.d.setFill(Color.RED);
                     break;
                 case "l":
                     this.a.setFill(Color.GREEN);
@@ -46,10 +46,10 @@ public class Form {
                     d.setFill(Color.ORANGE);
                     break;
                 case "t":
-                    a.setFill(Color.PINK);
-                    b.setFill(Color.PINK);
-                    c.setFill(Color.PINK);
-                    d.setFill(Color.PINK);
+                    a.setFill(Color.PURPLE);
+                    b.setFill(Color.PURPLE);
+                    c.setFill(Color.PURPLE);
+                    d.setFill(Color.PURPLE);
                     break;
                 case "z":
                     a.setFill(Color.YELLOW);
@@ -58,10 +58,10 @@ public class Form {
                     d.setFill(Color.YELLOW);
                     break;
                 case "i":
-                    a.setFill(Color.SKYBLUE);
-                    b.setFill(Color.SKYBLUE);
-                    c.setFill(Color.SKYBLUE);
-                    d.setFill(Color.SKYBLUE);
+                    a.setFill(Color.BLACK);
+                    b.setFill(Color.BLACK);
+                    c.setFill(Color.BLACK);
+                    d.setFill(Color.BLACK);
                     break;
             }
         }
@@ -74,7 +74,7 @@ public class Form {
         if (colorBlindMode) {
             switch (name) {
                 case "j":
-                    color = Color.GRAY;
+                    color = Color.RED;
                     break;
                 case "l":
                     color = Color.GREEN;
@@ -86,13 +86,13 @@ public class Form {
                     color = Color.ORANGE;
                     break;
                 case "t":
-                    color = Color.PINK;
+                    color = Color.PURPLE;
                     break;
                 case "z":
                     color = Color.YELLOW;
                     break;
                 case "i":
-                    color = Color.SKYBLUE;
+                    color = Color.BLACK;
                     break;
             }
         } else {
@@ -134,10 +134,10 @@ public class Form {
         if(colorBlindMode){
             switch (name) {
                 case "j":
-                    this.a.setFill(Color.GRAY);
-                    this.b.setFill(Color.GRAY);
-                    this.c.setFill(Color.GRAY);
-                    this.d.setFill(Color.GRAY);
+                    this.a.setFill(Color.RED);
+                    this.b.setFill(Color.RED);
+                    this.c.setFill(Color.RED);
+                    this.d.setFill(Color.RED);
                     break;
                 case "l":
                     this.a.setFill(Color.GREEN);
@@ -158,10 +158,10 @@ public class Form {
                     d.setFill(Color.ORANGE);
                     break;
                 case "t":
-                    a.setFill(Color.PINK);
-                    b.setFill(Color.PINK);
-                    c.setFill(Color.PINK);
-                    d.setFill(Color.PINK);
+                    a.setFill(Color.PURPLE);
+                    b.setFill(Color.PURPLE);
+                    c.setFill(Color.PURPLE);
+                    d.setFill(Color.PURPLE);
                     break;
                 case "z":
                     a.setFill(Color.YELLOW);
@@ -170,10 +170,10 @@ public class Form {
                     d.setFill(Color.YELLOW);
                     break;
                 case "i":
-                    a.setFill(Color.SKYBLUE);
-                    b.setFill(Color.SKYBLUE);
-                    c.setFill(Color.SKYBLUE);
-                    d.setFill(Color.SKYBLUE);
+                    a.setFill(Color.BLACK);
+                    b.setFill(Color.BLACK);
+                    c.setFill(Color.BLACK);
+                    d.setFill(Color.BLACK);
                     break;
             }
         }
