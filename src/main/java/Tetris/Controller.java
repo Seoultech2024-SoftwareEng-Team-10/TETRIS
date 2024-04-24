@@ -11,10 +11,11 @@ public class Controller {
     public static int MOVE = SizeConstants.MOVE;
     public static int SIZE = SizeConstants.SIZE;
     public static int XMAX = SizeConstants.XMAX;
-    public static int YMAX = SizeConstants.YMAX;
+    //public static int YMAX = SizeConstants.YMAX;
     public static double fontSize = SizeConstants.fontSize;
     public static int[][] MESH = SizeConstants.MESH;
     public static char difficultyLevel = LevelConstants.difficultyLevel;
+
 
     public static void MoveRight(Form form) {
         if (form.a.getX() + MOVE <= XMAX - SIZE && form.b.getX() + MOVE <= XMAX - SIZE
@@ -49,7 +50,12 @@ public class Controller {
     }
 
 
+
     public static Form makeText(boolean colorBlindMode, char difficultyLevel) {
+        fontSize = SizeConstants.fontSize;
+        System.out.println(fontSize);
+        XMAX = SizeConstants.XMAX;
+        SIZE = SizeConstants.SIZE;
         int block = 0;
         if(difficultyLevel == 'E'){
             block = (int) (Math.random() * 72);
@@ -61,8 +67,7 @@ public class Controller {
             block = (int) (Math.random() * 70);
         }
         String name;
-        Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
-                d = new Text(0, 0, "O");//Rectangle --> Text
+        Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"), d = new Text(0, 0, "O");//Rectangle --> Text
         a.setFont(Font.font(fontSize));
         b.setFont(Font.font(fontSize));
         c.setFont(Font.font(fontSize));
@@ -221,6 +226,10 @@ public class Controller {
         return new Form(a, b, c, d, name, colorBlindMode);
     }
     public static Form makeText(String name, boolean colorBlindMode) {
+        fontSize = SizeConstants.fontSize;
+        System.out.println(fontSize);
+        XMAX = SizeConstants.XMAX;
+        SIZE = SizeConstants.SIZE;
         Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
                 d = new Text(0, 0, "O");//Rectangle --> Text
         a.setFont(Font.font(fontSize));
