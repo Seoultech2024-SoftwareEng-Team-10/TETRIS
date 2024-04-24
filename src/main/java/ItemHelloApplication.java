@@ -685,7 +685,7 @@ public class ItemHelloApplication extends Application {
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
         RemoveRows(group);
-        itemCounter++;
+        itemCounter++;//
         ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         if(itemCounter==10){
