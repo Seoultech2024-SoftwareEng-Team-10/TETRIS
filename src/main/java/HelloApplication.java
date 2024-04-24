@@ -31,7 +31,7 @@ public class HelloApplication extends Application {
     {
         group.setStyle("-fx-background-color: black;");
     }
-    //testtetstest
+    //testtetstesttest
     private static Form object;
 
     private static Scene scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
