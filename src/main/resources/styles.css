@@ -9,14 +9,14 @@
     -fx-pref-width: 100px;
 }
 
-.game-start-button, .score-board-button, .settings-button, .exit-button {
+.game-start-button, .item-game-button, .score-board-button, .settings-button, .exit-button {
     -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-border-color: transparent;
     -fx-border-width: 2px;
 }
 
-.game-start-button:focused, .score-board-button:focused, .settings-button:focused, .exit-button:focused {
+.game-start-button:focused, .item-game-button:focused, .score-board-button:focused, .settings-button:focused, .exit-button:focused {
     -fx-border-color: black;
 }
 
@@ -24,6 +24,11 @@
 
 .game-start-button {
     -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+}
+
+.item-game-button {
+    -fx-background-color: #66FFFF;
     -fx-text-fill: white;
 }
 
