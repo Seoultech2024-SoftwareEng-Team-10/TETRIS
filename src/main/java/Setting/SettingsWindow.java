@@ -12,6 +12,15 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+
+
 
 public class SettingsWindow extends Stage {
 
@@ -141,13 +150,13 @@ public class SettingsWindow extends Stage {
 
     private void handleButtonClick(ActionEvent event) {
         Object source = event.getSource();
-        if (source == colorBlindModeToggle) {
-            isColorBlindModeOn = !isColorBlindModeOn;
-            colorBlindModeToggle.setText(isColorBlindModeOn ? "on" : "off");
-        } else if (source instanceof Button) {
+        if (source instanceof Button) {
             Button clickedButton = (Button) source;
             String buttonText = clickedButton.getText();
-            if (buttonText.equals("뒤로가기")) {
+            if (buttonText.equals("키 설정")) {
+                KeySettingsWindow keySettingsWindow = new KeySettingsWindow(this);
+                keySettingsWindow.start(new Stage());
+            } else if (buttonText.equals("뒤로가기")) {
                 hide();
                 mainWindow.show();
             } else if (buttonText.equals("기본 설정으로 되돌리기")) {
@@ -157,6 +166,7 @@ public class SettingsWindow extends Stage {
             }
         }
     }
+
 
     private void showResetConfirmation() {
         Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -194,6 +204,13 @@ public class SettingsWindow extends Stage {
 
         resizeMenuButton.setText("450 x 600");
         SizeConstants.setSize(450, 600);
+
+        // 키 설정 초기화
+        KeySettings.setRightKey("RIGHT");
+        KeySettings.setDownKey("DOWN");
+        KeySettings.setLeftKey("LEFT");
+        KeySettings.setUpKey("UP");
+        KeySettings.setSpaceKey("SPACE");
         // 다른 설정들도 초기화하는 코드 추가
         System.out.println("기본 설정으로 되돌림");
     }

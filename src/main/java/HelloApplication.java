@@ -17,14 +17,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.effect.ColorAdjust;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 //1234
+
+import Setting.KeySettings;
+import Setting.SizeConstants;
+import Tetris.Controller;
+
 public class HelloApplication extends Application {
     private static AnimationTimer timer;
     public static boolean running = true;
@@ -47,9 +50,7 @@ public class HelloApplication extends Application {
     private static int linesNo = 0;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
-    private ColorAdjust colorAdjust = new ColorAdjust();
-    private Button restartButton;
-    private Button exitButton;
+
     private ScoreboardConnector scoreboardDataInserter;
     private Text scoretext;
     public HelloApplication(){
@@ -68,6 +69,9 @@ public class HelloApplication extends Application {
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
     }
 
+    private boolean running = true;
+    public static boolean itemMode = false; // 아이템 모드 변수 추가
+
     @Override
     public void start(Stage stage) throws IOException {
         stage.close(); //stage초기화
@@ -82,16 +86,14 @@ public class HelloApplication extends Application {
         Line line = new Line(XMAX, 0, XMAX, YMAX);
         scoretext = new Text("SCORE: ");
         scoretext.setUserData("scoretext");
-        scoretext.setFill(Color.WHITE);
-        scoretext.setStyle("-fx-font: 20  Lato;");
+        scoretext.setStyle("-fx-font: 20 arial;");
         scoretext.setY(50);
-        scoretext.setX(XMAX + 30);
-        scoretext.setY(300);
-        Text level = new Text("LINES: ");//scoretext,level userdata추가
+        scoretext.setX(XMAX + 5);
+        Text level = new Text("Lines: ");//scoretext,level userdata추가
         level.setUserData("level");
-        level.setStyle("-fx-font: 20 Lato;");
-        level.setY(350);
-        level.setX(XMAX + 30);
+        level.setStyle("-fx-font: 20 arial;");
+        level.setY(100);
+        level.setX(XMAX + 5);
         level.setFill(Color.GREEN);
         Form wait = waitObj;
 
@@ -101,7 +103,9 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
+
         nextObj = Controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
+        //nextObj = Controller.makeText(itemMode); // itemMode 전달
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -128,10 +132,14 @@ public class HelloApplication extends Application {
         // 그룹에 버튼 추가
         group.getChildren().addAll(restartButton, exitButton);
         timer = new AnimationTimer() {
+
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
+                if (now - lastUpdate >= Frame) { // 1초마다 실행
+                    lastUpdate = now;
+
 
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
@@ -163,6 +171,27 @@ public class HelloApplication extends Application {
                             level.setText("Lines: " + linesNo);
                         }
 
+
+                    if (top == 2) {
+                        // GAME OVER
+                        Text over = new Text("GAME OVER");
+                        over.setFill(Color.RED);
+                        over.setStyle("-fx-font: 70 arial;");
+                        over.setY(250);
+                        over.setX(10);
+                        group.getChildren().add(over);
+                        ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
+                        game = false;
+                    }
+                    // Exit
+                    if (top == 15) {
+                        System.exit(0);
+                    }
+
+                    if (game) {
+                        MoveDown(object);
+                        scoretext.setText("Score: " + Integer.toString(score));
+                        level.setText("Lines: " + Integer.toString(linesNo));
                     }
                 }
             }
@@ -170,34 +199,15 @@ public class HelloApplication extends Application {
         timer.start();
     }
 
-
-    private void bringButtonsToFront() {
-        if (restartButton != null) restartButton.toFront();
-        if (exitButton != null) exitButton.toFront();
-    }
-
-    public void applyGrayscaleEffect() {
-        group.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
-    }
-
-    public void clearGrayscaleEffect() {
-        group.setEffect(null); // 흑백 효과 해제
-    }
-
     private void drawGridLines() {
         for (int x = 0; x <= XMAX / SIZE; x++) {
             Line line = new Line(x * SIZE, 0, x * SIZE, YMAX);
-            line.setStroke(Color.DARKGRAY);
-            line.setStrokeWidth(0.2);
-            if (x == XMAX / SIZE) { // 마지막 열에 굵은 선 추가
-                line.setStrokeWidth(5.0);
-            }
+            line.setStroke(Color.LIGHTGRAY);
             group.getChildren().add(line);
         }
         for (int y = 0; y <= YMAX / SIZE; y++) {
             Line line = new Line(0, y * SIZE, XMAX, y * SIZE);
-            line.setStroke(Color.DARKGRAY);
-            line.setStrokeWidth(0.2);
+            line.setStroke(Color.LIGHTGRAY);
             group.getChildren().add(line);
         }
     }
@@ -206,7 +216,7 @@ public class HelloApplication extends Application {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-
+                String pressedKey = event.getCode().toString();
                 if(running) {
                     switch (event.getCode()) {
                         case RIGHT:
@@ -229,16 +239,24 @@ public class HelloApplication extends Application {
                         case ESCAPE:
                             stopAnimation();
                             break;
+
                     }
                 }
                 else{
                     if(event.getCode() == KeyCode.ESCAPE) {
                         startAnimation();
                     }
-
                 }
             }
         });
+    }
+
+    public void stopAnimation() {
+        running = false;
+    }
+
+    public void startAnimation() {
+        running = true;
     }
 
     private void MoveTurn(Form form) {
@@ -249,45 +267,29 @@ public class HelloApplication extends Application {
         Text d = form.d;//Rectangle - >Text
         switch (form.getName()) {
             case "j":
-                if (f == 1) {
-                    if (cB(a, 1, -1) && cB(c, -1, -1) && cB(d, -2, -2)) {
-                        MoveRight(form.a);
-                        MoveDown(form.a);
-                        MoveDown(form.c);
-                        MoveLeft(form.c);
-                        MoveDown(form.d);
-                        MoveDown(form.d);
-                        MoveLeft(form.d);
-                        MoveLeft(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 1 && cB(a, 1, -1) && cB(c, -1, -1) && cB(d, -2, -2)) {
+                    MoveRight(form.a);
+                    MoveDown(form.a);
+                    MoveDown(form.c);
+                    MoveLeft(form.c);
+                    MoveDown(form.d);
+                    MoveDown(form.d);
+                    MoveLeft(form.d);
+                    MoveLeft(form.d);
+                    form.changeForm();
+                    break;
                 }
-                if (f == 2){
-                    if( cB(a, -1, -1) && cB(c, -1, 1) && cB(d, -2, 2)) {
-                        MoveDown(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.c);
-                        MoveUp(form.c);
-                        MoveLeft(form.d);
-                        MoveLeft(form.d);
-                        MoveUp(form.d);
-                        MoveUp(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, 1, -1) && cB(c, 1, 1) && cB(b,2,0) && cB(d, 0, 2)) {
-                        MoveDown(form.a);
-                        MoveRight(form.a);
-                        MoveRight(form.b);
-                        MoveRight(form.b);
-                        MoveRight(form.c);
-                        MoveUp(form.c);
-                        MoveUp(form.d);
-                        MoveUp(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 2 && cB(a, -1, -1) && cB(c, -1, 1) && cB(d, -2, 2)) {
+                    MoveDown(form.a);
+                    MoveLeft(form.a);
+                    MoveLeft(form.c);
+                    MoveUp(form.c);
+                    MoveLeft(form.d);
+                    MoveLeft(form.d);
+                    MoveUp(form.d);
+                    MoveUp(form.d);
+                    form.changeForm();
+                    break;
                 }
                 if (f == 3 && cB(a, -1, 1) && cB(c, 1, 1) && cB(d, 2, 2)) {
                     MoveLeft(form.a);
@@ -301,145 +303,67 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4){
-                    if( cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 2, -2)) {
-                        MoveUp(form.a);
-                        MoveRight(form.a);
-                        MoveRight(form.c);
-                        MoveDown(form.c);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        MoveDown(form.d);
-                        MoveDown(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, -1, 1) && cB(b,-2,0) && cB(c, -1, -1) && cB(d, 0, -2)) {
-                        MoveUp(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.c);
-                        MoveDown(form.c);
-                        MoveDown(form.d);
-                        MoveDown(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 4 && cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 2, -2)) {
+                    MoveUp(form.a);
+                    MoveRight(form.a);
+                    MoveRight(form.c);
+                    MoveDown(form.c);
+                    MoveRight(form.d);
+                    MoveRight(form.d);
+                    MoveDown(form.d);
+                    MoveDown(form.d);
+                    form.changeForm();
+                    break;
                 }
                 break;
             case "l":
-                if (f == 1) {
-                    if (cB(a, 1, -1) && cB(c, 1, 1) && cB(b, 2, 2)) {
-                        MoveRight(form.a);
-                        MoveDown(form.a);
-                        MoveUp(form.c);
-                        MoveRight(form.c);
-                        MoveUp(form.b);
-                        MoveUp(form.b);
-                        MoveRight(form.b);
-                        MoveRight(form.b);
-                        form.changeForm();
-                        break;
-                    }
-                    if (cB(a, 0, -1) && cB(c, 0, 1) && cB(b, 1, 2) && cB(d,-1,0)) {
-                        MoveDown(form.a);
-                        MoveUp(form.c);
-                        MoveUp(form.b);
-                        MoveUp(form.b);
-                        MoveRight(form.b);
-                        MoveLeft(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if (cB(a, 1, -1) && cB(c, 1, 1) && cB(b, 2, 2)) {
-                        MoveRight(form.a);
-                        MoveDown(form.a);
-                        MoveUp(form.c);
-                        MoveRight(form.c);
-                        MoveUp(form.b);
-                        MoveUp(form.b);
-                        MoveRight(form.b);
-                        MoveRight(form.b);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 1 && cB(a, 1, -1) && cB(c, 1, 1) && cB(b, 2, 2)) {
+                    MoveRight(form.a);
+                    MoveDown(form.a);
+                    MoveUp(form.c);
+                    MoveRight(form.c);
+                    MoveUp(form.b);
+                    MoveUp(form.b);
+                    MoveRight(form.b);
+                    MoveRight(form.b);
+                    form.changeForm();
+                    break;
                 }
-                if (f == 2) {
-                    if(cB(a, -1, -1) && cB(b, 2, -2) && cB(c, 1, -1)) {
-                        MoveDown(form.a);
-                        MoveLeft(form.a);
-                        MoveRight(form.b);
-                        MoveRight(form.b);
-                        MoveDown(form.b);
-                        MoveDown(form.b);
-                        MoveRight(form.c);
-                        MoveDown(form.c);
-                        form.changeForm();
-                        break;
-                    }
-                    if(cB(a, -2, -1) && cB(b, 1, -2) && cB(c, 0, -1) && cB(d,-1,0)) {
-                        MoveDown(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.a);
-                        MoveRight(form.b);
-                        MoveDown(form.b);
-                        MoveDown(form.b);
-                        MoveDown(form.c);
-                        MoveLeft(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 2 && cB(a, -1, -1) && cB(b, 2, -2) && cB(c, 1, -1)) {
+                    MoveDown(form.a);
+                    MoveLeft(form.a);
+                    MoveRight(form.b);
+                    MoveRight(form.b);
+                    MoveDown(form.b);
+                    MoveDown(form.b);
+                    MoveRight(form.c);
+                    MoveDown(form.c);
+                    form.changeForm();
+                    break;
                 }
-                if (f == 3){
-                    if( cB(a, -1, 1) && cB(c, -1, -1) && cB(b, -2, -2)) {
-                        MoveLeft(form.a);
-                        MoveUp(form.a);
-                        MoveDown(form.c);
-                        MoveLeft(form.c);
-                        MoveDown(form.b);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.b);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, 0, 1) && cB(c, 0, -1) && cB(b, -1, -2) && cB(d,1,0)) {
-                        MoveUp(form.a);
-                        MoveDown(form.c);
-                        MoveDown(form.b);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 3 && cB(a, -1, 1) && cB(c, -1, -1) && cB(b, -2, -2)) {
+                    MoveLeft(form.a);
+                    MoveUp(form.a);
+                    MoveDown(form.c);
+                    MoveLeft(form.c);
+                    MoveDown(form.b);
+                    MoveDown(form.b);
+                    MoveLeft(form.b);
+                    MoveLeft(form.b);
+                    form.changeForm();
+                    break;
                 }
-                if (f == 4){
-                    if( cB(a, 1, 1) && cB(b, -2, 2) && cB(c, -1, 1)) {
-                        MoveUp(form.a);
-                        MoveRight(form.a);
-                        MoveLeft(form.b);
-                        MoveLeft(form.b);
-                        MoveUp(form.b);
-                        MoveUp(form.b);
-                        MoveLeft(form.c);
-                        MoveUp(form.c);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, 2, 1) && cB(b, -1, 2) && cB(c, 0, 1) && cB(d,1,0)) {
-                        MoveUp(form.a);
-                        MoveRight(form.a);
-                        MoveRight(form.a);
-                        MoveLeft(form.b);
-                        MoveUp(form.b);
-                        MoveUp(form.b);
-                        MoveUp(form.c);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 4 && cB(a, 1, 1) && cB(b, -2, 2) && cB(c, -1, 1)) {
+                    MoveUp(form.a);
+                    MoveRight(form.a);
+                    MoveLeft(form.b);
+                    MoveLeft(form.b);
+                    MoveUp(form.b);
+                    MoveUp(form.b);
+                    MoveLeft(form.c);
+                    MoveUp(form.c);
+                    form.changeForm();
+                    break;
                 }
                 break;
             case "o":
@@ -455,27 +379,15 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 2){
-                    if( cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
-                        MoveUp(form.a);
-                        MoveRight(form.a);
-                        MoveRight(form.c);
-                        MoveDown(form.c);
-                        MoveDown(form.d);
-                        MoveDown(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, 0, 1) && cB(b,-1,0) && cB(c, 0, -1) && cB(d, -1, -2)) {
-                        MoveUp(form.a);
-                        MoveLeft(form.b);
-                        MoveDown(form.c);
-                        MoveLeft(form.d);
-                        MoveDown(form.d);
-                        MoveDown(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 2 && cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
+                    MoveUp(form.a);
+                    MoveRight(form.a);
+                    MoveRight(form.c);
+                    MoveDown(form.c);
+                    MoveDown(form.d);
+                    MoveDown(form.d);
+                    form.changeForm();
+                    break;
                 }
                 if (f == 3 && cB(a, -1, -1) && cB(c, -1, 1) && cB(d, 0, 2)) {
                     MoveDown(form.a);
@@ -487,27 +399,15 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4){
-                    if(cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
-                        MoveUp(form.a);
-                        MoveRight(form.a);
-                        MoveRight(form.c);
-                        MoveDown(form.c);
-                        MoveDown(form.d);
-                        MoveDown(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, 0, 1) && cB(b,-1,0) && cB(c, 0, -1) && cB(d, -1, -2)) {
-                        MoveUp(form.a);
-                        MoveLeft(form.b);
-                        MoveDown(form.c);
-                        MoveLeft(form.d);
-                        MoveDown(form.d);
-                        MoveDown(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 4 && cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
+                    MoveUp(form.a);
+                    MoveRight(form.a);
+                    MoveRight(form.c);
+                    MoveDown(form.c);
+                    MoveDown(form.d);
+                    MoveDown(form.d);
+                    form.changeForm();
+                    break;
                 }
                 break;
             case "t":
@@ -521,27 +421,15 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 2){
-                    if(cB(a, 1, -1) && cB(d, -1, 1) && cB(c, 1, 1)) {
-                        MoveRight(form.a);
-                        MoveDown(form.a);
-                        MoveLeft(form.d);
-                        MoveUp(form.d);
-                        MoveUp(form.c);
-                        MoveRight(form.c);
-                        form.changeForm();
-                        break;
-                    }
-                    if(cB(a, 0, -1) && cB(b,-1,0) && cB(d, -2, 1) && cB(c, 0, 1)) {
-                        MoveLeft(form.b);
-                        MoveDown(form.a);
-                        MoveLeft(form.d);
-                        MoveLeft(form.d);
-                        MoveUp(form.d);
-                        MoveUp(form.c);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 2 && cB(a, 1, -1) && cB(d, -1, 1) && cB(c, 1, 1)) {
+                    MoveRight(form.a);
+                    MoveDown(form.a);
+                    MoveLeft(form.d);
+                    MoveUp(form.d);
+                    MoveUp(form.c);
+                    MoveRight(form.c);
+                    form.changeForm();
+                    break;
                 }
                 if (f == 3 && cB(a, -1, -1) && cB(d, 1, 1) && cB(c, 1, -1)) {
                     MoveDown(form.a);
@@ -553,27 +441,15 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4){
-                    if(cB(a, -1, 1) && cB(d, 1, -1) && cB(c, -1, -1)) {
-                        MoveLeft(form.a);
-                        MoveUp(form.a);
-                        MoveRight(form.d);
-                        MoveDown(form.d);
-                        MoveDown(form.c);
-                        MoveLeft(form.c);
-                        form.changeForm();
-                        break;
-                    }
-                    if(cB(a, 0, 1) && cB(b,1,0) && cB(d, 2, -1) && cB(c, 0, -1)) {
-                        MoveUp(form.a);
-                        MoveRight(form.b);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        MoveDown(form.d);
-                        MoveDown(form.c);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 4 && cB(a, -1, 1) && cB(d, 1, -1) && cB(c, -1, -1)) {
+                    MoveLeft(form.a);
+                    MoveUp(form.a);
+                    MoveRight(form.d);
+                    MoveDown(form.d);
+                    MoveDown(form.c);
+                    MoveLeft(form.c);
+                    form.changeForm();
+                    break;
                 }
                 break;
             case "z":
@@ -587,27 +463,15 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 2){
-                    if(cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveRight(form.c);
-                        MoveDown(form.c);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if(cB(a,-1,0) && cB(b, -2, -1) && cB(c, 0, -1) && cB(d, 1, 0)) {
-                        MoveLeft(form.a);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.b);
-                        MoveDown(form.c);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 2 && cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
+                    MoveDown(form.b);
+                    MoveLeft(form.b);
+                    MoveRight(form.c);
+                    MoveDown(form.c);
+                    MoveRight(form.d);
+                    MoveRight(form.d);
+                    form.changeForm();
+                    break;
                 }
                 if (f == 3 && cB(b, 1, 1) && cB(c, -1, 1) && cB(d, -2, 0)) {
                     MoveUp(form.b);
@@ -619,85 +483,41 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4){
-                    if(cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveRight(form.c);
-                        MoveDown(form.c);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if(cB(a,-1,0) && cB(b, -2, -1) && cB(c, 0, -1) && cB(d, 1, 0)) {
-                        MoveLeft(form.a);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.b);
-                        MoveDown(form.c);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 4 && cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
+                    MoveDown(form.b);
+                    MoveLeft(form.b);
+                    MoveRight(form.c);
+                    MoveDown(form.c);
+                    MoveRight(form.d);
+                    MoveRight(form.d);
+                    form.changeForm();
+                    break;
                 }
                 break;
             case "i":
-                if (f == 1) {
-                    if (cB(a, 2, 2) && cB(b, 1, 1) && cB(d, -1, -1)) {
-                        MoveUp(form.a);
-                        MoveUp(form.a);
-                        MoveRight(form.a);
-                        MoveRight(form.a);
-                        MoveUp(form.b);
-                        MoveRight(form.b);
-                        MoveDown(form.d);
-                        MoveLeft(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 1 && cB(a, 2, 2) && cB(b, 1, 1) && cB(d, -1, -1)) {
+                    MoveUp(form.a);
+                    MoveUp(form.a);
+                    MoveRight(form.a);
+                    MoveRight(form.a);
+                    MoveUp(form.b);
+                    MoveRight(form.b);
+                    MoveDown(form.d);
+                    MoveLeft(form.d);
+                    form.changeForm();
+                    break;
                 }
-                if (f == 2){
-                    if( cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1)){
-                        MoveDown(form.a);
-                        MoveDown(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.a);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveUp(form.d);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if(cB(a, -3, -2) && cB(b, -2, -1) &&cB(c,-1,0) && cB(d, 0, 1)){
-                        MoveDown(form.a);
-                        MoveDown(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.a);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.c);
-                        MoveUp(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, 0, -2) && cB(b, 1, -1) && cB(c, 2, 0)&&cB(d,3,1)){
-                        MoveDown(form.a);
-                        MoveDown(form.a);
-                        MoveDown(form.b);
-                        MoveRight(form.b);
-                        MoveRight(form.c);
-                        MoveRight(form.c);
-                        MoveUp(form.d);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 2 && cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1)) {
+                    MoveDown(form.a);
+                    MoveDown(form.a);
+                    MoveLeft(form.a);
+                    MoveLeft(form.a);
+                    MoveDown(form.b);
+                    MoveLeft(form.b);
+                    MoveUp(form.d);
+                    MoveRight(form.d);
+                    form.changeForm();
+                    break;
                 }
                 if (f == 3 && cB(a, 2, 2) && cB(b, 1, 1) && cB(d, -1, -1)) {
                     MoveUp(form.a);
@@ -711,48 +531,17 @@ public class HelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4){
-                    if( cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1))
-                    {
-                        MoveDown(form.a);
-                        MoveDown(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.a);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveUp(form.d);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if(cB(a, -3, -2) && cB(b, -2, -1) &&cB(c,-1,0) && cB(d, 0, 1)){
-                        MoveDown(form.a);
-                        MoveDown(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.a);
-                        MoveLeft(form.a);
-                        MoveDown(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.b);
-                        MoveLeft(form.c);
-                        MoveUp(form.d);
-                        form.changeForm();
-                        break;
-                    }
-                    if( cB(a, 0, -2) && cB(b, 1, -1) && cB(c, 2, 0)&&cB(d,3,1)){
-                        MoveDown(form.a);
-                        MoveDown(form.a);
-                        MoveDown(form.b);
-                        MoveRight(form.b);
-                        MoveRight(form.c);
-                        MoveRight(form.c);
-                        MoveUp(form.d);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        MoveRight(form.d);
-                        form.changeForm();
-                        break;
-                    }
+                if (f == 4 && cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1)) {
+                    MoveDown(form.a);
+                    MoveDown(form.a);
+                    MoveLeft(form.a);
+                    MoveLeft(form.a);
+                    MoveDown(form.b);
+                    MoveLeft(form.b);
+                    MoveUp(form.d);
+                    MoveRight(form.d);
+                    form.changeForm();
+                    break;
                 }
                 break;
         }
@@ -878,7 +667,7 @@ public class HelloApplication extends Application {
 
 
 
-        return moved; // 5이동 여부를 반환
+        return moved; // 이동 여부를 반환
     }
 
     private void DirectMoveDown(Form form) {
@@ -980,6 +769,7 @@ public class HelloApplication extends Application {
         timer.stop();
         stage.close();
     }
+
 
 
     public static void main(String[] args) {

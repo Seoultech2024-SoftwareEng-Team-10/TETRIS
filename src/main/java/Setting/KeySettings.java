@@ -1,10 +1,11 @@
 package Setting;
 
 public class KeySettings {
-    private static String rightKey = "RIGHT";
-    private static String downKey = "DOWN";
-    private static String leftKey = "LEFT";
-    private static String upKey = "UP";
+    public static String rightKey = "RIGHT";
+    public static String downKey = "DOWN";
+    public static String leftKey = "LEFT";
+    public static String upKey = "UP";
+    public static String spaceKey = "SPACE";
 
     public static String getRightKey() {
         return rightKey;
@@ -36,5 +37,13 @@ public class KeySettings {
 
     public static void setUpKey(String key) {
         upKey = key;
+    }
+
+    public static String getSpaceKey() {
+        return spaceKey;
+    }
+
+    public static void setSpaceKey(String key) {
+        spaceKey = key;
     }
 }

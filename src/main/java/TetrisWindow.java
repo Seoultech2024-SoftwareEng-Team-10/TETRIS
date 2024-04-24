@@ -24,6 +24,11 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+
 
 
 
@@ -31,48 +36,32 @@ public class TetrisWindow extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setTitle("TETRIS GAME");
 
         BorderPane root = new BorderPane();
 
+        HelloApplication helloApp = new HelloApplication();
+
+        // 로고 생성
         Text logoText = new Text("TETRIS");
-        logoText.setFont(Font.font("Arial", FontWeight.BOLD, 50));
+        logoText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         logoText.setFill(Color.BLACK);
-
-        // 로고를 담을 BorderPane 생성
-        BorderPane logoPane = new BorderPane();
-        logoPane.setCenter(logoText);
-        BorderPane.setAlignment(logoText, Pos.CENTER);
-
-        // Scene 생성
-        Scene scene2 = new Scene(logoPane, 400, 300);
-        scene2.setFill(Color.BLACK);
-
-        // Stage 설정
-        primaryStage.setTitle("TETRIS Logo");
-        primaryStage.setScene(scene2);
-        primaryStage.show();
+        VBox logoPane = new VBox(logoText);
+        logoPane.setPadding(new Insets(10));
+        logoPane.setStyle("-fx-background-color: #800080;");
 
         // 버튼 생성
-        VBox buttonPane = new VBox(20);
+        VBox buttonPane = new VBox(10);
         buttonPane.setAlignment(Pos.CENTER);
-        Button gameStartButton = new Button("게임시작");
+        Button gameStartButton = new Button("일반모드");
+        Button itemgameButton = new Button("아이템모드");
         Button scoreBoardButton = new Button("스코어보드");
         Button settingsButton = new Button("설정");
         Button exitButton = new Button("게임종료");
-        gameStartButton.setPrefSize(1000, 50);
-        scoreBoardButton.setPrefSize(1000,50);
-        settingsButton.setPrefSize(1000, 50);
-        exitButton.setPrefSize(1000, 50);
-        Font font = Font.font("Arial", FontWeight.BOLD, 40);
-        gameStartButton.setFont(font);
-        scoreBoardButton.setFont(font);
-        settingsButton.setFont(font);
-        exitButton.setFont(font);
 
 
 
-
-        buttonPane.getChildren().addAll(gameStartButton, scoreBoardButton, settingsButton, exitButton);
+        buttonPane.getChildren().addAll(gameStartButton, itemgameButton, scoreBoardButton, settingsButton, exitButton);
 
         // 설정 창 생성
         SettingsWindow settingsWindow = new SettingsWindow(primaryStage);
@@ -110,14 +99,42 @@ public class TetrisWindow extends Application {
 
         gameStartButton.setOnAction(event -> {
             try {
-                // HelloApplication 인스턴스 생성
-                HelloApplication helloApp = new HelloApplication();
-
                 // 새 Stage 생성
                 Stage gameStage = new Stage();
 
                 // HelloApplication의 start 메소드 호출
                 helloApp.start(gameStage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        itemgameButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                // 버튼에 대한 동작 수행
+
+                itemgameButton.fire();
+            }
+        });
+
+        itemgameButton.setOnAction(event -> {
+            try {
+                // 새 Stage 생성
+                Stage gameStage = new Stage();
+                HelloApplication.itemMode = true; // 아이템 모드 활성화
+
+                // 아이템 모드 여부 확인
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("아이템 모드");
+                alert.setHeaderText(null);
+                alert.setContentText("아이템 모드로 진행하시겠습니까?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    helloApp.start(gameStage);
+                } else {
+                    HelloApplication.itemMode = false; // 아이템 모드 비활성화
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -143,7 +160,6 @@ public class TetrisWindow extends Application {
                 exitButton.fire();
             }
         });
-
 
         root.setTop(logoPane);
         root.setCenter(buttonPane);
@@ -171,11 +187,13 @@ public class TetrisWindow extends Application {
 
         // 각 버튼에 CSS 적용
         gameStartButton.getStyleClass().add("button");
+        itemgameButton.getStyleClass().add("button");
         scoreBoardButton.getStyleClass().add("button");
         settingsButton.getStyleClass().add("button");
         exitButton.getStyleClass().add("button");
 
         gameStartButton.getStyleClass().add("game-start-button");
+        itemgameButton.getStyleClass().add("item-game-button");
         scoreBoardButton.getStyleClass().add("score-board-button");
         settingsButton.getStyleClass().add("settings-button");
         exitButton.getStyleClass().add("exit-button");
@@ -188,6 +206,5 @@ public class TetrisWindow extends Application {
 
     public static void main(String[] args) {
         launch(args);
-        //test주석
     }
 }
