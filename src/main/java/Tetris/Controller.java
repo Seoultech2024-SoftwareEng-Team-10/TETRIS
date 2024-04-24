@@ -10,12 +10,11 @@ public class Controller {
     public static int MOVE = SizeConstants.MOVE;
     public static int SIZE = SizeConstants.SIZE;
     public static int XMAX = SizeConstants.XMAX;
-    public static int YMAX = SizeConstants.YMAX;
+    //public static int YMAX = SizeConstants.YMAX;
     public static double fontSize = SizeConstants.fontSize;
     public static int[][] MESH = SizeConstants.MESH;
     private int x;
-    public Controller (int x){
-        this.x = x;
+    public Controller (){
     }
 
     public static void MoveRight(Form form) {
@@ -52,10 +51,13 @@ public class Controller {
 
 
     public static Form makeText(boolean colorBlindMode) {
+        fontSize = SizeConstants.fontSize;
+        System.out.println(fontSize);
+        XMAX = SizeConstants.XMAX;
+        SIZE = SizeConstants.SIZE;
         int block = (int) (Math.random() * 105);
         String name;
-        Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
-                d = new Text(0, 0, "O");//Rectangle --> Text
+        Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"), d = new Text(0, 0, "O");//Rectangle --> Text
         a.setFont(Font.font(fontSize));
         b.setFont(Font.font(fontSize));
         c.setFont(Font.font(fontSize));
@@ -214,6 +216,10 @@ public class Controller {
         return new Form(a, b, c, d, name, colorBlindMode);
     }
     public static Form makeText(String name, boolean colorBlindMode) {
+        fontSize = SizeConstants.fontSize;
+        System.out.println(fontSize);
+        XMAX = SizeConstants.XMAX;
+        SIZE = SizeConstants.SIZE;
         Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
                 d = new Text(0, 0, "O");//Rectangle --> Text
         a.setFont(Font.font(fontSize));

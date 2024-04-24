@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.effect.ColorAdjust;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 //1234
@@ -35,14 +36,11 @@ public class HelloApplication extends Application {
     private static Form object;
 
     private static Pane group = new Pane();
-    {
-        group.setStyle("-fx-background-color: black;");
-    }
-
     private static Scene scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
     public static int score = 0;
     private static int top = 0;
     private static boolean game = true;
+
     private static Form nextObj = Controller.makeText(true);//makeRect->makeText
     private static Form waitObj = Controller.waitingTextMake(true);
     private static int linesNo = 0;
@@ -52,11 +50,14 @@ public class HelloApplication extends Application {
     private Button restartButton;
     private Button exitButton;
     private ScoreboardConnector scoreboardDataInserter;
-
-    @Override
-    public void start(Stage stage) throws IOException {
-        stage.close(); //stage초기화
+    private Text scoretext;
+    public HelloApplication(){
         group.getChildren().clear();
+        group.setEffect(null);
+        score = 0;
+        running = true;
+        waitObj = Controller.waitingTextMake(true);
+        nextObj = Controller.makeText(true);//makeRect->makeText
         MOVE = SizeConstants.MOVE;
         SIZE = SizeConstants.SIZE;
         XMAX = SizeConstants.XMAX;
@@ -64,6 +65,13 @@ public class HelloApplication extends Application {
         MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+    }
+
+    @Override
+    public void start(Stage stage) throws IOException {
+        stage.close(); //stage초기화
+
+
 
 
         for (int[] a : MESH) {
@@ -71,7 +79,7 @@ public class HelloApplication extends Application {
         }
         drawGridLines();
         Line line = new Line(XMAX, 0, XMAX, YMAX);
-        Text scoretext = new Text("SCORE: ");
+        scoretext = new Text("SCORE: ");
         scoretext.setUserData("scoretext");
         scoretext.setFill(Color.WHITE);
         scoretext.setStyle("-fx-font: 20  Lato;");
@@ -87,7 +95,7 @@ public class HelloApplication extends Application {
         Form wait = waitObj;
 
         group.getChildren().addAll(scoretext, line, level, wait.a, wait.b, wait.c, wait.d);
-
+        group.setStyle("-fx-background-color: black;");
         Form a = nextObj;
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
@@ -103,18 +111,18 @@ public class HelloApplication extends Application {
 
         // 게임 재시작 및 종료 버튼 추가
         restartButton = new Button("게임 재시작");
-        restartButton.setLayoutX(170);
-        restartButton.setLayoutY(240);
+        restartButton.setLayoutX(XMAX/2);
+        restartButton.setLayoutY(YMAX/2);
         restartButton.setVisible(false); // 초기에는 보이지 않게 설정
 
         exitButton = new Button("게임 종료");
-        exitButton.setLayoutX(176);
-        exitButton.setLayoutY(270);
+        exitButton.setLayoutX(XMAX/2);
+        exitButton.setLayoutY(YMAX/2+30);
         exitButton.setVisible(false); // 초기에는 보이지 않게 설정
 
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> startAnimation());
-        exitButton.setOnAction(e -> System.exit(0));
+        exitButton.setOnAction(e -> GameStopped(stage));
 
         // 그룹에 버튼 추가
         group.getChildren().addAll(restartButton, exitButton);
@@ -129,6 +137,7 @@ public class HelloApplication extends Application {
 
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
+                            group.getChildren().clear();
                         });
                         lastUpdate = now;
 
@@ -139,19 +148,18 @@ public class HelloApplication extends Application {
 
                         if (top == 2) {
                             GameOver();
-                            stage.close();
+
                         }
                         // Exit
                         if (top == 15) {
                             GameOver();
                             stage.close();
-                            timer.stop();
                         }
 
                         if (game) {
                             MoveDown(object);
-                            scoretext.setText("Score: " + Integer.toString(score));
-                            level.setText("Lines: " + Integer.toString(linesNo));
+                            scoretext.setText("Score: " + score);
+                            level.setText("Lines: " + linesNo);
                         }
 
                     }
@@ -205,6 +213,7 @@ public class HelloApplication extends Application {
                             break;
                         case DOWN:
                             MoveDown(form);
+                            scoretext.setText("Score: " + score);
                             break;
                         case LEFT:
                             Controller.MoveLeft(form);
@@ -214,6 +223,7 @@ public class HelloApplication extends Application {
                             break;
                         case SPACE:
                             DirectMoveDown(form);
+                            scoretext.setText("Score: " + score);
                             break;
                         case ESCAPE:
                             stopAnimation();
@@ -814,6 +824,8 @@ public class HelloApplication extends Application {
     }
 
     private void MoveDown(Text text) {
+        scoretext.setText("Score: " + score);
+        score++;
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 
@@ -836,15 +848,6 @@ public class HelloApplication extends Application {
 
     private boolean MoveDown(Form form) {
         boolean moved = false; // 이동 여부를 추적하는 변수입니다.
-        if (form.a.getY() + MOVE < YMAX && form.b.getY() + MOVE < YMAX && form.c.getY() + MOVE < YMAX
-                && form.d.getY() + MOVE < YMAX && !(moveA(form) || moveB(form) || moveC(form) || moveD(form))) {
-            form.a.setY(form.a.getY() + MOVE);
-            form.b.setY(form.b.getY() + MOVE);
-            form.c.setY(form.c.getY() + MOVE);
-            form.d.setY(form.d.getY() + MOVE);
-            moved = true; // 실제로 이동했으므로 true로 설정
-            score += scoreMultiplier;
-        }
         if (form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
                 || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form)) {
             // 여기서는 블록이 다음 위치로 이동할 수 없으므로, 현재 위치를 고정하고 새로운 블록을 생성합니다.
@@ -862,6 +865,16 @@ public class HelloApplication extends Application {
             moveOnKeyPress(a);
             moved = false; // 이 경우에는 이동하지 않으므로 false
         }
+        if (form.a.getY() + MOVE < YMAX && form.b.getY() + MOVE < YMAX && form.c.getY() + MOVE < YMAX
+                && form.d.getY() + MOVE < YMAX && !(moveA(form) || moveB(form) || moveC(form) || moveD(form))) {
+            form.a.setY(form.a.getY() + MOVE);
+            form.b.setY(form.b.getY() + MOVE);
+            form.c.setY(form.c.getY() + MOVE);
+            form.d.setY(form.d.getY() + MOVE);
+            moved = true; // 실제로 이동했으므로 true로 설정
+            score += scoreMultiplier;
+        }
+
 
 
         return moved; // 5이동 여부를 반환
@@ -926,7 +939,6 @@ public class HelloApplication extends Application {
 
     public void stopAnimation() {
         running = false;
-
         applyGrayscaleEffect();
         for (Node node : group.getChildren()) {
             if (node instanceof Button) {
@@ -950,11 +962,22 @@ public class HelloApplication extends Application {
         bringButtonsToFront();
     }
 
+
     public void GameOver(){
-        running = false;
+        running =  false;
+        try {
+            ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
+        } catch (Exception e) {
+            System.out.println("jdbc error");
+        }
         applyGrayscaleEffect();
-        ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
-        game = false;
+        if (exitButton != null)
+            exitButton.setVisible(true);
+
+    }
+    private void GameStopped(Stage stage){
+        timer.stop();
+        stage.close();
     }
 
 
