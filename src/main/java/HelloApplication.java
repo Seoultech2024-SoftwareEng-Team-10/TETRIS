@@ -57,8 +57,8 @@ public class HelloApplication extends Application {
         group.setEffect(null);
         score = 0;
         running = true;
-        waitObj = Controller.waitingTextMake(true);
-        nextObj = Controller.makeText(true);//makeRect->makeText
+        waitObj = Controller.waitingTextMake(true, difficultylevel);
+        nextObj = Controller.makeText(true, difficultylevel);//makeRect->makeText
         MOVE = SizeConstants.MOVE;
         SIZE = SizeConstants.SIZE;
         XMAX = SizeConstants.XMAX;
