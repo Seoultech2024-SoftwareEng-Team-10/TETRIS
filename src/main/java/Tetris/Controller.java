@@ -68,7 +68,6 @@ public class Controller {
         }
         String name;
         Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"), d = new Text(0, 0, "O");//Rectangle --> Text
-
         a.setFont(Font.font(fontSize));
         b.setFont(Font.font(fontSize));
         c.setFont(Font.font(fontSize));
@@ -134,10 +133,10 @@ public class Controller {
             // 각 블록에 대해 다른 색상 지정
             switch (name) {
                 case "j":
-                    a.setFill(Color.RED);
-                    b.setFill(Color.RED);
-                    c.setFill(Color.RED);
-                    d.setFill(Color.RED);
+                    a.setFill(Color.GRAY);
+                    b.setFill(Color.GRAY);
+                    c.setFill(Color.GRAY);
+                    d.setFill(Color.GRAY);
                     break;
                 case "l":
                     a.setFill(Color.GREEN);
@@ -158,10 +157,10 @@ public class Controller {
                     d.setFill(Color.ORANGE);
                     break;
                 case "t":
-                    a.setFill(Color.PURPLE);
-                    b.setFill(Color.PURPLE);
-                    c.setFill(Color.PURPLE);
-                    d.setFill(Color.PURPLE);
+                    a.setFill(Color.PINK);
+                    b.setFill(Color.PINK);
+                    c.setFill(Color.PINK);
+                    d.setFill(Color.PINK);
                     break;
                 case "z":
                     a.setFill(Color.YELLOW);
@@ -170,10 +169,10 @@ public class Controller {
                     d.setFill(Color.YELLOW);
                     break;
                 case "i":
-                    a.setFill(Color.BLACK);
-                    b.setFill(Color.BLACK);
-                    c.setFill(Color.BLACK);
-                    d.setFill(Color.BLACK);
+                    a.setFill(Color.SKYBLUE);
+                    b.setFill(Color.SKYBLUE);
+                    c.setFill(Color.SKYBLUE);
+                    d.setFill(Color.SKYBLUE);
                     break;
             }
         } else {
@@ -291,10 +290,10 @@ public class Controller {
             // 각 블록에 대해 다른 색상 지정
             switch (name) {
                 case "j":
-                    a.setFill(Color.RED);
-                    b.setFill(Color.RED);
-                    c.setFill(Color.RED);
-                    d.setFill(Color.RED);
+                    a.setFill(Color.GRAY);
+                    b.setFill(Color.GRAY);
+                    c.setFill(Color.GRAY);
+                    d.setFill(Color.GRAY);
                     break;
                 case "l":
                     a.setFill(Color.GREEN);
@@ -315,10 +314,10 @@ public class Controller {
                     d.setFill(Color.ORANGE);
                     break;
                 case "t":
-                    a.setFill(Color.PURPLE);
-                    b.setFill(Color.PURPLE);
-                    c.setFill(Color.PURPLE);
-                    d.setFill(Color.PURPLE);
+                    a.setFill(Color.PINK);
+                    b.setFill(Color.PINK);
+                    c.setFill(Color.PINK);
+                    d.setFill(Color.PINK);
                     break;
                 case "z":
                     a.setFill(Color.YELLOW);
@@ -327,10 +326,10 @@ public class Controller {
                     d.setFill(Color.YELLOW);
                     break;
                 case "i":
-                    a.setFill(Color.BLACK);
-                    b.setFill(Color.BLACK);
-                    c.setFill(Color.BLACK);
-                    d.setFill(Color.BLACK);
+                    a.setFill(Color.SKYBLUE);
+                    b.setFill(Color.SKYBLUE);
+                    c.setFill(Color.SKYBLUE);
+                    d.setFill(Color.SKYBLUE);
                     break;
             }
         } else {

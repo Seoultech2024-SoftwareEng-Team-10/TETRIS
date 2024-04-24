@@ -7,9 +7,10 @@ import Tetris.Form;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -44,18 +45,19 @@ public class HelloApplication extends Application {
     public static int score = 0;
     private static int top = 0;
     private static boolean game = true;
+    private ColorAdjust colorAdjust = new ColorAdjust();
     private static char difficultylevel = LevelConstants.difficultyLevel;
     private static Form nextObj = Controller.makeText(true,difficultylevel);//makeRect->makeText
     private static Form waitObj = Controller.waitingTextMake(true,difficultylevel);
     private static int linesNo = 0;
+    private Button restartButton;
+    private Button exitButton;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
 
     private ScoreboardConnector scoreboardDataInserter;
     private Text scoretext;
     public HelloApplication(){
-        group.getChildren().clear();
-        group.setEffect(null);
         score = 0;
         running = true;
         waitObj = Controller.waitingTextMake(true, difficultylevel);
@@ -67,17 +69,29 @@ public class HelloApplication extends Application {
         MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+        running = true;
     }
 
-    private boolean running = true;
     public static boolean itemMode = false; // 아이템 모드 변수 추가
 
     @Override
     public void start(Stage stage) throws IOException {
         stage.close(); //stage초기화
+        score = 0;
+        running = true;
+        waitObj = Controller.waitingTextMake(false, difficultylevel);
+        nextObj = Controller.makeText(false, difficultylevel);//makeRect->makeText
+        MOVE = SizeConstants.MOVE;
+        SIZE = SizeConstants.SIZE;
+        XMAX = SizeConstants.XMAX;
+        YMAX = SizeConstants.YMAX;
+        MESH = SizeConstants.MESH;
+        group = new Pane();
+        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+        running = true;
 
 
-
+        group.getChildren().clear();
 
         for (int[] a : MESH) {
             Arrays.fill(a, 0);
@@ -86,14 +100,16 @@ public class HelloApplication extends Application {
         Line line = new Line(XMAX, 0, XMAX, YMAX);
         scoretext = new Text("SCORE: ");
         scoretext.setUserData("scoretext");
-        scoretext.setStyle("-fx-font: 20 arial;");
+        scoretext.setFill(Color.WHITE);
+        scoretext.setStyle("-fx-font: 20  Lato;");
         scoretext.setY(50);
-        scoretext.setX(XMAX + 5);
-        Text level = new Text("Lines: ");//scoretext,level userdata추가
+        scoretext.setX(XMAX + 30);
+        scoretext.setY(300);
+        Text level = new Text("LINES: ");//scoretext,level userdata추가
         level.setUserData("level");
-        level.setStyle("-fx-font: 20 arial;");
-        level.setY(100);
-        level.setX(XMAX + 5);
+        level.setStyle("-fx-font: 20 Lato;");
+        level.setY(350);
+        level.setX(XMAX + 30);
         level.setFill(Color.GREEN);
         Form wait = waitObj;
 
@@ -103,12 +119,11 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
-
         nextObj = Controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
-        //nextObj = Controller.makeText(itemMode); // itemMode 전달
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
+
 
         // 흑백 효과 초기 설정
         colorAdjust.setSaturation(-1);
@@ -132,14 +147,10 @@ public class HelloApplication extends Application {
         // 그룹에 버튼 추가
         group.getChildren().addAll(restartButton, exitButton);
         timer = new AnimationTimer() {
-
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
-                if (now - lastUpdate >= Frame) { // 1초마다 실행
-                    lastUpdate = now;
-
 
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
@@ -155,7 +166,7 @@ public class HelloApplication extends Application {
                         else
                             top = 0;
 
-                         if (top == 2) {
+                        if (top == 2) {
                             GameOver();
 
                         }
@@ -171,27 +182,6 @@ public class HelloApplication extends Application {
                             level.setText("Lines: " + linesNo);
                         }
 
-
-                    if (top == 2) {
-                        // GAME OVER
-                        Text over = new Text("GAME OVER");
-                        over.setFill(Color.RED);
-                        over.setStyle("-fx-font: 70 arial;");
-                        over.setY(250);
-                        over.setX(10);
-                        group.getChildren().add(over);
-                        ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
-                        game = false;
-                    }
-                    // Exit
-                    if (top == 15) {
-                        System.exit(0);
-                    }
-
-                    if (game) {
-                        MoveDown(object);
-                        scoretext.setText("Score: " + Integer.toString(score));
-                        level.setText("Lines: " + Integer.toString(linesNo));
                     }
                 }
             }
@@ -199,15 +189,22 @@ public class HelloApplication extends Application {
         timer.start();
     }
 
+
+
     private void drawGridLines() {
         for (int x = 0; x <= XMAX / SIZE; x++) {
             Line line = new Line(x * SIZE, 0, x * SIZE, YMAX);
-            line.setStroke(Color.LIGHTGRAY);
+            line.setStroke(Color.DARKGRAY);
+            line.setStrokeWidth(0.2);
+            if (x == XMAX / SIZE) { // 마지막 열에 굵은 선 추가
+                line.setStrokeWidth(5.0);
+            }
             group.getChildren().add(line);
         }
         for (int y = 0; y <= YMAX / SIZE; y++) {
             Line line = new Line(0, y * SIZE, XMAX, y * SIZE);
-            line.setStroke(Color.LIGHTGRAY);
+            line.setStroke(Color.DARKGRAY);
+            line.setStrokeWidth(0.2);
             group.getChildren().add(line);
         }
     }
@@ -251,13 +248,6 @@ public class HelloApplication extends Application {
         });
     }
 
-    public void stopAnimation() {
-        running = false;
-    }
-
-    public void startAnimation() {
-        running = true;
-    }
 
     private void MoveTurn(Form form) {
         int f = form.form;
@@ -755,24 +745,36 @@ public class HelloApplication extends Application {
 
     public void GameOver(){
         running =  false;
+        applyGrayscaleEffect();
+        if (exitButton != null)
+            exitButton.toFront();
+            exitButton.setVisible(true);
         try {
             ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
         } catch (Exception e) {
             System.out.println("jdbc error");
         }
-        applyGrayscaleEffect();
-        if (exitButton != null)
-            exitButton.setVisible(true);
 
     }
     private void GameStopped(Stage stage){
         timer.stop();
         stage.close();
     }
+    public void applyGrayscaleEffect() {
+        group.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
+    }
+
+    public void clearGrayscaleEffect() {
+        group.setEffect(null); // 흑백 효과 해제
+    }
+    private void bringButtonsToFront() {
+        if (restartButton != null) restartButton.toFront();
+        if (exitButton != null) exitButton.toFront();
+    }
 
 
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
         launch();
     }
 }
