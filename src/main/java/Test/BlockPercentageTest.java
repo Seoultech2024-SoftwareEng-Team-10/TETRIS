@@ -58,7 +58,6 @@ public class BlockPercentageTest {
             }
         }
         testPrint(j,l,o,s,t,z,i);
-        j = 0;l = 0;o = 0;s = 0;t = 0;z = 0;i = 0;
     }
     public static void testPrint(int j, int l, int o, int s, int t, int z,int i){
         System.out.printf("j: %d ",j);
