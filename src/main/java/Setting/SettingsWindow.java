@@ -1,5 +1,8 @@
 package Setting;
 
+import ScoreBoard.JdbcConnecter;
+import User.SessionManager;
+import User.User;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -185,7 +188,8 @@ public class SettingsWindow extends Stage {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("기록 초기화");
         alert.setHeaderText(null);
-        alert.setContentText("정말 모든 기록을 초기화하시겠습니까?");
+        User user = SessionManager.getCurrentUser();
+        alert.setContentText("정말 "+user.getNickname()+"님의 모든 기록을 초기화하시겠습니까?");
 
         alert.showAndWait().ifPresent(result -> {
             if (result == ButtonType.OK) {
@@ -216,6 +220,10 @@ public class SettingsWindow extends Stage {
     }
 
     private void resetScoreSettings() {
-        // 기록 초기화 코드 입력 공간
+        User user = SessionManager.getCurrentUser();
+        String message = JdbcConnecter.deleteUserByNickname(user.getNickname());
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 }
