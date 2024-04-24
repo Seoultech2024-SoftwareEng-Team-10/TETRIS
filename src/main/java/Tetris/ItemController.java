@@ -239,6 +239,28 @@ public class ItemController {
                 case 3: c.setText("L"); break;
                 case 4: d.setText("L"); break;
             }
+        }if(item == "Weight"){
+            a.setText("X");
+            b.setText("X");
+            c.setText("X");
+            d.setText("X");
+        }if(item == "Inverse"){
+            a.setText("N");
+            b.setText("N");
+            c.setText("N");
+            d.setText("N");
+        }if(item == "Bomb"){
+            switch (itemRotate){
+                case 1: a.setText("B"); break;
+                case 2: b.setText("B"); break;
+                case 3: c.setText("B"); break;
+                case 4: d.setText("B"); break;
+            }
+        }if(item=="Fixed"){
+            a.setText("F");
+            b.setText("F");
+            c.setText("F");
+            d.setText("F");
         }
         a.setFont(Font.font(fontSize));
         b.setFont(Font.font(fontSize));
@@ -391,7 +413,15 @@ public class ItemController {
         return new ItemForm(a, b, c, d, name, colorBlindMode,item,itemRotate);
     }
     public static ItemForm waitingTextMake(boolean colorBlindMode, char difficultyLevel, String item, int itemRotate){
-        ItemForm waitObj = makeText(colorBlindMode, difficultyLevel,item,itemRotate);
+        ItemForm waitObj;
+        if(item == "Weight"){
+            waitObj = makeText("i",colorBlindMode,"Weight",itemRotate);
+            waitObj.a.setText("X");
+            waitObj.b.setText("X");
+            waitObj.c.setText("X");
+            waitObj.d.setText("X");
+        }else
+            waitObj = makeText(colorBlindMode, difficultyLevel,item,itemRotate);
         if(item == "LineClear"){
             switch (itemRotate){
                 case 1: waitObj.a.setText("L"); break;
@@ -399,6 +429,24 @@ public class ItemController {
                 case 3: waitObj.c.setText("L"); break;
                 case 4: waitObj.d.setText("L"); break;
             }
+        }
+        if(item == "Inverse"){
+            waitObj.a.setText("N");
+            waitObj.b.setText("N");
+            waitObj.c.setText("N");
+            waitObj.d.setText("N");
+        }if(item == "Bomb"){
+            switch (itemRotate){
+                case 1: waitObj.a.setText("B"); break;
+                case 2: waitObj.b.setText("B"); break;
+                case 3: waitObj.c.setText("B"); break;
+                case 4: waitObj.d.setText("B"); break;
+            }
+        }if(item=="Fixed"){
+            waitObj.a.setText("F");
+            waitObj.b.setText("F");
+            waitObj.c.setText("F");
+            waitObj.d.setText("F");
         }
 
         waitObj.a.setX(waitObj.a.getX()+SIZE*7);

@@ -2,8 +2,6 @@
 import ScoreBoard.ScoreboardConnector;
 import Setting.LevelConstants;
 import Setting.SizeConstants;
-import Tetris.Controller;
-import Tetris.Form;
 import Tetris.ItemController;
 import Tetris.ItemForm;
 import javafx.animation.AnimationTimer;
@@ -37,7 +35,7 @@ public class ItemHelloApplication extends Application {
     public static int[][] MESH = SizeConstants.MESH;
     public static String item = "";
     public static int itemRotate = 0;
-    public static int itemCounter = 0;
+    public static int itemCounter = 1;
 
     private static ItemForm object;
 
@@ -55,6 +53,9 @@ public class ItemHelloApplication extends Application {
     private Button exitButton;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
+
+    boolean WeightMove = true;
+    int LineClearY = -1;
 
     private ScoreboardConnector scoreboardDataInserter;
     private Text scoretext;
@@ -218,19 +219,52 @@ public class ItemHelloApplication extends Application {
                 if(running) {
                     switch (event.getCode()) {
                         case RIGHT:
+                            if(form.getItem()=="Weight"&&!(WeightMove))
+                                break;
+                            if(form.getItem()=="Inverse"){
+                                ItemController.MoveLeft(form);
+                                break;
+                            }
                             ItemController.MoveRight(form);
                             break;
                         case DOWN:
+                            if(form.getItem()=="Weight"&&!(WeightMove))
+                                break;
                             MoveDown(form);
                             scoretext.setText("Score: " + score);
                             break;
                         case LEFT:
+                            if(form.getItem()=="Weight"&&!(WeightMove))
+                                break;
+                            if(form.getItem()=="Inverse"){
+                                ItemController.MoveRight(form);
+                                break;
+                            }
                             ItemController.MoveLeft(form);
                             break;
                         case UP:
                             MoveTurn(form);
                             break;
                         case SPACE:
+                            if(form.getItem()=="Weight")
+                                break;
+                            if(form.getItem()=="Fixed"){
+                                MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
+                                MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
+                                MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
+                                MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
+                                RemoveRows(group);
+                                // 새 블록 생성
+                                ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
+                                group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+                                waitObj = ItemController.waitingTextMake(true,difficultylevel,item,itemRotate);
+                                object = a;
+                                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+                                moveOnKeyPress(a);
+                                item = "";
+                                itemRotate = 0;
+                                break;
+                            }
                             DirectMoveDown(form);
                             scoretext.setText("Score: " + score);
                             break;
@@ -258,29 +292,45 @@ public class ItemHelloApplication extends Application {
         Text d = form.d;//Rectangle - >Text
         switch (form.getName()) {
             case "j":
-                if (f == 1 && cB(a, 1, -1) && cB(c, -1, -1) && cB(d, -2, -2)) {
-                    MoveRight(form.a);
-                    MoveDown(form.a);
-                    MoveDown(form.c);
-                    MoveLeft(form.c);
-                    MoveDown(form.d);
-                    MoveDown(form.d);
-                    MoveLeft(form.d);
-                    MoveLeft(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 1) {
+                    if (cB(a, 1, -1) && cB(c, -1, -1) && cB(d, -2, -2)) {
+                        MoveRight(form.a);
+                        MoveDown(form.a);
+                        MoveDown(form.c);
+                        MoveLeft(form.c);
+                        MoveDown(form.d);
+                        MoveDown(form.d);
+                        MoveLeft(form.d);
+                        MoveLeft(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
-                if (f == 2 && cB(a, -1, -1) && cB(c, -1, 1) && cB(d, -2, 2)) {
-                    MoveDown(form.a);
-                    MoveLeft(form.a);
-                    MoveLeft(form.c);
-                    MoveUp(form.c);
-                    MoveLeft(form.d);
-                    MoveLeft(form.d);
-                    MoveUp(form.d);
-                    MoveUp(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 2){
+                    if( cB(a, -1, -1) && cB(c, -1, 1) && cB(d, -2, 2)) {
+                        MoveDown(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.c);
+                        MoveUp(form.c);
+                        MoveLeft(form.d);
+                        MoveLeft(form.d);
+                        MoveUp(form.d);
+                        MoveUp(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, 1, -1) && cB(c, 1, 1) && cB(b,2,0) && cB(d, 0, 2)) {
+                        MoveDown(form.a);
+                        MoveRight(form.a);
+                        MoveRight(form.b);
+                        MoveRight(form.b);
+                        MoveRight(form.c);
+                        MoveUp(form.c);
+                        MoveUp(form.d);
+                        MoveUp(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 if (f == 3 && cB(a, -1, 1) && cB(c, 1, 1) && cB(d, 2, 2)) {
                     MoveLeft(form.a);
@@ -294,67 +344,145 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4 && cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 2, -2)) {
-                    MoveUp(form.a);
-                    MoveRight(form.a);
-                    MoveRight(form.c);
-                    MoveDown(form.c);
-                    MoveRight(form.d);
-                    MoveRight(form.d);
-                    MoveDown(form.d);
-                    MoveDown(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 4){
+                    if( cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 2, -2)) {
+                        MoveUp(form.a);
+                        MoveRight(form.a);
+                        MoveRight(form.c);
+                        MoveDown(form.c);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        MoveDown(form.d);
+                        MoveDown(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, -1, 1) && cB(b,-2,0) && cB(c, -1, -1) && cB(d, 0, -2)) {
+                        MoveUp(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.c);
+                        MoveDown(form.c);
+                        MoveDown(form.d);
+                        MoveDown(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 break;
             case "l":
-                if (f == 1 && cB(a, 1, -1) && cB(c, 1, 1) && cB(b, 2, 2)) {
-                    MoveRight(form.a);
-                    MoveDown(form.a);
-                    MoveUp(form.c);
-                    MoveRight(form.c);
-                    MoveUp(form.b);
-                    MoveUp(form.b);
-                    MoveRight(form.b);
-                    MoveRight(form.b);
-                    form.changeForm();
-                    break;
+                if (f == 1) {
+                    if (cB(a, 1, -1) && cB(c, 1, 1) && cB(b, 2, 2)) {
+                        MoveRight(form.a);
+                        MoveDown(form.a);
+                        MoveUp(form.c);
+                        MoveRight(form.c);
+                        MoveUp(form.b);
+                        MoveUp(form.b);
+                        MoveRight(form.b);
+                        MoveRight(form.b);
+                        form.changeForm();
+                        break;
+                    }
+                    if (cB(a, 0, -1) && cB(c, 0, 1) && cB(b, 1, 2) && cB(d,-1,0)) {
+                        MoveDown(form.a);
+                        MoveUp(form.c);
+                        MoveUp(form.b);
+                        MoveUp(form.b);
+                        MoveRight(form.b);
+                        MoveLeft(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if (cB(a, 1, -1) && cB(c, 1, 1) && cB(b, 2, 2)) {
+                        MoveRight(form.a);
+                        MoveDown(form.a);
+                        MoveUp(form.c);
+                        MoveRight(form.c);
+                        MoveUp(form.b);
+                        MoveUp(form.b);
+                        MoveRight(form.b);
+                        MoveRight(form.b);
+                        form.changeForm();
+                        break;
+                    }
                 }
-                if (f == 2 && cB(a, -1, -1) && cB(b, 2, -2) && cB(c, 1, -1)) {
-                    MoveDown(form.a);
-                    MoveLeft(form.a);
-                    MoveRight(form.b);
-                    MoveRight(form.b);
-                    MoveDown(form.b);
-                    MoveDown(form.b);
-                    MoveRight(form.c);
-                    MoveDown(form.c);
-                    form.changeForm();
-                    break;
+                if (f == 2) {
+                    if(cB(a, -1, -1) && cB(b, 2, -2) && cB(c, 1, -1)) {
+                        MoveDown(form.a);
+                        MoveLeft(form.a);
+                        MoveRight(form.b);
+                        MoveRight(form.b);
+                        MoveDown(form.b);
+                        MoveDown(form.b);
+                        MoveRight(form.c);
+                        MoveDown(form.c);
+                        form.changeForm();
+                        break;
+                    }
+                    if(cB(a, -2, -1) && cB(b, 1, -2) && cB(c, 0, -1) && cB(d,-1,0)) {
+                        MoveDown(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.a);
+                        MoveRight(form.b);
+                        MoveDown(form.b);
+                        MoveDown(form.b);
+                        MoveDown(form.c);
+                        MoveLeft(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
-                if (f == 3 && cB(a, -1, 1) && cB(c, -1, -1) && cB(b, -2, -2)) {
-                    MoveLeft(form.a);
-                    MoveUp(form.a);
-                    MoveDown(form.c);
-                    MoveLeft(form.c);
-                    MoveDown(form.b);
-                    MoveDown(form.b);
-                    MoveLeft(form.b);
-                    MoveLeft(form.b);
-                    form.changeForm();
-                    break;
+                if (f == 3){
+                    if( cB(a, -1, 1) && cB(c, -1, -1) && cB(b, -2, -2)) {
+                        MoveLeft(form.a);
+                        MoveUp(form.a);
+                        MoveDown(form.c);
+                        MoveLeft(form.c);
+                        MoveDown(form.b);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.b);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, 0, 1) && cB(c, 0, -1) && cB(b, -1, -2) && cB(d,1,0)) {
+                        MoveUp(form.a);
+                        MoveDown(form.c);
+                        MoveDown(form.b);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
-                if (f == 4 && cB(a, 1, 1) && cB(b, -2, 2) && cB(c, -1, 1)) {
-                    MoveUp(form.a);
-                    MoveRight(form.a);
-                    MoveLeft(form.b);
-                    MoveLeft(form.b);
-                    MoveUp(form.b);
-                    MoveUp(form.b);
-                    MoveLeft(form.c);
-                    MoveUp(form.c);
-                    form.changeForm();
-                    break;
+                if (f == 4){
+                    if( cB(a, 1, 1) && cB(b, -2, 2) && cB(c, -1, 1)) {
+                        MoveUp(form.a);
+                        MoveRight(form.a);
+                        MoveLeft(form.b);
+                        MoveLeft(form.b);
+                        MoveUp(form.b);
+                        MoveUp(form.b);
+                        MoveLeft(form.c);
+                        MoveUp(form.c);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, 2, 1) && cB(b, -1, 2) && cB(c, 0, 1) && cB(d,1,0)) {
+                        MoveUp(form.a);
+                        MoveRight(form.a);
+                        MoveRight(form.a);
+                        MoveLeft(form.b);
+                        MoveUp(form.b);
+                        MoveUp(form.b);
+                        MoveUp(form.c);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 break;
             case "o":
@@ -370,15 +498,27 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 2 && cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
-                    MoveUp(form.a);
-                    MoveRight(form.a);
-                    MoveRight(form.c);
-                    MoveDown(form.c);
-                    MoveDown(form.d);
-                    MoveDown(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 2){
+                    if( cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
+                        MoveUp(form.a);
+                        MoveRight(form.a);
+                        MoveRight(form.c);
+                        MoveDown(form.c);
+                        MoveDown(form.d);
+                        MoveDown(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, 0, 1) && cB(b,-1,0) && cB(c, 0, -1) && cB(d, -1, -2)) {
+                        MoveUp(form.a);
+                        MoveLeft(form.b);
+                        MoveDown(form.c);
+                        MoveLeft(form.d);
+                        MoveDown(form.d);
+                        MoveDown(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 if (f == 3 && cB(a, -1, -1) && cB(c, -1, 1) && cB(d, 0, 2)) {
                     MoveDown(form.a);
@@ -390,15 +530,27 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4 && cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
-                    MoveUp(form.a);
-                    MoveRight(form.a);
-                    MoveRight(form.c);
-                    MoveDown(form.c);
-                    MoveDown(form.d);
-                    MoveDown(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 4){
+                    if(cB(a, 1, 1) && cB(c, 1, -1) && cB(d, 0, -2)) {
+                        MoveUp(form.a);
+                        MoveRight(form.a);
+                        MoveRight(form.c);
+                        MoveDown(form.c);
+                        MoveDown(form.d);
+                        MoveDown(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, 0, 1) && cB(b,-1,0) && cB(c, 0, -1) && cB(d, -1, -2)) {
+                        MoveUp(form.a);
+                        MoveLeft(form.b);
+                        MoveDown(form.c);
+                        MoveLeft(form.d);
+                        MoveDown(form.d);
+                        MoveDown(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 break;
             case "t":
@@ -412,15 +564,27 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 2 && cB(a, 1, -1) && cB(d, -1, 1) && cB(c, 1, 1)) {
-                    MoveRight(form.a);
-                    MoveDown(form.a);
-                    MoveLeft(form.d);
-                    MoveUp(form.d);
-                    MoveUp(form.c);
-                    MoveRight(form.c);
-                    form.changeForm();
-                    break;
+                if (f == 2){
+                    if(cB(a, 1, -1) && cB(d, -1, 1) && cB(c, 1, 1)) {
+                        MoveRight(form.a);
+                        MoveDown(form.a);
+                        MoveLeft(form.d);
+                        MoveUp(form.d);
+                        MoveUp(form.c);
+                        MoveRight(form.c);
+                        form.changeForm();
+                        break;
+                    }
+                    if(cB(a, 0, -1) && cB(b,-1,0) && cB(d, -2, 1) && cB(c, 0, 1)) {
+                        MoveLeft(form.b);
+                        MoveDown(form.a);
+                        MoveLeft(form.d);
+                        MoveLeft(form.d);
+                        MoveUp(form.d);
+                        MoveUp(form.c);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 if (f == 3 && cB(a, -1, -1) && cB(d, 1, 1) && cB(c, 1, -1)) {
                     MoveDown(form.a);
@@ -432,15 +596,27 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4 && cB(a, -1, 1) && cB(d, 1, -1) && cB(c, -1, -1)) {
-                    MoveLeft(form.a);
-                    MoveUp(form.a);
-                    MoveRight(form.d);
-                    MoveDown(form.d);
-                    MoveDown(form.c);
-                    MoveLeft(form.c);
-                    form.changeForm();
-                    break;
+                if (f == 4){
+                    if(cB(a, -1, 1) && cB(d, 1, -1) && cB(c, -1, -1)) {
+                        MoveLeft(form.a);
+                        MoveUp(form.a);
+                        MoveRight(form.d);
+                        MoveDown(form.d);
+                        MoveDown(form.c);
+                        MoveLeft(form.c);
+                        form.changeForm();
+                        break;
+                    }
+                    if(cB(a, 0, 1) && cB(b,1,0) && cB(d, 2, -1) && cB(c, 0, -1)) {
+                        MoveUp(form.a);
+                        MoveRight(form.b);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        MoveDown(form.d);
+                        MoveDown(form.c);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 break;
             case "z":
@@ -454,15 +630,27 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 2 && cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
-                    MoveDown(form.b);
-                    MoveLeft(form.b);
-                    MoveRight(form.c);
-                    MoveDown(form.c);
-                    MoveRight(form.d);
-                    MoveRight(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 2){
+                    if(cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveRight(form.c);
+                        MoveDown(form.c);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if(cB(a,-1,0) && cB(b, -2, -1) && cB(c, 0, -1) && cB(d, 1, 0)) {
+                        MoveLeft(form.a);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.b);
+                        MoveDown(form.c);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 if (f == 3 && cB(b, 1, 1) && cB(c, -1, 1) && cB(d, -2, 0)) {
                     MoveUp(form.b);
@@ -474,41 +662,85 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4 && cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
-                    MoveDown(form.b);
-                    MoveLeft(form.b);
-                    MoveRight(form.c);
-                    MoveDown(form.c);
-                    MoveRight(form.d);
-                    MoveRight(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 4){
+                    if(cB(b, -1, -1) && cB(c, 1, -1) && cB(d, 2, 0)) {
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveRight(form.c);
+                        MoveDown(form.c);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if(cB(a,-1,0) && cB(b, -2, -1) && cB(c, 0, -1) && cB(d, 1, 0)) {
+                        MoveLeft(form.a);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.b);
+                        MoveDown(form.c);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 break;
             case "i":
-                if (f == 1 && cB(a, 2, 2) && cB(b, 1, 1) && cB(d, -1, -1)) {
-                    MoveUp(form.a);
-                    MoveUp(form.a);
-                    MoveRight(form.a);
-                    MoveRight(form.a);
-                    MoveUp(form.b);
-                    MoveRight(form.b);
-                    MoveDown(form.d);
-                    MoveLeft(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 1) {
+                    if (cB(a, 2, 2) && cB(b, 1, 1) && cB(d, -1, -1)) {
+                        MoveUp(form.a);
+                        MoveUp(form.a);
+                        MoveRight(form.a);
+                        MoveRight(form.a);
+                        MoveUp(form.b);
+                        MoveRight(form.b);
+                        MoveDown(form.d);
+                        MoveLeft(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
-                if (f == 2 && cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1)) {
-                    MoveDown(form.a);
-                    MoveDown(form.a);
-                    MoveLeft(form.a);
-                    MoveLeft(form.a);
-                    MoveDown(form.b);
-                    MoveLeft(form.b);
-                    MoveUp(form.d);
-                    MoveRight(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 2){
+                    if( cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1)){
+                        MoveDown(form.a);
+                        MoveDown(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.a);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveUp(form.d);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if(cB(a, -3, -2) && cB(b, -2, -1) &&cB(c,-1,0) && cB(d, 0, 1)){
+                        MoveDown(form.a);
+                        MoveDown(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.a);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.c);
+                        MoveUp(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, 0, -2) && cB(b, 1, -1) && cB(c, 2, 0)&&cB(d,3,1)){
+                        MoveDown(form.a);
+                        MoveDown(form.a);
+                        MoveDown(form.b);
+                        MoveRight(form.b);
+                        MoveRight(form.c);
+                        MoveRight(form.c);
+                        MoveUp(form.d);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 if (f == 3 && cB(a, 2, 2) && cB(b, 1, 1) && cB(d, -1, -1)) {
                     MoveUp(form.a);
@@ -522,17 +754,48 @@ public class ItemHelloApplication extends Application {
                     form.changeForm();
                     break;
                 }
-                if (f == 4 && cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1)) {
-                    MoveDown(form.a);
-                    MoveDown(form.a);
-                    MoveLeft(form.a);
-                    MoveLeft(form.a);
-                    MoveDown(form.b);
-                    MoveLeft(form.b);
-                    MoveUp(form.d);
-                    MoveRight(form.d);
-                    form.changeForm();
-                    break;
+                if (f == 4){
+                    if( cB(a, -2, -2) && cB(b, -1, -1) && cB(d, 1, 1))
+                    {
+                        MoveDown(form.a);
+                        MoveDown(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.a);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveUp(form.d);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if(cB(a, -3, -2) && cB(b, -2, -1) &&cB(c,-1,0) && cB(d, 0, 1)){
+                        MoveDown(form.a);
+                        MoveDown(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.a);
+                        MoveLeft(form.a);
+                        MoveDown(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.b);
+                        MoveLeft(form.c);
+                        MoveUp(form.d);
+                        form.changeForm();
+                        break;
+                    }
+                    if( cB(a, 0, -2) && cB(b, 1, -1) && cB(c, 2, 0)&&cB(d,3,1)){
+                        MoveDown(form.a);
+                        MoveDown(form.a);
+                        MoveDown(form.b);
+                        MoveRight(form.b);
+                        MoveRight(form.c);
+                        MoveRight(form.c);
+                        MoveUp(form.d);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        MoveRight(form.d);
+                        form.changeForm();
+                        break;
+                    }
                 }
                 break;
         }
@@ -547,12 +810,17 @@ public class ItemHelloApplication extends Application {
             for (int j = 0; j < MESH.length; j++) {
                 if (MESH[j][i] == 1)
                     full++;
+                if(i == LineClearY)
+                    full = MESH.length;
             }
-            if (full == MESH.length)
+            if (full == MESH.length) {
                 lines.add(i);
+            }
             //lines.add(i + lines.size());
             full = 0;
+
         }
+        LineClearY = -1;
         if (lines.size() > 0)
             do {
                 for (Node node : pane.getChildren()) {
@@ -569,6 +837,7 @@ public class ItemHelloApplication extends Application {
                 }
                 score += 50 * scoreMultiplier;
                 linesNo++;
+                itemCounter++;
 
                 for (Node node : texts) {
                     Text a = (Text) node;
@@ -603,6 +872,99 @@ public class ItemHelloApplication extends Application {
                 texts.clear();
             } while (lines.size() > 0);//size->0
     }
+    private void WeightRemoveRows(Pane pane,ItemForm form) {
+        ArrayList<Node> texts = new ArrayList<Node>();
+        for (Node node : pane.getChildren()) {
+            if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
+                    node.getUserData() == "waita" || node.getUserData() == "waitb" ||
+                    node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                continue;
+            if (node instanceof Text)
+                texts.add(node);
+        }
+        for (Node node : texts) {
+            Text a = (Text) node;
+            if ((a.getY() == form.a.getY()+SIZE&&a.getX()==form.a.getX())||
+                    (a.getY() == form.b.getY()+SIZE&&a.getX()==form.b.getX())||
+                    (a.getY() == form.c.getY()+SIZE&&a.getX()==form.c.getX())||
+                    (a.getY() == form.d.getY()+SIZE&&a.getX()==form.d.getX())) {
+                //MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                pane.getChildren().remove(node);
+                WeightMove = false;
+            }
+        }
+    }
+
+    private void BombRemoveRows(Pane pane,ItemForm form) {
+        ArrayList<Node> texts = new ArrayList<Node>();
+        for (Node node : pane.getChildren()) {
+            if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
+                    node.getUserData() == "waita" || node.getUserData() == "waitb" ||
+                    node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                continue;
+            if (node instanceof Text)
+                texts.add(node);
+        }
+        for (Node node : texts) {
+            Text a = (Text) node;
+            if(form.getItemRotate() == 1) {
+                if ((a.getY() == form.a.getY() - SIZE && a.getX() == form.a.getX() - SIZE) ||
+                        (a.getY() == form.a.getY() - SIZE && a.getX() == form.a.getX()) ||
+                        (a.getY() == form.a.getY() - SIZE && a.getX() == form.a.getX() + SIZE) ||
+                        (a.getY() == form.a.getY() && a.getX() == form.a.getX() - SIZE)||
+                        (a.getY() == form.a.getY() && a.getX() == form.a.getX())||
+                        (a.getY() == form.a.getY() && a.getX() == form.a.getX() + SIZE)||
+                        (a.getY() == form.a.getY() + SIZE && a.getX() == form.a.getX() - SIZE)||
+                        (a.getY() == form.a.getY() + SIZE && a.getX() == form.a.getX())||
+                        (a.getY() == form.a.getY() + SIZE && a.getX() == form.a.getX() + SIZE)) {
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                    pane.getChildren().remove(node);
+                }
+            }
+            if(form.getItemRotate() == 2) {
+                if ((a.getY() == form.b.getY() - SIZE && a.getX() == form.b.getX() - SIZE) ||
+                        (a.getY() == form.b.getY() - SIZE && a.getX() == form.b.getX()) ||
+                        (a.getY() == form.b.getY() - SIZE && a.getX() == form.b.getX() + SIZE) ||
+                        (a.getY() == form.b.getY() && a.getX() == form.b.getX() - SIZE)||
+                        (a.getY() == form.b.getY() && a.getX() == form.b.getX())||
+                        (a.getY() == form.b.getY() && a.getX() == form.b.getX() + SIZE)||
+                        (a.getY() == form.b.getY() + SIZE && a.getX() == form.b.getX() - SIZE)||
+                        (a.getY() == form.b.getY() + SIZE && a.getX() == form.b.getX())||
+                        (a.getY() == form.b.getY() + SIZE && a.getX() == form.b.getX() + SIZE)) {
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                    pane.getChildren().remove(node);
+                }
+            }
+            if(form.getItemRotate() == 3) {
+                if ((a.getY() == form.c.getY() - SIZE && a.getX() == form.c.getX() - SIZE) ||
+                        (a.getY() == form.c.getY() - SIZE && a.getX() == form.c.getX()) ||
+                        (a.getY() == form.c.getY() - SIZE && a.getX() == form.c.getX() + SIZE) ||
+                        (a.getY() == form.c.getY() && a.getX() == form.c.getX() - SIZE)||
+                        (a.getY() == form.c.getY() && a.getX() == form.c.getX())||
+                        (a.getY() == form.c.getY() && a.getX() == form.c.getX() + SIZE)||
+                        (a.getY() == form.c.getY() + SIZE && a.getX() == form.c.getX() - SIZE)||
+                        (a.getY() == form.c.getY() + SIZE && a.getX() == form.c.getX())||
+                        (a.getY() == form.c.getY() + SIZE && a.getX() == form.c.getX() + SIZE)) {
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                    pane.getChildren().remove(node);
+                }
+            }
+            if(form.getItemRotate() == 4) {
+                if ((a.getY() == form.d.getY() - SIZE && a.getX() == form.d.getX() - SIZE) ||
+                        (a.getY() == form.d.getY() - SIZE && a.getX() == form.d.getX()) ||
+                        (a.getY() == form.d.getY() - SIZE && a.getX() == form.d.getX() + SIZE) ||
+                        (a.getY() == form.d.getY() && a.getX() == form.d.getX() - SIZE)||
+                        (a.getY() == form.d.getY() && a.getX() == form.d.getX())||
+                        (a.getY() == form.d.getY() && a.getX() == form.d.getX() + SIZE)||
+                        (a.getY() == form.d.getY() + SIZE && a.getX() == form.d.getX() - SIZE)||
+                        (a.getY() == form.d.getY() + SIZE && a.getX() == form.d.getX())||
+                        (a.getY() == form.d.getY() + SIZE && a.getX() == form.d.getX() + SIZE)) {
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                    pane.getChildren().remove(node);
+                }
+            }
+        }
+    }
 
     private void MoveDown(Text text) {
         scoretext.setText("Score: " + score);
@@ -629,6 +991,16 @@ public class ItemHelloApplication extends Application {
 
     private boolean MoveDown(ItemForm form) {
         boolean moved = false; // 이동 여부를 추적하는 변수입니다.
+        if(form.getItem()=="Weight"){
+            if(!(form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
+                    || form.d.getY() == YMAX - SIZE)){
+                MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE + 1] = 0;
+                MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE + 1] = 0;
+                MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE + 1] = 0;
+                MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE + 1] = 0;
+                WeightRemoveRows(group,form);
+            }
+        }
         if (form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
                 || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form)) {
             // 여기서는 블록이 다음 위치로 이동할 수 없으므로, 현재 위치를 고정하고 새로운 블록을 생성합니다.
@@ -637,13 +1009,41 @@ public class ItemHelloApplication extends Application {
             MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
             MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
             RemoveRows(group);
-            itemCounter++;
+            WeightMove = true;
+            if(form.getItem()=="LineClear"){
+                switch (form.getItemRotate()){
+                    case 1: LineClearY = (int)form.a.getY()/SIZE;break;
+                    case 2: LineClearY = (int)form.b.getY()/SIZE;break;
+                    case 3: LineClearY = (int)form.c.getY()/SIZE;break;
+                    case 4: LineClearY = (int)form.d.getY()/SIZE;break;
+                }
+            }if(form.getItem()=="Bomb"){
+                BombRemoveRows(group,form);
+            }
             // 새 블록 생성
             ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
             group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-            if(itemCounter==10){
-                item = "LineClear";
-                itemRotate = 1;
+            if(itemCounter>=10){
+                int itemNumber = (int)(Math.random()*100);
+                int itemRotateNumber = (int)(Math.random()*100);
+                if(itemNumber<20)
+                    item="LineClear";
+                else if(itemNumber<40)
+                    item="Weight";
+                else if(itemNumber<60)
+                    item="Inverse";
+                else if(itemNumber<80)
+                    item = "Bomb";
+                else
+                    item = "Fixed";
+                if(itemRotateNumber<25)
+                    itemRotate = 1;
+                else if(itemRotateNumber<50)
+                    itemRotate = 2;
+                else if(itemRotateNumber<75)
+                    itemRotate = 3;
+                else
+                    itemRotate = 4;
                 itemCounter = 0;
             }
             waitObj = ItemController.waitingTextMake(true,difficultylevel,item,itemRotate);
@@ -685,12 +1085,39 @@ public class ItemHelloApplication extends Application {
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
         RemoveRows(group);
-        itemCounter++;//
+        if(form.getItem()=="LineClear"){
+            switch (form.getItemRotate()){
+                case 1: LineClearY = (int)form.a.getY()/SIZE;break;
+                case 2: LineClearY = (int)form.b.getY()/SIZE;break;
+                case 3: LineClearY = (int)form.c.getY()/SIZE;break;
+                case 4: LineClearY = (int)form.d.getY()/SIZE;break;
+            }
+        }if(form.getItem()=="Bomb"){
+            BombRemoveRows(group,form);
+        }
         ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        if(itemCounter==10){
-            item = "LineClear";
-            itemRotate = 1;
+        if(itemCounter>=10){
+            int itemNumber = (int)(Math.random()*100);
+            int itemRotateNumber = (int)(Math.random()*100);
+            if(itemNumber<20)
+                item="LineClear";
+            else if(itemNumber<40)
+                item="Weight";
+            else if(itemNumber<60)
+                item="Inverse";
+            else if(itemNumber<80)
+                item = "Bomb";
+            else
+                item = "Fixed";
+            if(itemRotateNumber<25)
+                itemRotate = 1;
+            else if(itemRotateNumber<50)
+                itemRotate = 2;
+            else if(itemRotateNumber<75)
+                itemRotate = 3;
+            else
+                itemRotate = 4;
             itemCounter = 0;
         }
         waitObj = ItemController.waitingTextMake(true,difficultylevel,item,itemRotate);
@@ -699,7 +1126,7 @@ public class ItemHelloApplication extends Application {
         moveOnKeyPress(a);
         item ="";
         itemRotate=0;
-
+        System.out.println(itemCounter);
     }
 
 
