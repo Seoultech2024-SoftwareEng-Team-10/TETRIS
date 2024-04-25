@@ -83,6 +83,9 @@ public class HelloApplication extends Application {
         System.out.println(currentUser.getNickname());
         stage.close(); //stage초기화
         score = 0;
+        linesNo = 0;
+        scoreMultiplier = 1;
+        Frame = 1000000000;
         running = true;
         waitObj = Controller.waitingTextMake(false, difficultylevel);
         nextObj = Controller.makeText(false, difficultylevel);//makeRect->makeText
@@ -148,7 +151,6 @@ public class HelloApplication extends Application {
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {
             startAnimation();
-
         });
         exitButton.setOnAction(e -> GameStopped(stage));
 
