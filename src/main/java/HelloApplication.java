@@ -72,6 +72,7 @@ public class HelloApplication extends Application {
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
         user = TetrisWindow.user;
+        linesNo = 0;
     }
 
     public static boolean itemMode = false; // 아이템 모드 변수 추가
@@ -250,7 +251,6 @@ public class HelloApplication extends Application {
                         case ESCAPE:
                             stopAnimation();
                             break;
-
                     }
                 }
                 else{

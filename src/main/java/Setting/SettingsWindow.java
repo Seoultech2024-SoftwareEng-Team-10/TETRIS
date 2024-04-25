@@ -154,7 +154,7 @@ public class SettingsWindow extends Stage {
         colorBlindModeToggle.setOnAction(event -> {
             isColorBlindModeOn = !isColorBlindModeOn;
             colorBlindModeToggle.setText(isColorBlindModeOn ? "on" : "off");
-            BlockColor.setColorBlindMode(isColorBlindModeOn); // BlockColor의 colorBlindMode 값 설정
+
         });
     }
 
