@@ -4,10 +4,10 @@ public class BlockColor {
     public static boolean colorBlindMode;
 
     public static javafx.scene.paint.Color getColor(String name) {
-        if (colorBlindMode) {
+        if (!colorBlindMode) {
             switch (name) {
                 case "j":
-                    return javafx.scene.paint.Color.RED;
+                    return javafx.scene.paint.Color.GRAY;
                 case "l":
                     return javafx.scene.paint.Color.GREEN;
                 case "o":
@@ -15,30 +15,30 @@ public class BlockColor {
                 case "s":
                     return javafx.scene.paint.Color.ORANGE;
                 case "t":
-                    return javafx.scene.paint.Color.PURPLE;
+                    return javafx.scene.paint.Color.PINK;
                 case "z":
                     return javafx.scene.paint.Color.YELLOW;
                 case "i":
-                    return javafx.scene.paint.Color.WHITE;
+                    return javafx.scene.paint.Color.SKYBLUE;
                 default:
                     return null;
             }
         } else {
             switch (name) {
                 case "j":
-                    return javafx.scene.paint.Color.SLATEGRAY;
+                    return javafx.scene.paint.Color.WHITE;
                 case "l":
-                    return javafx.scene.paint.Color.DARKGOLDENROD;
+                    return javafx.scene.paint.Color.rgb(37, 37, 37);
                 case "o":
-                    return javafx.scene.paint.Color.INDIANRED;
+                    return javafx.scene.paint.Color.rgb(217, 43, 110);
                 case "s":
-                    return javafx.scene.paint.Color.FORESTGREEN;
+                    return javafx.scene.paint.Color.rgb(156, 247, 99);
                 case "t":
-                    return javafx.scene.paint.Color.CADETBLUE;
+                    return javafx.scene.paint.Color.rgb(115, 183, 255);
                 case "z":
-                    return javafx.scene.paint.Color.HOTPINK;
+                    return javafx.scene.paint.Color.rgb(255, 145, 61);
                 case "i":
-                    return javafx.scene.paint.Color.SANDYBROWN;
+                    return javafx.scene.paint.Color.rgb(117, 0, 235);
                 default:
                     return null;
             }
