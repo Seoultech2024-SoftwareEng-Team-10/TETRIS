@@ -88,16 +88,16 @@ public class HelloApplication extends Application {
         Frame = 1000000000;
         running = true;
         if(LevelConstants.getLevel()=='E'){
-            scoreMultiplier = 0.8;
-            frameMultiplier = 0.8;
-        }
-        else if(LevelConstants.getLevel()=='N'){
             scoreMultiplier = 1.0;
             frameMultiplier = 1.0;
         }
-        else{
+        else if(LevelConstants.getLevel()=='N'){
             scoreMultiplier = 1.2;
             frameMultiplier = 1.2;
+        }
+        else{
+            scoreMultiplier = 1.4;
+            frameMultiplier = 1.4;
         }
         System.out.println(scoreMultiplier);
         System.out.println(frameMultiplier);

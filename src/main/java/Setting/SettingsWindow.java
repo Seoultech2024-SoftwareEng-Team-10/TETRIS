@@ -86,7 +86,7 @@ public class SettingsWindow extends Stage {
             LevelConstants.setLevel('H');
         });
         levelButton.getItems().addAll(leveItem1,leveItem2,leveItem3);
-        levelButton.setText("Normal");
+        levelButton.setText("Easy");
         levelPanel.getChildren().addAll(levelLable,levelButton);
 
 
