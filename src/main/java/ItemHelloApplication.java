@@ -55,8 +55,9 @@ public class ItemHelloApplication extends Application {
     private static int linesNo = 0;
     private Button restartButton;
     private Button exitButton;
-    private long Frame = 1000000000;
-    private static int scoreMultiplier = 1;
+    private double Frame = 1000000000;
+    private static double scoreMultiplier = 1.0;
+    private static double frameMultiplier = 1.0;
 
     boolean WeightMove = true;
     int LineClearY = -1;
@@ -87,9 +88,20 @@ public class ItemHelloApplication extends Application {
         stage.close(); //stage초기화
         score = 0;
         linesNo = 0;
-        scoreMultiplier = 1;
         Frame = 1000000000;
         running = true;
+        if(LevelConstants.getLevel()=='E'){
+            scoreMultiplier = 0.8;
+            frameMultiplier = 0.8;
+        }
+        else if(LevelConstants.getLevel()=='N'){
+            scoreMultiplier = 1.0;
+            frameMultiplier = 1.0;
+        }
+        else{
+            scoreMultiplier = 1.2;
+            frameMultiplier = 1.2;
+        }
 
         waitObj = ItemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);
         nextObj = ItemController.makeText(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);//makeRect->makeText
@@ -829,7 +841,7 @@ public class ItemHelloApplication extends Application {
                         texts.add(node);
                 }
                 if (Frame > 150000000) {
-                    Frame -= 50000000;
+                    Frame -= 50000000 * frameMultiplier;
                     scoreMultiplier++;
                 }
                 score += 50 * scoreMultiplier;
