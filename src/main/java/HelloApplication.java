@@ -2,6 +2,7 @@
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
 import Setting.SizeConstants;
+import Tetris.BlockColor;
 import Tetris.Controller;
 import Tetris.Form;
 import User.User;
@@ -20,22 +21,23 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import Setting.KeySettings;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
+import Setting.SizeConstants;
+
+import static Setting.SizeConstants.*;
 
 
 public class HelloApplication extends Application {
+    private static HelloApplication instance;
 
     private static AnimationTimer timer;
     public static boolean running = true;
-    public static int MOVE = SizeConstants.MOVE;
-    public static int SIZE = SizeConstants.SIZE;
-    public static int XMAX = SizeConstants.XMAX;
-    public static int YMAX = SizeConstants.YMAX;
-    public static int[][] MESH = SizeConstants.MESH;
+    SizeConstants sizeConstants = new SizeConstants();
 
     private static Form object;
 
@@ -46,8 +48,8 @@ public class HelloApplication extends Application {
     private static boolean game = true;
     private ColorAdjust colorAdjust = new ColorAdjust();
     private static char difficultylevel = LevelConstants.difficultyLevel;
-    private static Form nextObj = Controller.makeText(true,difficultylevel);//makeRect->makeText
-    private static Form waitObj = Controller.waitingTextMake(true,difficultylevel);
+    private static Form nextObj = Controller.makeText(BlockColor.colorBlindMode,difficultylevel);//makeRect->makeText
+    private static Form waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode,difficultylevel);
     private static int linesNo = 0;
     private Button restartButton;
     private Button exitButton;
@@ -61,18 +63,24 @@ public class HelloApplication extends Application {
     public HelloApplication(){
         score = 0;
         running = true;
-        waitObj = Controller.waitingTextMake(true, difficultylevel);
-        nextObj = Controller.makeText(true, difficultylevel);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
+        nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
+        //MOVE = SizeConstants.MOVE;
+        //SIZE = SizeConstants.SIZE;
+        //XMAX = SizeConstants.XMAX;
+        //YMAX = SizeConstants.YMAX;
+        //MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
         user = TetrisWindow.user;
         linesNo = 0;
+
     }
 
     public static boolean itemMode = false; // 아이템 모드 변수 추가
@@ -84,13 +92,18 @@ public class HelloApplication extends Application {
         stage.close(); //stage초기화
         score = 0;
         running = true;
-        waitObj = Controller.waitingTextMake(false, difficultylevel);
-        nextObj = Controller.makeText(false, difficultylevel);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
+        nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
+        //MOVE = SizeConstants.MOVE;
+        //SIZE = SizeConstants.SIZE;
+        //XMAX = SizeConstants.XMAX;
+        //YMAX = SizeConstants.YMAX;
+        //MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -148,7 +161,7 @@ public class HelloApplication extends Application {
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {
             startAnimation();
-
+            HelloApplication helloApp = new HelloApplication();
         });
         exitButton.setOnAction(e -> GameStopped(stage));
 
@@ -230,27 +243,19 @@ public class HelloApplication extends Application {
             public void handle(KeyEvent event) {
                 String pressedKey = event.getCode().toString();
                 if(running) {
-                    switch (event.getCode()) {
-                        case RIGHT:
-                            Controller.MoveRight(form);
-                            break;
-                        case DOWN:
-                            MoveDown(form);
-                            scoretext.setText("Score: " + score);
-                            break;
-                        case LEFT:
-                            Controller.MoveLeft(form);
-                            break;
-                        case UP:
-                            MoveTurn(form);
-                            break;
-                        case SPACE:
-                            DirectMoveDown(form);
-                            scoretext.setText("Score: " + score);
-                            break;
-                        case ESCAPE:
-                            stopAnimation();
-                            break;
+                    if (pressedKey.equals(KeySettings.getRightKey())) {
+                        Controller.MoveRight(form);
+                    } else if (pressedKey.equals(KeySettings.getDownKey())) {
+                        MoveDown(form);
+                        score++;
+                    } else if (pressedKey.equals(KeySettings.getLeftKey())) {
+                        Controller.MoveLeft(form);
+                    } else if (pressedKey.equals(KeySettings.getUpKey())) {
+                        MoveTurn(form);
+                    } else if (pressedKey.equals(KeySettings.getSpaceKey())) {
+                        DirectMoveDown(form);
+                    } else if (pressedKey.equals("ESCAPE")) {
+                        stopAnimation();
                     }
                 }
                 else{
@@ -806,7 +811,7 @@ public class HelloApplication extends Application {
                         texts.add(node);
                 }
                 if (Frame > 150000000) {
-                    Frame -= 10000000;
+                    Frame -= 50000000;
                     scoreMultiplier++;
                 }
                 score += 50 * scoreMultiplier;
@@ -848,6 +853,7 @@ public class HelloApplication extends Application {
 
     private void MoveDown(Text text) {
         scoretext.setText("Score: " + score);
+        score++;
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 
@@ -999,7 +1005,7 @@ public class HelloApplication extends Application {
             exitButton.toFront();
             exitButton.setVisible(true);
         try {
-            JdbcConnecter.insertData("홍길동", score, "00:00:00", linesNo);
+            JdbcConnecter.insertData(user.getNickname(), score, "00:00:00", linesNo);
         } catch (Exception e) {
             System.out.println("jdbc error");
         }
