@@ -490,7 +490,6 @@ public class HelloApplication extends Application {
                 }
                 score += 50 * scoreMultiplier;
                 linesNo++;
-
                 for (Node node : texts) {
                     Text a = (Text) node;
                     if (a.getY() == lines.get(0) * SIZE) {

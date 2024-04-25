@@ -25,17 +25,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
-import Setting.SizeConstants;
-
 import static Setting.SizeConstants.*;
 
-
 public class HelloApplication extends Application {
-    private static HelloApplication instance;
 
     private static AnimationTimer timer;
     public static boolean running = true;
-    SizeConstants sizeConstants = new SizeConstants();
 
     private static Form object;
 
@@ -68,15 +63,11 @@ public class HelloApplication extends Application {
         XMAX = sizeConstants.getXMAX();
         YMAX = sizeConstants.getYMAX();
         MESH = sizeConstants.getMESH();
-        //MOVE = SizeConstants.MOVE;
-        //SIZE = SizeConstants.SIZE;
-        //XMAX = SizeConstants.XMAX;
-        //YMAX = SizeConstants.YMAX;
-        //MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
         user = TetrisWindow.user;
+        linesNo = 0;
     }
 
     public static boolean itemMode = false; // 아이템 모드 변수 추가
@@ -87,6 +78,9 @@ public class HelloApplication extends Application {
         System.out.println(currentUser.getNickname());
         stage.close(); //stage초기화
         score = 0;
+        linesNo = 0;
+        scoreMultiplier = 1;
+        Frame = 1000000000;
         running = true;
         waitObj = Controller.waitingTextMake(false, difficultylevel);
         nextObj = Controller.makeText(false, difficultylevel);//makeRect->makeText
@@ -95,11 +89,6 @@ public class HelloApplication extends Application {
         XMAX = sizeConstants.getXMAX();
         YMAX = sizeConstants.getYMAX();
         MESH = sizeConstants.getMESH();
-        //MOVE = SizeConstants.MOVE;
-        //SIZE = SizeConstants.SIZE;
-        //XMAX = SizeConstants.XMAX;
-        //YMAX = SizeConstants.YMAX;
-        //MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -157,7 +146,6 @@ public class HelloApplication extends Application {
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {
             startAnimation();
-            HelloApplication helloApp = new HelloApplication();
         });
         exitButton.setOnAction(e -> GameStopped(stage));
 
@@ -260,7 +248,6 @@ public class HelloApplication extends Application {
                         case ESCAPE:
                             stopAnimation();
                             break;
-
                     }
                 }
                 else{
@@ -816,7 +803,7 @@ public class HelloApplication extends Application {
                         texts.add(node);
                 }
                 if (Frame > 150000000) {
-                    Frame -= 50000000;
+                    Frame -= 10000000;
                     scoreMultiplier++;
                 }
                 score += 50 * scoreMultiplier;
@@ -858,7 +845,6 @@ public class HelloApplication extends Application {
 
     private void MoveDown(Text text) {
         scoretext.setText("Score: " + score);
-        score++;
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 
@@ -1008,9 +994,9 @@ public class HelloApplication extends Application {
         scoreLabel.setVisible(true);
         if (exitButton != null)
             exitButton.toFront();
-            exitButton.setVisible(true);
+        exitButton.setVisible(true);
         try {
-            JdbcConnecter.insertData(user.getNickname(), score, "00:00:00", linesNo);
+            JdbcConnecter.insertData(user.getNickname(), score, 0, difficultylevel, linesNo);
         } catch (Exception e) {
             System.out.println("jdbc error");
         }

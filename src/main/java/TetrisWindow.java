@@ -1,4 +1,4 @@
-
+//hi
 import ScoreBoard.ScoreBoard;
 import ScoreBoard.ScoreBoardWindow;
 import ScoreBoard.ScoreRecord;
@@ -28,7 +28,6 @@ import User.SessionManager;
 
 
 public class TetrisWindow extends Application {
-    public JdbcConnecter scoreboardConnector;
     private Label userInfoLabel;
     public static User user;
 
@@ -93,10 +92,12 @@ public class TetrisWindow extends Application {
         //스코어보드 버튼 동작 설정
         scoreBoardButton.setOnAction(event -> {
             List<ScoreRecord> scoreboardData = JdbcConnecter.fetchData(1);
+            System.out.println(scoreboardData.getClass());
             ScoreBoard scoreBoard = new ScoreBoard(scoreboardData);
+            System.out.println(scoreBoard);
             ScoreBoardWindow window = new ScoreBoardWindow(scoreBoard);
+            System.out.println(window);
             window.show();
-
         });
 
         // 엔터 키로 버튼 선택하기
@@ -113,9 +114,7 @@ public class TetrisWindow extends Application {
                 Stage gameStage = new Stage();
 
                 // HelloApplication의 start 메소드 호출
-                if (user !=null){
-                    helloApp.start(gameStage);
-                }
+                helloApp.start(gameStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -124,7 +123,7 @@ public class TetrisWindow extends Application {
         // 엔터 키로 버튼 선택하기
         itemgameButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                // 버튼에 대한 동작 수행
+
                 itemgameButton.fire();
             }
         });
@@ -257,7 +256,6 @@ public class TetrisWindow extends Application {
             if (user != null) {
                 alert.setContentText(user.getNickname() + "님 환영합니다");
                 SessionManager.setCurrentUser(user);
-                System.out.println("로그인성공");
                 alert.showAndWait();
                 userInfoLabel.setText(user.getNickname() + "님 환영합니다");
             }
