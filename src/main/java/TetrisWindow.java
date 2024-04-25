@@ -342,7 +342,7 @@ public class TetrisWindow extends Application {
         Optional<String[]> result = dialog.showAndWait();
 
         result.ifPresent(idPasswordNickname -> {
-            User user = new User(idPasswordNickname[0], idPasswordNickname[1], idPasswordNickname[2]);
+            User user = new User(idPasswordNickname[0], idPasswordNickname[2], idPasswordNickname[1]);
             String message = JdbcConnecter.CreateUser(user);
             Alert alert = new Alert(AlertType.CONFIRMATION);
             if (message.equals("Success")) {

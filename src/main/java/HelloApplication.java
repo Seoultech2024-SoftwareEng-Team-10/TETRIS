@@ -35,8 +35,6 @@ public class HelloApplication extends Application {
 
     private static AnimationTimer timer;
     public static boolean running = true;
-    SizeConstants sizeConstants = new SizeConstants();
-
     private static Form object;
 
     private static Pane group = new Pane();
@@ -998,7 +996,8 @@ public class HelloApplication extends Application {
             exitButton.toFront();
         exitButton.setVisible(true);
         try {
-            JdbcConnecter.insertData(user.getNickname(), score, 0, difficultylevel, linesNo);
+            JdbcConnecter.insertData(user.getNickname(), score, 0, LevelConstants.getLevel(), linesNo);
+
         } catch (Exception e) {
             System.out.println("jdbc error");
         }
