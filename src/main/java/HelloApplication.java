@@ -82,22 +82,19 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         User currentUser = SessionManager.getCurrentUser();
         System.out.println(currentUser.getNickname());
-        stage.close(); //stage초기화
+        stage.close();
         score = 0;
         linesNo = 0;
         Frame = 1000000000;
         running = true;
         if(LevelConstants.getLevel()=='E'){
-            scoreMultiplier = 1.0;
-            frameMultiplier = 1.0;
+            Frame = 1200000000;
         }
         else if(LevelConstants.getLevel()=='N'){
-            scoreMultiplier = 1.2;
-            frameMultiplier = 1.2;
+            Frame = 1000000000;
         }
         else{
-            scoreMultiplier = 1.4;
-            frameMultiplier = 1.4;
+            Frame = 800000000;
         }
         System.out.println(scoreMultiplier);
         System.out.println(frameMultiplier);
