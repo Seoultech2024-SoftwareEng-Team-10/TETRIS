@@ -7,6 +7,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import static Setting.SizeConstants.*;
 
+
 public class Controller {
     // Getting the numbers and the MESH from HelloApplication
 
