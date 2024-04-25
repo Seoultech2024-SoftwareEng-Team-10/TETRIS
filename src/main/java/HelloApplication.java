@@ -21,18 +21,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
-import Setting.SizeConstants;
 
+import Setting.KeySettings;
 import static Setting.SizeConstants.*;
 
 
 public class HelloApplication extends Application {
-    private static HelloApplication instance;
+    SizeConstants sizeConstants = new SizeConstants();
 
     private static AnimationTimer timer;
     public static boolean running = true;
@@ -55,13 +54,13 @@ public class HelloApplication extends Application {
     private Label scoreLabel;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
-
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     private User user;
     public HelloApplication(){
         score = 0;
         running = true;
+
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
         nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
         MOVE = sizeConstants.getMOVE();
@@ -69,11 +68,7 @@ public class HelloApplication extends Application {
         XMAX = sizeConstants.getXMAX();
         YMAX = sizeConstants.getYMAX();
         MESH = sizeConstants.getMESH();
-        //MOVE = SizeConstants.MOVE;
-        //SIZE = SizeConstants.SIZE;
-        //XMAX = SizeConstants.XMAX;
-        //YMAX = SizeConstants.YMAX;
-        //MESH = SizeConstants.MESH;
+
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -88,19 +83,20 @@ public class HelloApplication extends Application {
         System.out.println(currentUser.getNickname());
         stage.close(); //stage초기화
         score = 0;
+        linesNo = 0;
+        scoreMultiplier = 1;
+        Frame = 1000000000;
         running = true;
+
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
         nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
+
         MOVE = sizeConstants.getMOVE();
         SIZE = sizeConstants.getSIZE();
         XMAX = sizeConstants.getXMAX();
         YMAX = sizeConstants.getYMAX();
         MESH = sizeConstants.getMESH();
-        //MOVE = SizeConstants.MOVE;
-        //SIZE = SizeConstants.SIZE;
-        //XMAX = SizeConstants.XMAX;
-        //YMAX = SizeConstants.YMAX;
-        //MESH = SizeConstants.MESH;
+
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -158,7 +154,6 @@ public class HelloApplication extends Application {
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {
             startAnimation();
-            HelloApplication helloApp = new HelloApplication();
         });
         exitButton.setOnAction(e -> GameStopped(stage));
 
@@ -240,28 +235,21 @@ public class HelloApplication extends Application {
             public void handle(KeyEvent event) {
                 String pressedKey = event.getCode().toString();
                 if(running) {
-                    switch (event.getCode()) {
-                        case RIGHT:
-                            Controller.MoveRight(form);
-                            break;
-                        case DOWN:
-                            MoveDown(form);
-                            scoretext.setText("Score: " + score);
-                            break;
-                        case LEFT:
-                            Controller.MoveLeft(form);
-                            break;
-                        case UP:
-                            MoveTurn(form);
-                            break;
-                        case SPACE:
-                            DirectMoveDown(form);
-                            scoretext.setText("Score: " + score);
-                            break;
-                        case ESCAPE:
-                            stopAnimation();
-                            break;
 
+                    if (pressedKey.equals(KeySettings.getRightKey())) {
+                        Controller.MoveRight(form);
+                    } else if (pressedKey.equals(KeySettings.getDownKey())) {
+                        MoveDown(form);
+                        scoretext.setText("Score: " + score);
+                    } else if (pressedKey.equals(KeySettings.getLeftKey())) {
+                        Controller.MoveLeft(form);
+                    } else if (pressedKey.equals(KeySettings.getUpKey())) {
+                        MoveTurn(form);
+                    } else if (pressedKey.equals(KeySettings.getSpaceKey())) {
+                        DirectMoveDown(form);
+                        scoretext.setText("Score: " + score);
+                    } else if (pressedKey.equals("ESCAPE")) {
+                        stopAnimation();
                     }
                 }
                 else{
@@ -859,7 +847,6 @@ public class HelloApplication extends Application {
 
     private void MoveDown(Text text) {
         scoretext.setText("Score: " + score);
-        score++;
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 
@@ -1009,9 +996,9 @@ public class HelloApplication extends Application {
         scoreLabel.setVisible(true);
         if (exitButton != null)
             exitButton.toFront();
-            exitButton.setVisible(true);
+        exitButton.setVisible(true);
         try {
-            JdbcConnecter.insertData(user.getNickname(), score, "00:00:00", linesNo);
+            JdbcConnecter.insertData(user.getNickname(), score, 0, difficultylevel, linesNo);
         } catch (Exception e) {
             System.out.println("jdbc error");
         }

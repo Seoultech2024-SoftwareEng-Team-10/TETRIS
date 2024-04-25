@@ -10,6 +10,8 @@ import static Setting.SizeConstants.*;
 
 public class Controller {
     // Getting the numbers and the MESH from HelloApplication
+
+
     public static char difficultyLevel = LevelConstants.difficultyLevel;
 
 
@@ -48,10 +50,6 @@ public class Controller {
 
 
     public static Form makeText(boolean colorBlindMode, char difficultyLevel) {
-        fontSize = SizeConstants.fontSize;
-        System.out.println(fontSize);
-        XMAX = SizeConstants.XMAX;
-        SIZE = SizeConstants.SIZE;
         int block = 0;
         if(difficultyLevel == 'E'){
             block = (int) (Math.random() * 72);
