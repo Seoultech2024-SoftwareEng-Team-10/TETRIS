@@ -1,4 +1,4 @@
-//hi
+
 import ScoreBoard.ScoreBoard;
 import ScoreBoard.ScoreBoardWindow;
 import ScoreBoard.ScoreRecord;
@@ -113,7 +113,7 @@ public class TetrisWindow extends Application {
                 Stage gameStage = new Stage();
 
                 // HelloApplication의 start 메소드 호출
-                if (user !=null||true){
+                if (user !=null){
                     helloApp.start(gameStage);
                 }
             } catch (Exception e) {

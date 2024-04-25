@@ -2,6 +2,7 @@ package Setting;
 
 
 import ScoreBoard.JdbcConnecter;
+import Tetris.BlockColor;
 import User.SessionManager;
 import User.User;
 import javafx.event.ActionEvent;
@@ -31,13 +32,14 @@ public class SettingsWindow extends Stage {
     private ToggleButton colorBlindModeToggle;
     private MenuButton resizeMenuButton;
     private Stage mainWindow;
-    private boolean isColorBlindModeOn;
+    public static boolean isColorBlindModeOn;
     private Button[] buttons;
     private MenuButton levelButton;
     private LevelConstants levelConstants = new LevelConstants();
 
     public SettingsWindow(Stage mainWindow) {
         this.mainWindow = mainWindow;
+        SizeConstants sizeConstants = new SizeConstants();
         setTitle("설정");
         setWidth(300);
         setHeight(400);
@@ -154,7 +156,7 @@ public class SettingsWindow extends Stage {
         colorBlindModeToggle.setOnAction(event -> {
             isColorBlindModeOn = !isColorBlindModeOn;
             colorBlindModeToggle.setText(isColorBlindModeOn ? "on" : "off");
-
+            BlockColor.setColorBlindMode(isColorBlindModeOn); // BlockColor의 colorBlindMode 값 설정
         });
     }
 
