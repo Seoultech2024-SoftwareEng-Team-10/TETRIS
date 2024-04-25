@@ -37,6 +37,7 @@ public class TetrisWindow extends Application {
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
         HelloApplication helloApp = new HelloApplication();
+        ItemHelloApplication itemHelloApp = new ItemHelloApplication();
 
         // 로고 생성
         Text logoText = new Text("TETRIS");
@@ -120,10 +121,10 @@ public class TetrisWindow extends Application {
             }
         });
 
+        // 엔터 키로 버튼 선택하기
         itemgameButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 // 버튼에 대한 동작 수행
-
                 itemgameButton.fire();
             }
         });
@@ -132,24 +133,15 @@ public class TetrisWindow extends Application {
             try {
                 // 새 Stage 생성
                 Stage gameStage = new Stage();
-                HelloApplication.itemMode = true; // 아이템 모드 활성화
 
-                // 아이템 모드 여부 확인
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("아이템 모드");
-                alert.setHeaderText(null);
-                alert.setContentText("아이템 모드로 진행하시겠습니까?");
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    helloApp.start(gameStage);
-                } else {
-                    HelloApplication.itemMode = false; // 아이템 모드 비활성화
-                }
+                // HelloApplication의 start 메소드 호출
+                itemHelloApp.start(gameStage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+
+
 
         scoreBoardButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
