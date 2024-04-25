@@ -123,8 +123,8 @@ public class Controller {
             name = "i";
         }
 
-        if (colorBlindMode) {
-            // 각 블록에 대해 다른 색상 지정
+        if (!colorBlindMode) {
+            // 일반 모드
             switch (name) {
                 case "j":
                     a.setFill(Color.GRAY);
@@ -170,49 +170,49 @@ public class Controller {
                     break;
             }
         } else {
-            // 일반 모드인 경우 기존 색상 사용
+            // 색맹 모드
             switch (name) {
                 case "j":
-                    a.setFill(Color.SLATEGRAY);
-                    b.setFill(Color.SLATEGRAY);
-                    c.setFill(Color.SLATEGRAY);
-                    d.setFill(Color.SLATEGRAY);
+                    a.setFill(Color.WHITE);
+                    b.setFill(Color.WHITE);
+                    c.setFill(Color.WHITE);
+                    d.setFill(Color.WHITE);
                     break;
                 case "l":
-                    a.setFill(Color.DARKGOLDENROD);
-                    b.setFill(Color.DARKGOLDENROD);
-                    c.setFill(Color.DARKGOLDENROD);
-                    d.setFill(Color.DARKGOLDENROD);
+                    a.setFill(Color.rgb(37, 37, 37));
+                    b.setFill(Color.rgb(37, 37, 37));
+                    c.setFill(Color.rgb(37, 37, 37));
+                    d.setFill(Color.rgb(37, 37, 37));
                     break;
                 case "o":
-                    a.setFill(Color.INDIANRED);
-                    b.setFill(Color.INDIANRED);
-                    c.setFill(Color.INDIANRED);
-                    d.setFill(Color.INDIANRED);
+                    a.setFill(Color.rgb(217, 43, 110));
+                    b.setFill(Color.rgb(217, 43, 110));
+                    c.setFill(Color.rgb(217, 43, 110));
+                    d.setFill(Color.rgb(217, 43, 110));
                     break;
                 case "s":
-                    a.setFill(Color.FORESTGREEN);
-                    b.setFill(Color.FORESTGREEN);
-                    c.setFill(Color.FORESTGREEN);
-                    d.setFill(Color.FORESTGREEN);
+                    a.setFill(Color.rgb(156, 247, 99));
+                    b.setFill(Color.rgb(156, 247, 99));
+                    c.setFill(Color.rgb(156, 247, 99));
+                    d.setFill(Color.rgb(156, 247, 99));
                     break;
                 case "t":
-                    a.setFill(Color.CADETBLUE);
-                    b.setFill(Color.CADETBLUE);
-                    c.setFill(Color.CADETBLUE);
-                    d.setFill(Color.CADETBLUE);
+                    a.setFill(Color.rgb(115, 183, 255));
+                    b.setFill(Color.rgb(115, 183, 255));
+                    c.setFill(Color.rgb(115, 183, 255));
+                    d.setFill(Color.rgb(115, 183, 255));
                     break;
                 case "z":
-                    a.setFill(Color.HOTPINK);
-                    b.setFill(Color.HOTPINK);
-                    c.setFill(Color.HOTPINK);
-                    d.setFill(Color.HOTPINK);
+                    a.setFill(Color.rgb(255, 145, 61));
+                    b.setFill(Color.rgb(255, 145, 61));
+                    c.setFill(Color.rgb(255, 145, 61));
+                    d.setFill(Color.rgb(255, 145, 61));
                     break;
                 case "i":
-                    a.setFill(Color.SANDYBROWN);
-                    b.setFill(Color.SANDYBROWN);
-                    c.setFill(Color.SANDYBROWN);
-                    d.setFill(Color.SANDYBROWN);
+                    a.setFill(Color.rgb(117, 0, 235));
+                    b.setFill(Color.rgb(117, 0, 235));
+                    c.setFill(Color.rgb(117, 0, 235));
+                    d.setFill(Color.rgb(117, 0, 235));
                     break;
             }
         }
@@ -276,8 +276,8 @@ public class Controller {
             d.setX(XMAX / 2 + SIZE);
         }
 
-        if (colorBlindMode) {
-            // 각 블록에 대해 다른 색상 지정
+        if (!colorBlindMode) {
+            // 일반 모드
             switch (name) {
                 case "j":
                     a.setFill(Color.GRAY);
@@ -323,49 +323,49 @@ public class Controller {
                     break;
             }
         } else {
-            // 일반 모드인 경우 기존 색상 사용
+            // 색맹 모드
             switch (name) {
                 case "j":
-                    a.setFill(Color.SLATEGRAY);
-                    b.setFill(Color.SLATEGRAY);
-                    c.setFill(Color.SLATEGRAY);
-                    d.setFill(Color.SLATEGRAY);
+                    a.setFill(Color.WHITE);
+                    b.setFill(Color.WHITE);
+                    c.setFill(Color.WHITE);
+                    d.setFill(Color.WHITE);
                     break;
                 case "l":
-                    a.setFill(Color.DARKGOLDENROD);
-                    b.setFill(Color.DARKGOLDENROD);
-                    c.setFill(Color.DARKGOLDENROD);
-                    d.setFill(Color.DARKGOLDENROD);
+                    a.setFill(Color.rgb(37, 37, 37));
+                    b.setFill(Color.rgb(37, 37, 37));
+                    c.setFill(Color.rgb(37, 37, 37));
+                    d.setFill(Color.rgb(37, 37, 37));
                     break;
                 case "o":
-                    a.setFill(Color.INDIANRED);
-                    b.setFill(Color.INDIANRED);
-                    c.setFill(Color.INDIANRED);
-                    d.setFill(Color.INDIANRED);
+                    a.setFill(Color.rgb(217, 43, 110));
+                    b.setFill(Color.rgb(217, 43, 110));
+                    c.setFill(Color.rgb(217, 43, 110));
+                    d.setFill(Color.rgb(217, 43, 110));
                     break;
                 case "s":
-                    a.setFill(Color.FORESTGREEN);
-                    b.setFill(Color.FORESTGREEN);
-                    c.setFill(Color.FORESTGREEN);
-                    d.setFill(Color.FORESTGREEN);
+                    a.setFill(Color.rgb(156, 247, 99));
+                    b.setFill(Color.rgb(156, 247, 99));
+                    c.setFill(Color.rgb(156, 247, 99));
+                    d.setFill(Color.rgb(156, 247, 99));
                     break;
                 case "t":
-                    a.setFill(Color.CADETBLUE);
-                    b.setFill(Color.CADETBLUE);
-                    c.setFill(Color.CADETBLUE);
-                    d.setFill(Color.CADETBLUE);
+                    a.setFill(Color.rgb(115, 183, 255));
+                    b.setFill(Color.rgb(115, 183, 255));
+                    c.setFill(Color.rgb(115, 183, 255));
+                    d.setFill(Color.rgb(115, 183, 255));
                     break;
                 case "z":
-                    a.setFill(Color.HOTPINK);
-                    b.setFill(Color.HOTPINK);
-                    c.setFill(Color.HOTPINK);
-                    d.setFill(Color.HOTPINK);
+                    a.setFill(Color.rgb(255, 145, 61));
+                    b.setFill(Color.rgb(255, 145, 61));
+                    c.setFill(Color.rgb(255, 145, 61));
+                    d.setFill(Color.rgb(255, 145, 61));
                     break;
                 case "i":
-                    a.setFill(Color.SANDYBROWN);
-                    b.setFill(Color.SANDYBROWN);
-                    c.setFill(Color.SANDYBROWN);
-                    d.setFill(Color.SANDYBROWN);
+                    a.setFill(Color.rgb(117, 0, 235));
+                    b.setFill(Color.rgb(117, 0, 235));
+                    c.setFill(Color.rgb(117, 0, 235));
+                    d.setFill(Color.rgb(117, 0, 235));
                     break;
             }
         }
