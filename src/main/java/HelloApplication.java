@@ -148,7 +148,7 @@ public class HelloApplication extends Application {
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {
             startAnimation();
-            HelloApplication helloApp = new HelloApplication();
+
         });
         exitButton.setOnAction(e -> GameStopped(stage));
 
@@ -848,7 +848,6 @@ public class HelloApplication extends Application {
 
     private void MoveDown(Text text) {
         scoretext.setText("Score: " + score);
-        score++;
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 
