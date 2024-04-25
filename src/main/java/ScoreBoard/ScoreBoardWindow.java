@@ -107,4 +107,5 @@ public class ScoreBoardWindow {
     public void show() {
         stage.show();
     }
+
 }

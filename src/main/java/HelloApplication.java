@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -24,6 +25,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import User.SessionManager;
 
 import Setting.KeySettings;
@@ -233,7 +236,6 @@ public class HelloApplication extends Application {
             public void handle(KeyEvent event) {
                 String pressedKey = event.getCode().toString();
                 if(running) {
-
                     if (pressedKey.equals(KeySettings.getRightKey())) {
                         Controller.MoveRight(form);
                     } else if (pressedKey.equals(KeySettings.getDownKey())) {
@@ -983,24 +985,49 @@ public class HelloApplication extends Application {
 
 
     public void GameOver(){
-        running =  false;
+        running = false;
         User user = SessionManager.getCurrentUser();
         applyGrayscaleEffect();
-        scoreLabel = new Label(Integer.toString(score));
-        scoreLabel.setLayoutX(XMAX/2);
+        Label scoreLabel = new Label("score: " + score);
+        scoreLabel.setLayoutX(XMAX/2 - 10);
         scoreLabel.setLayoutY(YMAX/2);
-        scoreLabel.setStyle("-fx-font-size: XMAX/5; -fx-text-fill: red; -fx-background-color: blue;");
+        scoreLabel.setStyle("-fx-font-size: XMAX/3; -fx-text-fill: red; -fx-background-color: blue;");
         group.getChildren().addAll(scoreLabel);
+
         scoreLabel.setVisible(true);
+        TextArea nicknameTextArea = new TextArea(user.getNickname());
+        nicknameTextArea.setLayoutX(XMAX / 2);
+        nicknameTextArea.setLayoutY(YMAX / 3);
+        nicknameTextArea.setPrefWidth(XMAX / 4);
+        nicknameTextArea.setPrefHeight(XMAX / 10);
+
+        Label NameLabel = new Label("점수를 저장하시겠습니까?");
+        NameLabel.setLayoutX(XMAX/2 - 10);
+        NameLabel.setLayoutY(YMAX/2 - 40);
+        NameLabel.setStyle("-fx-font-size: XMAX; -fx-text-fill: red; -fx-background-color: blue;");
+        group.getChildren().addAll(nicknameTextArea, NameLabel);
+
+        NameLabel.setVisible(true);
+
+        Button yesButton = new Button("Yes");
+        yesButton.setLayoutX(XMAX / 2 - 50); //
+        yesButton.setLayoutY(YMAX / 2 + 50); //
+        exitButton.setLayoutX(XMAX/2+50);
+        exitButton.setLayoutY(YMAX/2+50);
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
-        try {
-            JdbcConnecter.insertData(user.getNickname(), score, 0, LevelConstants.getLevel(), linesNo);
+        yesButton.setOnAction(e -> {
+            String newNickname = nicknameTextArea.getText();
+            try {
+                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
+                yesButton.setVisible(false);
 
-        } catch (Exception e) {
-            System.out.println("jdbc error");
-        }
+            } catch (Exception ex) {
+                System.out.println("jdbc error");
+            }
+        });
+        group.getChildren().addAll(yesButton);
 
     }
     private void GameStopped(Stage stage){

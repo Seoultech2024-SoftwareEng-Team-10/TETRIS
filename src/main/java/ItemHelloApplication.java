@@ -13,6 +13,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -1182,20 +1184,49 @@ public class ItemHelloApplication extends Application {
 
 
     public void GameOver(){
-        running =  false;
-        applyGrayscaleEffect();
-        if (exitButton != null){
-            exitButton.toFront();
-            exitButton.setVisible(true);
-        }
+        running = false;
         User user = SessionManager.getCurrentUser();
-        if (user!=null){
+        applyGrayscaleEffect();
+        Label scoreLabel = new Label("score: " + score);
+        scoreLabel.setLayoutX(XMAX/2 - 10);
+        scoreLabel.setLayoutY(YMAX/2);
+        scoreLabel.setStyle("-fx-font-size: XMAX/3; -fx-text-fill: red; -fx-background-color: blue;");
+        group.getChildren().addAll(scoreLabel);
+
+        scoreLabel.setVisible(true);
+        TextArea nicknameTextArea = new TextArea(user.getNickname());
+        nicknameTextArea.setLayoutX(XMAX / 2);
+        nicknameTextArea.setLayoutY(YMAX / 3);
+        nicknameTextArea.setPrefWidth(XMAX / 4);
+        nicknameTextArea.setPrefHeight(XMAX / 10);
+
+        Label NameLabel = new Label("점수를 저장하시겠습니까?");
+        NameLabel.setLayoutX(XMAX/2 - 10);
+        NameLabel.setLayoutY(YMAX/2 - 40);
+        NameLabel.setStyle("-fx-font-size: XMAX; -fx-text-fill: red; -fx-background-color: blue;");
+        group.getChildren().addAll(nicknameTextArea, NameLabel);
+
+        NameLabel.setVisible(true);
+
+        Button yesButton = new Button("Yes");
+        yesButton.setLayoutX(XMAX / 2 - 50); //
+        yesButton.setLayoutY(YMAX / 2 + 50); //
+        exitButton.setLayoutX(XMAX/2+50);
+        exitButton.setLayoutY(YMAX/2+50);
+        if (exitButton != null)
+            exitButton.toFront();
+        exitButton.setVisible(true);
+        yesButton.setOnAction(e -> {
+            String newNickname = nicknameTextArea.getText();
             try {
-                JdbcConnecter.insertData(user.getNickname(), score, 1,difficultylevel, linesNo);
-            } catch (Exception e) {
+                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
+                yesButton.setVisible(false);
+            } catch (Exception ex) {
                 System.out.println("jdbc error");
             }
-        }
+        });
+        group.getChildren().addAll(yesButton);
+
     }
     private void GameStopped(Stage stage){
         timer.stop();

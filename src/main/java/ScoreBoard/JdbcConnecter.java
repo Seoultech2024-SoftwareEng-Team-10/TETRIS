@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class JdbcConnecter {
-    private static final Properties props = new Properties();
+    public static final Properties props = new Properties();
 
     static {
         loadProperties();
@@ -28,8 +28,8 @@ public class JdbcConnecter {
         }
     }
 
-    public static void insertData(String nicknameParam, int scoreParam, int modeParam, int levelParam, int linesCountParam) {
-        String query = "INSERT INTO scoreboard (nickname, score, mode, level, lines_count, date) VALUES (?, ?, ?, ?, ?, ?)";
+    public static void insertData(String loginIdParam, String nicknameParam, int scoreParam, int modeParam, int levelParam, int linesCountParam) {
+        String query = "INSERT INTO scoreboard (nickname, score, mode, level, lines_count, date, loginId) VALUES (?, ?, ?, ?, ?, ?,?)";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -41,6 +41,7 @@ public class JdbcConnecter {
             pstmt.setInt(4, levelParam);
             pstmt.setInt(5, linesCountParam);
             pstmt.setDate(6, Date.valueOf(LocalDate.now()));
+            pstmt.setString(7,loginIdParam);
             pstmt.executeUpdate();
 
             System.out.println("insert data to scoreboard successfully");
@@ -215,7 +216,7 @@ public class JdbcConnecter {
             return null;
     }
     public static String deleteUserByNickname(String nickname) {
-        String query = "DELETE FROM scoreboard WHERE nickname = ?";
+        String query = "DELETE FROM scoreboard WHERE loginId = ?";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
