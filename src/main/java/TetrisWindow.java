@@ -113,7 +113,7 @@ public class TetrisWindow extends Application {
                 Stage gameStage = new Stage();
 
                 // HelloApplication의 start 메소드 호출
-                if (user !=null){
+                if (user !=null||true){
                     helloApp.start(gameStage);
                 }
             } catch (Exception e) {

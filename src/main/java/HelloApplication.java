@@ -1000,7 +1000,7 @@ public class HelloApplication extends Application {
             exitButton.toFront();
             exitButton.setVisible(true);
         try {
-            JdbcConnecter.insertData(user.getNickname(), score, "00:00:00", linesNo);
+            JdbcConnecter.insertData("홍길동", score, "00:00:00", linesNo);
         } catch (Exception e) {
             System.out.println("jdbc error");
         }
