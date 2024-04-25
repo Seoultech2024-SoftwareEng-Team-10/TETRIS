@@ -1,5 +1,6 @@
 package Setting;
 
+import Tetris.BlockColor;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -146,6 +147,12 @@ public class SettingsWindow extends Stage {
 
         Scene scene = new Scene(root);
         setScene(scene);
+
+        colorBlindModeToggle.setOnAction(event -> {
+            isColorBlindModeOn = !isColorBlindModeOn;
+            colorBlindModeToggle.setText(isColorBlindModeOn ? "on" : "off");
+            BlockColor.setColorBlindMode(isColorBlindModeOn); // BlockColor의 colorBlindMode 값 설정
+        });
     }
 
     private void handleButtonClick(ActionEvent event) {
@@ -211,6 +218,11 @@ public class SettingsWindow extends Stage {
         KeySettings.setLeftKey("LEFT");
         KeySettings.setUpKey("UP");
         KeySettings.setSpaceKey("SPACE");
+
+        // 난이도 설정 초기화
+        levelButton.setText("Normal");
+        LevelConstants.setLevel('N');
+
         // 다른 설정들도 초기화하는 코드 추가
         System.out.println("기본 설정으로 되돌림");
     }

@@ -223,7 +223,7 @@ public class Controller {
             }
         }
 
-        return new Form(a, b, c, d, name, colorBlindMode);
+        return new Form(a, b, c, d, name);
     }
     public static Form makeText(String name, boolean colorBlindMode) {
         fontSize = SizeConstants.fontSize;
@@ -380,7 +380,7 @@ public class Controller {
             }
         }
 
-        return new Form(a, b, c, d, name, colorBlindMode);
+        return new Form(a, b, c, d, name);
     }
     public static Form waitingTextMake(boolean colorBlindMode, char difficultyLevel){
         Form waitObj = makeText(colorBlindMode, difficultyLevel);
@@ -398,6 +398,6 @@ public class Controller {
         waitObj.c.setUserData("waitc");
         waitObj.d.setUserData("waitd");
 
-        return new Form(waitObj.a, waitObj.b, waitObj.c, waitObj.d, waitObj.getName(),colorBlindMode);
+        return new Form(waitObj.a, waitObj.b, waitObj.c, waitObj.d, waitObj.getName());
     }
 }
