@@ -220,10 +220,6 @@ public class Controller {
         return new Form(a, b, c, d, name);
     }
     public static Form makeText(String name, boolean colorBlindMode) {
-        fontSize = SizeConstants.fontSize;
-        System.out.println(fontSize);
-        XMAX = SizeConstants.XMAX;
-        SIZE = SizeConstants.SIZE;
         Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
                 d = new Text(0, 0, "O");//Rectangle --> Text
         a.setFont(Font.font(fontSize));
