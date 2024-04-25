@@ -5,15 +5,12 @@ import Setting.SizeConstants;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import static Setting.SizeConstants.*;
 
 public class Controller {
     // Getting the numbers and the MESH from HelloApplication
-    public static int MOVE = SizeConstants.MOVE;
-    public static int SIZE = SizeConstants.SIZE;
-    public static int XMAX = SizeConstants.XMAX;
-    //public static int YMAX = SizeConstants.YMAX;
-    public static double fontSize = SizeConstants.fontSize;
-    public static int[][] MESH = SizeConstants.MESH;
+
+
     public static char difficultyLevel = LevelConstants.difficultyLevel;
 
 
@@ -52,10 +49,6 @@ public class Controller {
 
 
     public static Form makeText(boolean colorBlindMode, char difficultyLevel) {
-        fontSize = SizeConstants.fontSize;
-        System.out.println(fontSize);
-        XMAX = SizeConstants.XMAX;
-        SIZE = SizeConstants.SIZE;
         int block = 0;
         if(difficultyLevel == 'E'){
             block = (int) (Math.random() * 72);

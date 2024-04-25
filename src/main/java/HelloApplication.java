@@ -25,9 +25,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
+import Setting.KeySettings;
+import static Setting.SizeConstants.*;
 
 
 public class HelloApplication extends Application {
+    SizeConstants sizeConstants = new SizeConstants();
 
     private static AnimationTimer timer;
     public static boolean running = true;
@@ -54,46 +57,48 @@ public class HelloApplication extends Application {
     private Label scoreLabel;
     private long Frame = 1000000000;
     private static int scoreMultiplier = 1;
-
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     private User user;
     public HelloApplication(){
-        linesNo = 0;
         score = 0;
         running = true;
         waitObj = Controller.waitingTextMake(true, difficultylevel);
         nextObj = Controller.makeText(true, difficultylevel);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
+        user = TetrisWindow.user;
+        linesNo = 0;
     }
 
     public static boolean itemMode = false; // 아이템 모드 변수 추가
 
     @Override
     public void start(Stage stage) throws IOException {
-        stage.close();
-        linesNo = 0;
+        User currentUser = SessionManager.getCurrentUser();
+        System.out.println(currentUser.getNickname());
+        stage.close(); //stage초기화
         score = 0;
         linesNo = 0;
         scoreMultiplier = 1;
         Frame = 1000000000;
         running = true;
-        waitObj = Controller.waitingTextMake(true, difficultylevel);
-        nextObj = Controller.makeText(true, difficultylevel);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        waitObj = Controller.waitingTextMake(false, difficultylevel);
+        nextObj = Controller.makeText(false, difficultylevel);//makeRect->makeText
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+        running = true;
 
 
         group.getChildren().clear();
@@ -229,27 +234,20 @@ public class HelloApplication extends Application {
             public void handle(KeyEvent event) {
                 String pressedKey = event.getCode().toString();
                 if(running) {
-                    switch (event.getCode()) {
-                        case RIGHT:
-                            Controller.MoveRight(form);
-                            break;
-                        case DOWN:
-                            MoveDown(form);
-                            scoretext.setText("Score: " + score);
-                            break;
-                        case LEFT:
-                            Controller.MoveLeft(form);
-                            break;
-                        case UP:
-                            MoveTurn(form);
-                            break;
-                        case SPACE:
-                            DirectMoveDown(form);
-                            scoretext.setText("Score: " + score);
-                            break;
-                        case ESCAPE:
-                            stopAnimation();
-                            break;
+                    if (pressedKey.equals(KeySettings.getRightKey())) {
+                        Controller.MoveRight(form);
+                    } else if (pressedKey.equals(KeySettings.getDownKey())) {
+                        MoveDown(form);
+                        scoretext.setText("Score: " + score);
+                    } else if (pressedKey.equals(KeySettings.getLeftKey())) {
+                        Controller.MoveLeft(form);
+                    } else if (pressedKey.equals(KeySettings.getUpKey())) {
+                        MoveTurn(form);
+                    } else if (pressedKey.equals(KeySettings.getSpaceKey())) {
+                        DirectMoveDown(form);
+                        scoretext.setText("Score: " + score);
+                    } else if (pressedKey.equals("ESCAPE")) {
+                        stopAnimation();
                     }
                 }
                 else{
@@ -795,7 +793,6 @@ public class HelloApplication extends Application {
             full = 0;
         }
         if (lines.size() > 0)
-            System.out.println("a");
             do {
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
@@ -924,6 +921,7 @@ public class HelloApplication extends Application {
         object = a;
         group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         moveOnKeyPress(a);
+
     }
 
 
@@ -986,6 +984,7 @@ public class HelloApplication extends Application {
 
     public void GameOver(){
         running =  false;
+        User user = SessionManager.getCurrentUser();
         applyGrayscaleEffect();
         scoreLabel = new Label(Integer.toString(score));
         scoreLabel.setLayoutX(XMAX/2);
@@ -993,17 +992,13 @@ public class HelloApplication extends Application {
         scoreLabel.setStyle("-fx-font-size: XMAX/5; -fx-text-fill: red; -fx-background-color: blue;");
         group.getChildren().addAll(scoreLabel);
         scoreLabel.setVisible(true);
-        if (exitButton != null){
+        if (exitButton != null)
             exitButton.toFront();
-            exitButton.setVisible(true);
-        }
-        User user = SessionManager.getCurrentUser();
-        if (user!=null){
-            try {
-                JdbcConnecter.insertData(user.getNickname(), score, 0,difficultylevel, linesNo);
-            } catch (Exception e) {
-                System.out.println("jdbc error");
-            }
+        exitButton.setVisible(true);
+        try {
+            JdbcConnecter.insertData(user.getNickname(), score, 0, difficultylevel, linesNo);
+        } catch (Exception e) {
+            System.out.println("jdbc error");
         }
 
     }

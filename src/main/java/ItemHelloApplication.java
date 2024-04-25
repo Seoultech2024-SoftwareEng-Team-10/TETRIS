@@ -23,16 +23,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import static Setting.SizeConstants.*;
+import Setting.KeySettings;
 //1234
 
 
 public class ItemHelloApplication extends Application {
     private static AnimationTimer timer;
     public static boolean running = true;
-    public static int MOVE = SizeConstants.MOVE;
-    public static int SIZE = SizeConstants.SIZE;
-    public static int XMAX = SizeConstants.XMAX;
-    public static int YMAX = SizeConstants.YMAX;
+    SizeConstants sizeConstants = new SizeConstants();
     public static int[][] MESH = SizeConstants.MESH;
     public static String item = "";
     public static int itemRotate = 0;
@@ -65,11 +64,11 @@ public class ItemHelloApplication extends Application {
         running = true;
         waitObj = ItemController.waitingTextMake(true, difficultylevel,item,itemRotate);
         nextObj = ItemController.makeText(true, difficultylevel,item,itemRotate);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -87,11 +86,11 @@ public class ItemHelloApplication extends Application {
         running = true;
         waitObj = ItemController.waitingTextMake(false, difficultylevel,item,itemRotate);
         nextObj = ItemController.makeText(false, difficultylevel,item,itemRotate);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -221,61 +220,46 @@ public class ItemHelloApplication extends Application {
             public void handle(KeyEvent event) {
                 String pressedKey = event.getCode().toString();
                 if(running) {
-                    switch (event.getCode()) {
-                        case RIGHT:
-                            if(form.getItem()=="Weight"&&!(WeightMove))
-                                break;
-                            if(form.getItem()=="Inverse"){
-                                ItemController.MoveLeft(form);
-                                break;
-                            }
+                    if (pressedKey.equals(KeySettings.getRightKey())) {
+                        if (form.getItem() == "Inverse") {
+                            ItemController.MoveLeft(form);
+                        } else {
                             ItemController.MoveRight(form);
-                            break;
-                        case DOWN:
-                            if(form.getItem()=="Weight"&&!(WeightMove))
-                                break;
+                        }
+                    } else if (pressedKey.equals(KeySettings.getDownKey())) {
+                        if(!(form.getItem()=="Weight"&&!(WeightMove))){
                             MoveDown(form);
                             scoretext.setText("Score: " + score);
-                            break;
-                        case LEFT:
-                            if(form.getItem()=="Weight"&&!(WeightMove))
-                                break;
-                            if(form.getItem()=="Inverse"){
-                                ItemController.MoveRight(form);
-                                break;
-                            }
+                        }
+                    } else if (pressedKey.equals(KeySettings.getLeftKey())) {
+                        if (form.getItem() == "Inverse") {
+                            ItemController.MoveRight(form);
+                        } else {
                             ItemController.MoveLeft(form);
-                            break;
-                        case UP:
-                            MoveTurn(form);
-                            break;
-                        case SPACE:
-                            if(form.getItem()=="Weight")
-                                break;
-                            if(form.getItem()=="Fixed"){
-                                MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
-                                MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
-                                MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
-                                MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
-                                RemoveRows(group);
-                                // 새 블록 생성
-                                ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
-                                group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-                                waitObj = ItemController.waitingTextMake(true,difficultylevel,item,itemRotate);
-                                object = a;
-                                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-                                moveOnKeyPress(a);
-                                item = "";
-                                itemRotate = 0;
-                                break;
-                            }
+                        }
+                    } else if (pressedKey.equals(KeySettings.getUpKey())) {
+                        MoveTurn(form);
+                    } else if (pressedKey.equals(KeySettings.getSpaceKey())) {
+                        if (form.getItem() == "Fixed") {
+                            MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
+                            MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
+                            MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
+                            MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
+                            RemoveRows(group);
+                            // 새 블록 생성
+                            ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
+                            group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+                            waitObj = ItemController.waitingTextMake(true, difficultylevel, item, itemRotate);
+                            object = a;
+                            group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+                            moveOnKeyPress(a);
+                            item = "";
+                            itemRotate = 0;
+                        } else {
                             DirectMoveDown(form);
-                            scoretext.setText("Score: " + score);
-                            break;
-                        case ESCAPE:
-                            stopAnimation();
-                            break;
-
+                        }
+                    } else if (pressedKey.equals("ESCAPE")) {
+                        stopAnimation();
                     }
                 }
                 else{
@@ -972,7 +956,6 @@ public class ItemHelloApplication extends Application {
 
     private void MoveDown(Text text) {
         scoretext.setText("Score: " + score);
-        score++;
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 

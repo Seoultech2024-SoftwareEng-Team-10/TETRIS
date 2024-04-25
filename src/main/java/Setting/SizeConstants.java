@@ -2,26 +2,26 @@ package Setting;
 
 public class SizeConstants {
     // 450 x 600 (기본값)
-    public static final int MOVE_450x600 = 30;
-    public static final int SIZE_450x600 = 30;
-    public static final int XMAX_450x600 = SIZE_450x600 * 10;
-    public static final int YMAX_450x600 = SIZE_450x600 * 21;
-    public static final double FONTSIZE_450x600 = SIZE_450x600 * 1.4;
+    // 450 x 600 (기본값)
+    private static final int MOVE_450x600 = 30;
+    private static final int SIZE_450x600 = 30;
+    private static final int XMAX_450x600 = SIZE_450x600 * 10;
+    private static final int YMAX_450x600 = SIZE_450x600 * 21;
+    private static final double FONTSIZE_450x600 = SIZE_450x600 * 1.4;
 
     // 300 x 400
-    public static final int MOVE_300x400 = 20;
-    public static final int SIZE_300x400 = 20;
-    public static final int XMAX_300x400 = SIZE_300x400 * 10;
-    public static final int YMAX_300x400 = SIZE_300x400 * 21;
-    public static final double FONTSIZE_300x400 = SIZE_300x400 * 1.4;
+    private static final int MOVE_300x400 = 20;
+    private static final int SIZE_300x400 = 20;
+    private static final int XMAX_300x400 = SIZE_300x400 * 10;
+    private static final int YMAX_300x400 = SIZE_300x400 * 21;
+    private static final double FONTSIZE_300x400 = SIZE_300x400 * 1.4;
 
     // 600 x 800
-    public static final int MOVE_600x800 = 39;
-    public static final int SIZE_600x800 = 39;
-    public static final int XMAX_600x800 = SIZE_600x800 * 10;
-    public static final int YMAX_600x800 = SIZE_600x800 * 21;
-    public static final double FONTSIZE_600x800 = SIZE_600x800 * 1.4;
-
+    private static final int MOVE_600x800 = 39;
+    private static final int SIZE_600x800 = 39;
+    private static final int XMAX_600x800 = SIZE_600x800 * 10;
+    private static final int YMAX_600x800 = SIZE_600x800 * 21;
+    private static final double FONTSIZE_600x800 = SIZE_600x800 * 1.4;
     // 현재 사용중인 크기 상수들
     public static int MOVE = MOVE_450x600;
     public static int SIZE = SIZE_450x600;
@@ -30,7 +30,29 @@ public class SizeConstants {
     public static double fontSize = FONTSIZE_450x600;
     public static int[][] MESH = new int[XMAX / SIZE][YMAX / SIZE + 1];
 
+    public static int getMOVE() {
+        return MOVE;
+    }
 
+    public static int getSIZE() {
+        return SIZE;
+    }
+
+    public static int getXMAX() {
+        return XMAX;
+    }
+
+    public static int getYMAX() {
+        return YMAX;
+    }
+
+    public static double getFontSize() {
+        return fontSize;
+    }
+
+    public static int[][] getMESH() {
+        return MESH;
+    }
 
     public static void setSize(int width, int height) {
         if (width == 450 && height == 600) {
