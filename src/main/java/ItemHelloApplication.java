@@ -831,7 +831,7 @@ public class ItemHelloApplication extends Application {
                         texts.add(node);
                 }
                 if (Frame > 150000000) {
-                    Frame -= 50000000;
+                    Frame -= 10000000;
                     scoreMultiplier++;
                 }
                 score += 50 * scoreMultiplier;
