@@ -1,13 +1,13 @@
 package Tetris;
 
-public class BlockColor {
+public class ItemBlockColor {
     public static boolean colorBlindMode;
 
-    public static javafx.scene.paint.Color getColor(String name) {
+    public static javafx.scene.paint.Color getItemColor(String name) {
         if (colorBlindMode) {
             switch (name) {
                 case "j":
-                    return javafx.scene.paint.Color.RED;
+                    return javafx.scene.paint.Color.GRAY;
                 case "l":
                     return javafx.scene.paint.Color.GREEN;
                 case "o":
@@ -15,11 +15,11 @@ public class BlockColor {
                 case "s":
                     return javafx.scene.paint.Color.ORANGE;
                 case "t":
-                    return javafx.scene.paint.Color.PURPLE;
+                    return javafx.scene.paint.Color.PINK;
                 case "z":
                     return javafx.scene.paint.Color.YELLOW;
                 case "i":
-                    return javafx.scene.paint.Color.WHITE;
+                    return javafx.scene.paint.Color.SKYBLUE;
                 default:
                     return null;
             }

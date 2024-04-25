@@ -1,6 +1,8 @@
+
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
 import Setting.SizeConstants;
+import Tetris.BlockColor;
 import Tetris.ItemController;
 import Tetris.ItemForm;
 import javafx.animation.AnimationTimer;
@@ -21,17 +23,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static Setting.SizeConstants.*;
 //1234
 
 
 public class ItemHelloApplication extends Application {
+    SizeConstants sizeConstants = new SizeConstants();
     private static AnimationTimer timer;
     public static boolean running = true;
-    public static int MOVE = SizeConstants.MOVE;
-    public static int SIZE = SizeConstants.SIZE;
-    public static int XMAX = SizeConstants.XMAX;
-    public static int YMAX = SizeConstants.YMAX;
-    public static int[][] MESH = SizeConstants.MESH;
     public static String item = "";
     public static int itemRotate = 0;
     public static int itemCounter = 1;
@@ -45,8 +45,8 @@ public class ItemHelloApplication extends Application {
     private static boolean game = true;
     private ColorAdjust colorAdjust = new ColorAdjust();
     private static char difficultylevel = LevelConstants.difficultyLevel;
-    private static ItemForm nextObj = ItemController.makeText(true,difficultylevel,item,itemRotate);//makeRect->makeText
-    private static ItemForm waitObj = ItemController.waitingTextMake(true,difficultylevel,item,itemRotate);
+    private static ItemForm nextObj = ItemController.makeText(BlockColor.colorBlindMode,difficultylevel,item,itemRotate);//makeRect->makeText
+    private static ItemForm waitObj = ItemController.waitingTextMake(BlockColor.colorBlindMode,difficultylevel,item,itemRotate);
     private static int linesNo = 0;
     private Button restartButton;
     private Button exitButton;
@@ -61,13 +61,18 @@ public class ItemHelloApplication extends Application {
     public ItemHelloApplication(){
         score = 0;
         running = true;
-        waitObj = ItemController.waitingTextMake(true, difficultylevel,item,itemRotate);
-        nextObj = ItemController.makeText(true, difficultylevel,item,itemRotate);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        waitObj = ItemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);
+        nextObj = ItemController.makeText(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);//makeRect->makeText
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
+        //MOVE = SizeConstants.MOVE;
+        //SIZE = SizeConstants.SIZE;
+        //XMAX = SizeConstants.XMAX;
+        //YMAX = SizeConstants.YMAX;
+        //MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -80,13 +85,18 @@ public class ItemHelloApplication extends Application {
         stage.close(); //stage초기화
         score = 0;
         running = true;
-        waitObj = ItemController.waitingTextMake(false, difficultylevel,item,itemRotate);
-        nextObj = ItemController.makeText(false, difficultylevel,item,itemRotate);//makeRect->makeText
-        MOVE = SizeConstants.MOVE;
-        SIZE = SizeConstants.SIZE;
-        XMAX = SizeConstants.XMAX;
-        YMAX = SizeConstants.YMAX;
-        MESH = SizeConstants.MESH;
+        waitObj = ItemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);
+        nextObj = ItemController.makeText(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);//makeRect->makeText
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
+        //MOVE = SizeConstants.MOVE;
+        //SIZE = SizeConstants.SIZE;
+        //XMAX = SizeConstants.XMAX;
+        //YMAX = SizeConstants.YMAX;
+        //MESH = SizeConstants.MESH;
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
@@ -120,7 +130,7 @@ public class ItemHelloApplication extends Application {
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
-        nextObj = ItemController.makeText(true,difficultylevel,item,itemRotate);//색맹 모드가 아님을 의미
+        nextObj = ItemController.makeText(BlockColor.colorBlindMode,difficultylevel,item,itemRotate);//색맹 모드가 아님을 의미
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -831,7 +841,7 @@ public class ItemHelloApplication extends Application {
                         texts.add(node);
                 }
                 if (Frame > 150000000) {
-                    Frame -= 10000000;
+                    Frame -= 50000000;
                     scoreMultiplier++;
                 }
                 score += 50 * scoreMultiplier;

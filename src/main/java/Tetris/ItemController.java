@@ -6,14 +6,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import static Setting.SizeConstants.*;
+
 public class ItemController {
-    // Getting the numbers and the MESH from HelloApplication
-    public static int MOVE = SizeConstants.MOVE;
-    public static int SIZE = SizeConstants.SIZE;
-    public static int XMAX = SizeConstants.XMAX;
-    //public static int YMAX = SizeConstants.YMAX;
-    public static double fontSize = SizeConstants.fontSize;
-    public static int[][] MESH = SizeConstants.MESH;
     public static char difficultyLevel = LevelConstants.difficultyLevel;
 
 
@@ -54,8 +49,8 @@ public class ItemController {
     public static ItemForm makeText(boolean colorBlindMode, char difficultyLevel,String item,int itemRotate) {
         fontSize = SizeConstants.fontSize;
         System.out.println(fontSize);
-        XMAX = SizeConstants.XMAX;
-        SIZE = SizeConstants.SIZE;
+        XMAX = SizeConstants.getXMAX();
+        SIZE = SizeConstants.getSIZE();
         int block = 0;
         if(difficultyLevel == 'E'){
             block = (int) (Math.random() * 72);
@@ -226,10 +221,10 @@ public class ItemController {
         return new ItemForm(a, b, c, d, name, colorBlindMode,item,itemRotate);
     }
     public static ItemForm makeText(String name, boolean colorBlindMode,String item,int itemRotate) {
-        fontSize = SizeConstants.fontSize;
+        fontSize = SizeConstants.getFontSize();
         System.out.println(fontSize);
-        XMAX = SizeConstants.XMAX;
-        SIZE = SizeConstants.SIZE;
+        XMAX = SizeConstants.getXMAX();
+        SIZE = SizeConstants.getSIZE();
         Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
                 d = new Text(0, 0, "O");//Rectangle --> Text
         if(item == "LineClear"){
