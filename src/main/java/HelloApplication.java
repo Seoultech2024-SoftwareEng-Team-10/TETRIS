@@ -50,15 +50,15 @@ public class HelloApplication extends Application {
     private Button restartButton;
     private Button exitButton;
     private Label scoreLabel;
-    private long Frame = 1000000000;
-    private static int scoreMultiplier = 1;
+    private double Frame = 1000000000;
+    private static double scoreMultiplier = 1.0;
+    private static double frameMultiplier = 1.0;
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     private User user;
     public HelloApplication(){
         score = 0;
         running = true;
-
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
         nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
         MOVE = sizeConstants.getMOVE();
@@ -82,9 +82,22 @@ public class HelloApplication extends Application {
         stage.close(); //stage초기화
         score = 0;
         linesNo = 0;
-        scoreMultiplier = 1;
         Frame = 1000000000;
         running = true;
+        if(LevelConstants.getLevel()=='E'){
+            scoreMultiplier = 0.8;
+            frameMultiplier = 0.8;
+        }
+        else if(LevelConstants.getLevel()=='N'){
+            scoreMultiplier = 1.0;
+            frameMultiplier = 1.0;
+        }
+        else{
+            scoreMultiplier = 1.2;
+            frameMultiplier = 1.2;
+        }
+        System.out.println(scoreMultiplier);
+        System.out.println(frameMultiplier);
 
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
         nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
@@ -803,7 +816,7 @@ public class HelloApplication extends Application {
                         texts.add(node);
                 }
                 if (Frame > 150000000) {
-                    Frame -= 50000000;
+                    Frame -= 50000000 * frameMultiplier;
                     scoreMultiplier++;
                 }
                 score += 50 * scoreMultiplier;
