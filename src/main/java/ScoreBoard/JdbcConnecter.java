@@ -215,7 +215,7 @@ public class JdbcConnecter {
             return null;
     }
     public static String deleteUserByNickname(String nickname) {
-        String query = "DELETE FROM user WHERE nickname = ?";
+        String query = "DELETE FROM scoreboard WHERE nickname = ?";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {

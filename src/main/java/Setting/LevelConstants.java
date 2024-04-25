@@ -1,13 +1,13 @@
 package Setting;
 
 public class LevelConstants {
-    public static char difficultyLevel = 'N';
-    public static void setLevel(char level){
-        if(level=='E')
-            difficultyLevel = 'E';
-        else if(level == 'H')
-            difficultyLevel = 'H';
-        else if(level =='N')
-            difficultyLevel = 'N';
+    public static char difficultyLevel = 'N'; // 기본값은 Normal
+
+    public static void setLevel(char level) {
+        difficultyLevel = level;
+    }
+
+    public static char getLevel() {
+        return difficultyLevel;
     }
 }
