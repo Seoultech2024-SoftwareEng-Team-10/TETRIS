@@ -79,6 +79,9 @@ public class ItemHelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         stage.close(); //stage초기화
         score = 0;
+        linesNo = 0;
+        scoreMultiplier = 1;
+        Frame = 1000000000;
         running = true;
         waitObj = ItemController.waitingTextMake(false, difficultylevel,item,itemRotate);
         nextObj = ItemController.makeText(false, difficultylevel,item,itemRotate);//makeRect->makeText
