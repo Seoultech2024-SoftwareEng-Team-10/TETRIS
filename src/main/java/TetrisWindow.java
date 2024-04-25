@@ -110,11 +110,13 @@ public class TetrisWindow extends Application {
 
         gameStartButton.setOnAction(event -> {
             try {
-                // 새 Stage 생성
-                Stage gameStage = new Stage();
+                if(user!=null) {
+                    // 새 Stage 생성
+                    Stage gameStage = new Stage();
 
-                // HelloApplication의 start 메소드 호출
-                helloApp.start(gameStage);
+                    // HelloApplication의 start 메소드 호출
+                    helloApp.start(gameStage);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -130,11 +132,13 @@ public class TetrisWindow extends Application {
 
         itemgameButton.setOnAction(event -> {
             try {
-                // 새 Stage 생성
-                Stage gameStage = new Stage();
+                if(user!=null) {
+                    // 새 Stage 생성
+                    Stage gameStage = new Stage();
 
-                // HelloApplication의 start 메소드 호출
-                itemHelloApp.start(gameStage);
+                    // HelloApplication의 start 메소드 호출
+                    itemHelloApp.start(gameStage);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
