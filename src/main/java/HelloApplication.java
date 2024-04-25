@@ -28,7 +28,6 @@ import User.SessionManager;
 
 
 public class HelloApplication extends Application {
-    private static HelloApplication instance;
 
     private static AnimationTimer timer;
     public static boolean running = true;

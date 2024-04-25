@@ -1,5 +1,4 @@
-
-import ScoreBoard.ScoreboardConnector;
+import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
 import Setting.SizeConstants;
 import Tetris.ItemController;
@@ -57,7 +56,7 @@ public class ItemHelloApplication extends Application {
     boolean WeightMove = true;
     int LineClearY = -1;
 
-    private ScoreboardConnector scoreboardDataInserter;
+    private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     public ItemHelloApplication(){
         score = 0;
@@ -1194,7 +1193,7 @@ public class ItemHelloApplication extends Application {
             exitButton.toFront();
             exitButton.setVisible(true);
         try {
-            ScoreboardConnector.insertData("홍길동", score, "00:00:00", linesNo);
+            JdbcConnecter.insertData("홍길동", score, "00:00:00", linesNo);
         } catch (Exception e) {
             System.out.println("jdbc error");
         }
