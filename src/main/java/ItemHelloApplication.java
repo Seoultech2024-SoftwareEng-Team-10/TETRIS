@@ -1134,7 +1134,6 @@ public class ItemHelloApplication extends Application {
         moveOnKeyPress(a);
         item ="";
         itemRotate=0;
-        System.out.println(itemCounter);
     }
 
 
