@@ -5,20 +5,21 @@ import java.time.LocalDate;
 public class ScoreRecord {
     private String nickname;
     private int score;
-    private String time; // 게임을 완료하는 데 걸린 시간
+    private String mode;
+    private String level;
     private int linesCount; // 제거한 라인 수
     private LocalDate date; // 기록 날짜
 
     // 기본 생성자
-    public ScoreRecord(String nickname, int score, String time, int linesCount, LocalDate date) {
+    public ScoreRecord(String nickname, int score, String mode,  String level ,int linesCount, LocalDate date) {
         this.nickname = nickname;
         this.score = score;
-        this.time = time;
+        this.mode = mode;
+        this.level = level;
         this.linesCount = linesCount;
         this.date = date;
     }
 
-    // Getter 메서드들
     public String getNickname() {
         return nickname;
     }
@@ -27,8 +28,12 @@ public class ScoreRecord {
         return score;
     }
 
-    public String getTime() {
-        return time;
+    public String getMode() {
+        return mode;
+    }
+
+    public String getLevel() {
+        return level;
     }
 
     public int getLinesCount() {
@@ -38,6 +43,4 @@ public class ScoreRecord {
     public LocalDate getDate() {
         return date;
     }
-
-
 }

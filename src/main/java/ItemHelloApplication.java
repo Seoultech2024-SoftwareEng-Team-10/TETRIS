@@ -3,6 +3,8 @@ import Setting.LevelConstants;
 import Setting.SizeConstants;
 import Tetris.ItemController;
 import Tetris.ItemForm;
+import User.User;
+import User.SessionManager;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -1192,15 +1194,18 @@ public class ItemHelloApplication extends Application {
     public void GameOver(){
         running =  false;
         applyGrayscaleEffect();
-        if (exitButton != null)
+        if (exitButton != null){
             exitButton.toFront();
             exitButton.setVisible(true);
-        try {
-            JdbcConnecter.insertData("홍길동", score, "00:00:00", linesNo);
-        } catch (Exception e) {
-            System.out.println("jdbc error");
         }
-
+        User user = SessionManager.getCurrentUser();
+        if (user!=null){
+            try {
+                JdbcConnecter.insertData(user.getNickname(), score, 1,difficultylevel, linesNo);
+            } catch (Exception e) {
+                System.out.println("jdbc error");
+            }
+        }
     }
     private void GameStopped(Stage stage){
         timer.stop();

@@ -28,8 +28,8 @@ public class JdbcConnecter {
         }
     }
 
-    public static void insertData(String nicknameParam, int scoreParam, String timeParam, int linesCountParam) {
-        String query = "INSERT INTO scoreboard (nickname, score, time, lines_count, date) VALUES (?, ?, ?, ?, ?)";
+    public static void insertData(String nicknameParam, int scoreParam, int modeParam, int levelParam, int linesCountParam) {
+        String query = "INSERT INTO scoreboard (nickname, score, mode, level, lines_count, date) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -37,9 +37,10 @@ public class JdbcConnecter {
             // 샘플 데이터 삽입
             pstmt.setString(1, nicknameParam);
             pstmt.setInt(2, scoreParam);
-            pstmt.setString(3, "00:00:00");
-            pstmt.setInt(4, linesCountParam);
-            pstmt.setDate(5, Date.valueOf(LocalDate.now()));
+            pstmt.setInt(3, modeParam);
+            pstmt.setInt(4, levelParam);
+            pstmt.setInt(5, linesCountParam);
+            pstmt.setDate(6, Date.valueOf(LocalDate.now()));
             pstmt.executeUpdate();
 
             System.out.println("insert data to scoreboard successfully");
@@ -48,12 +49,14 @@ public class JdbcConnecter {
             e.printStackTrace();
         }
     }
+
+
     public static List<ScoreRecord> fetchData(int page) {
         List<ScoreRecord> records = new ArrayList<>();
         int pageSize = 20; // 한 페이지당 데이터 수
         int offset = (page - 1) * pageSize; // SQL 쿼리에서 사용할 OFFSET 계산
 
-        String query = "SELECT nickname, score, time, lines_count, date FROM scoreboard ORDER BY score DESC LIMIT ? OFFSET ?";
+        String query = "SELECT nickname, score, mode, level, lines_count, date FROM scoreboard ORDER BY score DESC LIMIT ? OFFSET ?";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -65,20 +68,92 @@ public class JdbcConnecter {
                 while (rs.next()) {
                     String nickname = rs.getString("nickname");
                     int score = rs.getInt("score");
-                    String time = rs.getString("time");
+                    int level = rs.getInt("level");
+                    int mode = rs.getInt("mode");
                     int linesCount = rs.getInt("lines_count");
                     LocalDate date = rs.getDate("date").toLocalDate();
+                    String enLevel = "";
+                    String enMode = "";
+                    if (level == 69){
+                        enLevel = "easy";
+                    }
+                    else if(level==78){
+                        enLevel = "normal";
+                    }
+                    else if(level ==72){
+                        enLevel = "hard";
+                    }
+                    else{
+                        enLevel = Integer.toString(level);
+                    }
+                    if(mode == 0){
+                        enMode = "NormalMode";
+                    }
+                    else{
+                        enMode = "ItemMode";
+                    }
 
-                    records.add(new ScoreRecord(nickname, score, time, linesCount, date));
+                    records.add(new ScoreRecord(nickname, score, enMode, enLevel, linesCount, date));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
         return records;
     }
+    public static List<ScoreRecord> fetchDataByMode(int modeParam, int page) {
+        List<ScoreRecord> records = new ArrayList<>();
+        int pageSize = 20; // 한 페이지당 데이터 수
+        int offset = (page - 1) * pageSize; // SQL 쿼리에서 사용할 OFFSET 계산
+
+        // mode를 필터링 조건으로 추가
+        String query = "SELECT nickname, score, mode, level, lines_count, date FROM scoreboard WHERE mode = ? ORDER BY score DESC LIMIT ? OFFSET ?";
+
+        try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, modeParam);
+            pstmt.setInt(2, pageSize);
+            pstmt.setInt(3, offset);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String nickname = rs.getString("nickname");
+                    int score = rs.getInt("score");
+                    int level = rs.getInt("level");
+                    int mode = rs.getInt("mode");
+                    int linesCount = rs.getInt("lines_count");
+                    LocalDate date = rs.getDate("date").toLocalDate();
+                    String enLevel = "";
+                    String enMode = "";
+                    if (level == 69){
+                        enLevel = "easy";
+                    }
+                    else if(level==78){
+                        enLevel = "normal";
+                    }
+                    else if(level ==72){
+                        enLevel = "hard";
+                    }
+                    else{
+                        enLevel = Integer.toString(level);
+                    }
+                    if(mode == 0){
+                        enMode ="NormalMode";
+                    }
+                    else{
+                        enMode = "ItemMode";
+                    }
+
+                    records.add(new ScoreRecord(nickname, score, enMode,enLevel, linesCount, date));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return records;
+    }
+
     public static String CreateUser(User user) {
         String queryCheck = "SELECT COUNT(*) AS count FROM user WHERE loginId = ? OR nickname = ?";
         String queryInsert = "INSERT INTO user (loginId, nickname, password) VALUES (?, ?, ?)";
