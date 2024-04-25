@@ -83,6 +83,16 @@ public class KeySettingsWindow extends Application {
 
         stage.initModality(Modality.APPLICATION_MODAL);
         scene.setOnKeyPressed(this::handleKeyPressed);
+
+        stage.setOnCloseRequest(event -> {
+            if (isKeyCodeDuplicated()) {
+                showDuplicateKeyAlert();
+                event.consume(); // 창 닫힘 이벤트를 소비하여 창이 닫히지 않도록 함
+            } else {
+                event.consume(); // 창 닫힘 이벤트를 소비하여 창이 닫히도록 함
+            }
+        });
+
         stage.showAndWait();
     }
 

@@ -30,8 +30,6 @@ import User.SessionManager;
 public class HelloApplication extends Application {
     private static HelloApplication instance;
 
-
-
     private static AnimationTimer timer;
     public static boolean running = true;
     public static int MOVE = SizeConstants.MOVE;
@@ -148,7 +146,10 @@ public class HelloApplication extends Application {
         exitButton.setVisible(false); // 초기에는 보이지 않게 설정
 
         // 버튼 이벤트 핸들러 설정
-        restartButton.setOnAction(e -> startAnimation());
+        restartButton.setOnAction(e -> {
+            startAnimation();
+            HelloApplication helloApp = new HelloApplication();
+        });
         exitButton.setOnAction(e -> GameStopped(stage));
 
         // 그룹에 버튼 추가
@@ -193,6 +194,13 @@ public class HelloApplication extends Application {
                 }
             }
         };
+        stage.setOnCloseRequest(event -> {
+            // 게임 종료 시 실행되는 코드
+            timer.stop(); // AnimationTimer 중지
+            group.getChildren().clear(); // 모든 노드 제거
+            // 필요한 경우 추가적인 리소스 해제 코드 추가
+        });
+
         timer.start();
     }
 

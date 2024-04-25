@@ -30,6 +30,8 @@ public class SizeConstants {
     public static double fontSize = FONTSIZE_450x600;
     public static int[][] MESH = new int[XMAX / SIZE][YMAX / SIZE + 1];
 
+
+
     public static void setSize(int width, int height) {
         if (width == 450 && height == 600) {
             MOVE = MOVE_450x600;
