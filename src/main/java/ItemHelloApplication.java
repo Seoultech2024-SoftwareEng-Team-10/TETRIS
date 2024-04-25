@@ -1230,7 +1230,7 @@ public class ItemHelloApplication extends Application {
         yesButton.setOnAction(e -> {
             String newNickname = nicknameTextArea.getText();
             try {
-                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
+                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 1, LevelConstants.getLevel(), linesNo);
                 yesButton.setVisible(false);
             } catch (Exception ex) {
                 System.out.println("jdbc error");
