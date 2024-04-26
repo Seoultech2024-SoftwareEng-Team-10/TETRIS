@@ -57,7 +57,7 @@ public class ItemHelloApplication extends Application {
     private Button exitButton;
     private double Frame = 1000000000;
     private static double scoreMultiplier = 1.0;
-    private static double frameMultiplier = 1.0;
+    private static double frameMultiplier = 0.8;
 
     boolean WeightMove = true;
     int LineClearY = -1;
@@ -90,18 +90,8 @@ public class ItemHelloApplication extends Application {
         linesNo = 0;
         Frame = 1000000000;
         running = true;
-        if(LevelConstants.getLevel()=='E'){
-            scoreMultiplier = 1.0;
-            frameMultiplier = 1.0;
-        }
-        else if(LevelConstants.getLevel()=='N'){
-            scoreMultiplier = 1.2;
-            frameMultiplier = 1.2;
-        }
-        else{
-            scoreMultiplier = 1.4;
-            frameMultiplier = 1.4;
-        }
+        frameMultiplier = 0.8;
+        scoreMultiplier = 1.0;
 
         waitObj = ItemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);
         nextObj = ItemController.makeText(BlockColor.colorBlindMode, difficultylevel,item,itemRotate);//makeRect->makeText
