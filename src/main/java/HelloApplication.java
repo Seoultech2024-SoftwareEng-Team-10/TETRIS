@@ -1,5 +1,8 @@
 
 import ScoreBoard.JdbcConnecter;
+import ScoreBoard.ScoreBoard;
+import ScoreBoard.ScoreBoardWindow;
+import ScoreBoard.ScoreRecord;
 import Setting.LevelConstants;
 import Setting.SizeConstants;
 import Tetris.BlockColor;
@@ -25,6 +28,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import User.SessionManager;
@@ -197,12 +201,12 @@ public class HelloApplication extends Application {
                             top = 0;
 
                         if (top == 2) {
-                            GameOver();
+                            GameOver(stage);
 
                         }
                         // Exit
                         if (top == 15) {
-                            GameOver();
+                            GameOver(stage);
                             stage.close();
                         }
 
@@ -998,7 +1002,7 @@ public class HelloApplication extends Application {
     }
 
 
-    public void GameOver(){
+    public void GameOver(Stage stage){
         running = false;
         User user = SessionManager.getCurrentUser();
         applyGrayscaleEffect();
@@ -1035,11 +1039,17 @@ public class HelloApplication extends Application {
             String newNickname = nicknameTextArea.getText();
             try {
                 JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
+                List<ScoreRecord> scoreboardData = JdbcConnecter.fetchData(1);
+                ScoreBoard scoreBoard = new ScoreBoard(scoreboardData);
+                ScoreBoardWindow window = new ScoreBoardWindow(scoreBoard);
+                window.show();
                 yesButton.setVisible(false);
+                GameStopped(stage);
 
             } catch (Exception ex) {
                 System.out.println("jdbc error");
             }
+
         });
         group.getChildren().addAll(yesButton);
 
