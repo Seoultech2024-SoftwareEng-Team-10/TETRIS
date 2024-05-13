@@ -25,8 +25,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import User.SessionManager;
 
 import Setting.KeySettings;
@@ -35,17 +33,16 @@ import static Setting.SizeConstants.*;
 
 public class HelloApplication extends Application {
     SizeConstants sizeConstants = new SizeConstants();
-
     private static AnimationTimer timer;
     public static boolean running = true;
     private static Form object;
 
     private static Pane group = new Pane();
     private static Scene scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
-    public static int score = 0;
-    private static int top = 0;
+    public static int score;
+    private static int top;
     private static boolean game = true;
-    private ColorAdjust colorAdjust = new ColorAdjust();
+    private ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
     private static char difficultylevel = LevelConstants.difficultyLevel;
     private static Form nextObj = Controller.makeText(BlockColor.colorBlindMode,difficultylevel);//makeRect->makeText
     private static Form waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode,difficultylevel);
@@ -64,27 +61,25 @@ public class HelloApplication extends Application {
         running = true;
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
         nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
-        MOVE = sizeConstants.getMOVE();
-        SIZE = sizeConstants.getSIZE();
-        XMAX = sizeConstants.getXMAX();
-        YMAX = sizeConstants.getYMAX();
-        MESH = sizeConstants.getMESH();
-
+        MOVE = getMOVE();
+        SIZE = getSIZE();
+        XMAX = getXMAX();
+        YMAX = getYMAX();
+        MESH = getMESH();
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
         user = TetrisWindow.user;
+        score = 0;
+        linesNo = 0;
     }
 
-    public static boolean itemMode = false; // 아이템 모드 변수 추가
 
     @Override
     public void start(Stage stage) throws IOException {
         User currentUser = SessionManager.getCurrentUser();
         System.out.println(currentUser.getNickname());
         stage.close();
-        score = 0;
-        linesNo = 0;
         Frame = 1000000000;
         running = true;
         if(LevelConstants.getLevel()=='E'){
@@ -1011,7 +1006,10 @@ public class HelloApplication extends Application {
         nicknameTextArea.setLayoutY(YMAX / 3);
         nicknameTextArea.setPrefWidth(XMAX / 4);
         nicknameTextArea.setPrefHeight(XMAX / 10);
-
+        //1 코드정리와 함께UI 정리
+        //2. 스코어보드 띄워놓을 부분 냄겨주기
+        //3. GamePause에서 끄는거
+        //4.
         Label NameLabel = new Label("점수를 저장하시겠습니까?");
         NameLabel.setLayoutX(XMAX/2 - 10);
         NameLabel.setLayoutY(YMAX/2 - 40);
@@ -1019,7 +1017,6 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(nicknameTextArea, NameLabel);
 
         NameLabel.setVisible(true);
-
         Button yesButton = new Button("Yes");
         yesButton.setLayoutX(XMAX / 2 - 50); //
         yesButton.setLayoutY(YMAX / 2 + 50); //
@@ -1033,13 +1030,11 @@ public class HelloApplication extends Application {
             try {
                 JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
                 yesButton.setVisible(false);
-
             } catch (Exception ex) {
                 System.out.println("jdbc error");
             }
         });
         group.getChildren().addAll(yesButton);
-
     }
     private void GameStopped(Stage stage){
         timer.stop();
@@ -1056,8 +1051,6 @@ public class HelloApplication extends Application {
         if (restartButton != null) restartButton.toFront();
         if (exitButton != null) exitButton.toFront();
     }
-
-
 
     public void main(String[] args) {
         launch();

@@ -32,7 +32,6 @@ public class KeySettingsWindow extends Application {
     public KeySettingsWindow(SettingsWindow settingsWindow) {
         this.settingsWindow = settingsWindow;
     }
-
     @Override
     public void start(Stage stage) {
         stage.setTitle("Key Settings");
@@ -44,7 +43,7 @@ public class KeySettingsWindow extends Application {
 
         // 현재 설정된 키 정보를 표시하는 라벨 생성
         grid.add(new Label("Right Key:"), 0, 0);
-        rightKeyLabel = new Label(KeySettings.getRightKey());
+        rightKeyLabel = new Label();
         rightKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.RIGHT));
         grid.add(rightKeyLabel, 1, 0);
 

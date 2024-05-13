@@ -18,18 +18,16 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 
 
 public class SettingsWindow extends Stage {
 
+    private final Settings setttings;
     private ToggleButton colorBlindModeToggle;
     private MenuButton resizeMenuButton;
     private Stage mainWindow;
@@ -38,8 +36,9 @@ public class SettingsWindow extends Stage {
     private MenuButton levelButton;
     private LevelConstants levelConstants = new LevelConstants();
 
-    public SettingsWindow(Stage mainWindow) {
+    public SettingsWindow(Stage mainWindow, Settings settings) {
         this.mainWindow = mainWindow;
+        this.setttings = settings;
         SizeConstants sizeConstants = new SizeConstants();
         setTitle("설정");
         setWidth(300);
@@ -97,27 +96,32 @@ public class SettingsWindow extends Stage {
         resizeMenuButton = new MenuButton();
 
         resizeMenuButton.setFocusTraversable(false); // 포커스 가능 여부 설정
+        resizeMenuButton.setText(settings.getWindowWidth()+"x"+settings.getWindowHeight());
         MenuItem item1 = new MenuItem("450 x 600");
         item1.setOnAction(event -> {
             resizeMenuButton.setText("450 x 600");
             SizeConstants.setSize(450, 600);
+            settings.updateAndSaveKey("windowWidth", "450");
+            settings.updateAndSaveKey("windowHeight", "600");
         });
         MenuItem item2 = new MenuItem("300 x 400");
         item2.setOnAction(event -> {
             resizeMenuButton.setText("300 x 400");
+            settings.updateAndSaveKey("windowWidth", "300");
+            settings.updateAndSaveKey("windowHeight", "400");
             SizeConstants.setSize(300, 400);
         });
         MenuItem item3 = new MenuItem("600 x 800");
         item3.setOnAction(event -> {
             resizeMenuButton.setText("600 x 800");
+            settings.updateAndSaveKey("windowWidth", "600");
+            settings.updateAndSaveKey("windowHeight", "800");
             SizeConstants.setSize(600, 800);
         });
         resizeMenuButton.getItems().addAll(item1, item2, item3);
-        resizeMenuButton.setText("450 x 600"); // 기본값 "450 x 600"로 설정
 
 
         resizePanel.getChildren().addAll(resizeLabel, resizeMenuButton);
-
         buttonBox.getChildren().addAll(modePanel,levelPanel, resizePanel);
 
         Button keySettingsButton = new Button("키 설정");

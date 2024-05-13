@@ -1,6 +1,10 @@
 package Setting;
 
 public class SizeConstants {
+    /*public SizeConstants(int windowWidth, int windowHeight){
+
+
+    }*/
     // 450 x 600 (기본값)
     // 450 x 600 (기본값)
     private static final int MOVE_450x600 = 30;

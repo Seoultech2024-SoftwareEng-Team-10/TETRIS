@@ -3,7 +3,9 @@ import ScoreBoard.ScoreBoard;
 import ScoreBoard.ScoreBoardWindow;
 import ScoreBoard.ScoreRecord;
 import ScoreBoard.JdbcConnecter;
+import Setting.Settings;
 import Setting.SettingsWindow;
+import Setting.SizeConstants;
 import User.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -21,6 +23,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -32,13 +35,16 @@ public class TetrisWindow extends Application {
     public static User user;
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
+        Settings settings = new Settings();
+        settings.printSettings();
+        //SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
+
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
         HelloApplication helloApp = new HelloApplication();
         ItemHelloApplication itemHelloApp = new ItemHelloApplication();
 
-        // 로고 생성
         Text logoText = new Text("TETRIS");
         logoText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         logoText.setFill(Color.BLACK);
@@ -64,7 +70,7 @@ public class TetrisWindow extends Application {
         buttonPane.getChildren().addAll(gameStartButton, itemgameButton, scoreBoardButton, settingsButton, exitButton, loginButton, signUpButton, userInfoLabel);
 
         // 설정 창 생성
-        SettingsWindow settingsWindow = new SettingsWindow(primaryStage);
+        SettingsWindow settingsWindow = new SettingsWindow(primaryStage, settings);
         settingsButton.setOnAction(event -> settingsWindow.show());
 
         // 게임 종료 버튼 동작 설정
