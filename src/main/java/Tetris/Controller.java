@@ -9,7 +9,7 @@ import static Setting.SizeConstants.*;
 
 
 public class Controller {
-    // Getting the numbers and the MESH from HelloApplication
+
 
 
     public static char difficultyLevel = LevelConstants.difficultyLevel;

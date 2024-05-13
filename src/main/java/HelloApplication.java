@@ -32,13 +32,12 @@ import static Setting.SizeConstants.*;
 
 
 public class HelloApplication extends Application {
-    SizeConstants sizeConstants = new SizeConstants();
     private static AnimationTimer timer;
     public static boolean running = true;
     private static Form object;
 
     private static Pane group = new Pane();
-    private static Scene scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+    private static Scene scene;//Mesh 시점 맞추기 임시 y 에 - size
     public static int score;
     private static int top;
     private static boolean game = true;
@@ -56,7 +55,21 @@ public class HelloApplication extends Application {
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     private User user;
+    private int MOVE;
+    private int SIZE;
+    private int XMAX;
+    private int YMAX;
+    private int MESH[][];
+    private String rightKey;
+    private String leftKey;
+    private String spaceKey;
+    private String upKey;
+    private String downKey;
     public HelloApplication(SizeConstants sizeConstants, Settings settings){
+        rightKey = settings.getRightKey();
+        leftKey = settings.getLeftKey();
+        upKey = settings.getUpKey();
+        downKey = settings.getDownKey();
         score = 0;
         running = true;
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
@@ -67,7 +80,7 @@ public class HelloApplication extends Application {
         YMAX = sizeConstants.getYMAX();
         MESH = sizeConstants.getMESH();
         group = new Pane();
-        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+        scene = new Scene(group, XMAX + 150, YMAX - SIZE);
         running = true;
         user = TetrisWindow.user;
         score = 0;
@@ -97,12 +110,6 @@ public class HelloApplication extends Application {
 
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
         nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
-
-        MOVE = sizeConstants.getMOVE();
-        SIZE = sizeConstants.getSIZE();
-        XMAX = sizeConstants.getXMAX();
-        YMAX = sizeConstants.getYMAX();
-        MESH = sizeConstants.getMESH();
 
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
@@ -242,16 +249,16 @@ public class HelloApplication extends Application {
             public void handle(KeyEvent event) {
                 String pressedKey = event.getCode().toString();
                 if(running) {
-                    if (pressedKey.equals(KeySettings.getRightKey())) {
+                    if (pressedKey.equals(rightKey)) {
                         Controller.MoveRight(form);
-                    } else if (pressedKey.equals(KeySettings.getDownKey())) {
+                    } else if (pressedKey.equals(downKey)) {
                         MoveDown(form);
                         scoretext.setText("Score: " + score);
-                    } else if (pressedKey.equals(KeySettings.getLeftKey())) {
+                    } else if (pressedKey.equals(leftKey)) {
                         Controller.MoveLeft(form);
-                    } else if (pressedKey.equals(KeySettings.getUpKey())) {
+                    } else if (pressedKey.equals(upKey)) {
                         MoveTurn(form);
-                    } else if (pressedKey.equals(KeySettings.getSpaceKey())) {
+                    } else if (pressedKey.equals(spaceKey)) {
                         DirectMoveDown(form);
                         scoretext.setText("Score: " + score);
                     } else if (pressedKey.equals("ESCAPE")) {

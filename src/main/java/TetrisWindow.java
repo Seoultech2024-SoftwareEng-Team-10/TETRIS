@@ -43,7 +43,7 @@ public class TetrisWindow extends Application {
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
         HelloApplication helloApp = new HelloApplication(sizeConstants, settings);
-        ItemHelloApplication itemHelloApp = new ItemHelloApplication();
+
 
         Text logoText = new Text("TETRIS");
         logoText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
@@ -70,7 +70,7 @@ public class TetrisWindow extends Application {
         buttonPane.getChildren().addAll(gameStartButton, itemgameButton, scoreBoardButton, settingsButton, exitButton, loginButton, signUpButton, userInfoLabel);
 
         // 설정 창 생성
-        SettingsWindow settingsWindow = new SettingsWindow(primaryStage, settings);
+        SettingsWindow settingsWindow = new SettingsWindow(primaryStage, settings,sizeConstants);
         settingsButton.setOnAction(event -> settingsWindow.show());
 
         // 게임 종료 버튼 동작 설정
@@ -139,11 +139,7 @@ public class TetrisWindow extends Application {
         itemgameButton.setOnAction(event -> {
             try {
                 if(user!=null) {
-                    // 새 Stage 생성
-                    Stage gameStage = new Stage();
 
-                    // HelloApplication의 start 메소드 호출
-                    itemHelloApp.start(gameStage);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -36,10 +36,9 @@ public class SettingsWindow extends Stage {
     private MenuButton levelButton;
     private LevelConstants levelConstants = new LevelConstants();
 
-    public SettingsWindow(Stage mainWindow, Settings settings) {
+    public SettingsWindow(Stage mainWindow, Settings settings, SizeConstants sizeConstants) {
         this.mainWindow = mainWindow;
         this.setttings = settings;
-        SizeConstants sizeConstants = new SizeConstants();
         setTitle("설정");
         setWidth(300);
         setHeight(400);
