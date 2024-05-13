@@ -1,6 +1,7 @@
 
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
+import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.BlockColor;
 import Tetris.Controller;
@@ -27,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
 
-import Setting.KeySettings;
 import static Setting.SizeConstants.*;
 
 
@@ -56,16 +56,16 @@ public class HelloApplication extends Application {
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     private User user;
-    public HelloApplication(){
+    public HelloApplication(SizeConstants sizeConstants, Settings settings){
         score = 0;
         running = true;
         waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
         nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
-        MOVE = getMOVE();
-        SIZE = getSIZE();
-        XMAX = getXMAX();
-        YMAX = getYMAX();
-        MESH = getMESH();
+        MOVE = sizeConstants.getMOVE();
+        SIZE = sizeConstants.getSIZE();
+        XMAX = sizeConstants.getXMAX();
+        YMAX = sizeConstants.getYMAX();
+        MESH = sizeConstants.getMESH();
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;

@@ -38,11 +38,11 @@ public class TetrisWindow extends Application {
     public void start(Stage primaryStage) throws IOException {
         Settings settings = new Settings();
         settings.printSettings();
-        //SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
+        SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
 
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
-        HelloApplication helloApp = new HelloApplication();
+        HelloApplication helloApp = new HelloApplication(sizeConstants, settings);
         ItemHelloApplication itemHelloApp = new ItemHelloApplication();
 
         Text logoText = new Text("TETRIS");
