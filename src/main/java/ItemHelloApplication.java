@@ -39,7 +39,7 @@ public class ItemHelloApplication extends Application {
     public static boolean running = true;
     public static String item = "";
     public static int itemRotate = 0;
-    public static int itemCounter = 1;
+    public static int itemCounter = 0;
 
     private static ItemForm object;
 
@@ -55,6 +55,7 @@ public class ItemHelloApplication extends Application {
     private static int linesNo = 0;
     private Button restartButton;
     private Button exitButton;
+    private Button terminateButton;
     private double Frame = 1000000000;
     private static double scoreMultiplier = 1.0;
     private static double frameMultiplier = 0.8;
@@ -156,12 +157,18 @@ public class ItemHelloApplication extends Application {
         exitButton.setLayoutY(YMAX/2+30);
         exitButton.setVisible(false); // 초기에는 보이지 않게 설정
 
+        terminateButton = new Button("게임 나가기");
+        terminateButton.setLayoutX(XMAX / 2);
+        terminateButton.setLayoutY(YMAX / 2 + 60);
+        terminateButton.setVisible(false);
+
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> startAnimation());
         exitButton.setOnAction(e -> GameStopped(stage));
+        terminateButton.setOnAction(e -> System.exit(0));
 
         // 그룹에 버튼 추가
-        group.getChildren().addAll(restartButton, exitButton);
+        group.getChildren().addAll(restartButton, exitButton, terminateButton);
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
@@ -1243,6 +1250,7 @@ public class ItemHelloApplication extends Application {
     private void bringButtonsToFront() {
         if (restartButton != null) restartButton.toFront();
         if (exitButton != null) exitButton.toFront();
+        if (terminateButton != null) terminateButton.toFront();
     }
 
 
