@@ -28,23 +28,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
 
-import static Setting.SizeConstants.*;
-
 
 public class HelloApplication extends Application {
-    private static AnimationTimer timer;
-    public static boolean running = true;
+    private AnimationTimer timer;
+    public boolean running;
     private static Form object;
-
     private static Pane group = new Pane();
-    private static Scene scene;//Mesh 시점 맞추기 임시 y 에 - size
-    public static int score;
+    private static Scene scene;
+    public int score;
     private static int top;
     private static boolean game = true;
     private ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
     private static char difficultylevel = LevelConstants.difficultyLevel;
-    private static Form nextObj = Controller.makeText(BlockColor.colorBlindMode,difficultylevel);//makeRect->makeText
-    private static Form waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode,difficultylevel);
+    private Form nextObj;
+    private Form waitObj;
     private static int linesNo = 0;
     private Button restartButton;
     private Button exitButton;
@@ -54,37 +51,39 @@ public class HelloApplication extends Application {
     private static double frameMultiplier = 0.8;
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
-    private User user;
-    private int MOVE;
-    private int SIZE;
-    private int XMAX;
-    private int YMAX;
-    private int MESH[][];
-    private String rightKey;
-    private String leftKey;
-    private String spaceKey;
-    private String upKey;
-    private String downKey;
-    public HelloApplication(SizeConstants sizeConstants, Settings settings){
-        rightKey = settings.getRightKey();
-        leftKey = settings.getLeftKey();
-        upKey = settings.getUpKey();
-        downKey = settings.getDownKey();
-        score = 0;
-        running = true;
-        waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
-        nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
-        MOVE = sizeConstants.getMOVE();
-        SIZE = sizeConstants.getSIZE();
-        XMAX = sizeConstants.getXMAX();
-        YMAX = sizeConstants.getYMAX();
-        MESH = sizeConstants.getMESH();
-        group = new Pane();
-        scene = new Scene(group, XMAX + 150, YMAX - SIZE);
-        running = true;
-        user = TetrisWindow.user;
-        score = 0;
-        linesNo = 0;
+    private final User user;
+    private final Controller controller;
+    private final int MOVE;
+    private final int SIZE;
+    private final int XMAX;
+    private final int YMAX;
+    private final int[][] MESH;
+    private final String rightKey;
+    private final String leftKey;
+    private final String spaceKey;
+    private final String upKey;
+    private final String downKey;
+    public HelloApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
+        this.controller = controller;
+        this.score = 0;
+        this.running = true;
+        this.rightKey = settings.getRightKey();
+        this.leftKey = settings.getLeftKey();
+        this.upKey = settings.getUpKey();
+        this.downKey = settings.getDownKey();
+        this.spaceKey  = settings.getSpaceKey();
+        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
+        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel);
+        this.MOVE = sizeConstants.getMOVE();
+        this.SIZE = sizeConstants.getSIZE();
+        this.XMAX = sizeConstants.getXMAX();
+        this.YMAX = sizeConstants.getYMAX();
+        this.MESH = sizeConstants.getMESH();
+        this.group = new Pane();
+        this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
+        this.running = true;
+        this.user = TetrisWindow.user;
+        this.linesNo = 0;
     }
 
 
@@ -108,8 +107,6 @@ public class HelloApplication extends Application {
             scoreMultiplier = 1.4;
         }
 
-        waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
-        nextObj = Controller.makeText(BlockColor.colorBlindMode, difficultylevel);//makeRect->makeText
 
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
@@ -144,7 +141,7 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
-        nextObj = Controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
+        nextObj = controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -250,12 +247,12 @@ public class HelloApplication extends Application {
                 String pressedKey = event.getCode().toString();
                 if(running) {
                     if (pressedKey.equals(rightKey)) {
-                        Controller.MoveRight(form);
+                        controller.MoveRight(form);
                     } else if (pressedKey.equals(downKey)) {
                         MoveDown(form);
                         scoretext.setText("Score: " + score);
                     } else if (pressedKey.equals(leftKey)) {
-                        Controller.MoveLeft(form);
+                        controller.MoveLeft(form);
                     } else if (pressedKey.equals(upKey)) {
                         MoveTurn(form);
                     } else if (pressedKey.equals(spaceKey)) {
@@ -891,9 +888,9 @@ public class HelloApplication extends Application {
             MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
             RemoveRows(group);
             // 새 블록 생성
-            Form a = Controller.makeText(waitObj.getName(), true);
+            Form a = controller.makeText(waitObj.getName(), true);
             group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-            waitObj = Controller.waitingTextMake(true,difficultylevel);
+            waitObj = controller.waitingTextMake(true,difficultylevel);
             object = a;
             group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a);
@@ -930,9 +927,9 @@ public class HelloApplication extends Application {
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
         RemoveRows(group);
-        Form a = Controller.makeText(waitObj.getName(), true);
+        Form a = controller.makeText(waitObj.getName(), true);
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        waitObj = Controller.waitingTextMake(true,difficultylevel);
+        waitObj = controller.waitingTextMake(true,difficultylevel);
         object = a;
         group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         moveOnKeyPress(a);
@@ -1037,6 +1034,8 @@ public class HelloApplication extends Application {
             try {
                 JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
                 yesButton.setVisible(false);
+
+                //여기서 Scoreboard 보여주기
             } catch (Exception ex) {
                 System.out.println("jdbc error");
             }

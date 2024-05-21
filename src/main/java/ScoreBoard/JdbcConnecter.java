@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.*;
 
 public class JdbcConnecter {
     public static final Properties props = new Properties();
@@ -29,27 +30,35 @@ public class JdbcConnecter {
     }
 
     public static void insertData(String loginIdParam, String nicknameParam, int scoreParam, int modeParam, int levelParam, int linesCountParam) {
-        String query = "INSERT INTO scoreboard (nickname, score, mode, level, lines_count, date, loginId) VALUES (?, ?, ?, ?, ?, ?,?)";
+        String query = "INSERT INTO scoreboard (nickname, score, mode, level, lines_count, date, loginId) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            // 샘플 데이터 삽입
+            // Set the timeout for the query execution (in seconds)
+            pstmt.setQueryTimeout(30);  // Set a 30-second timeout. Adjust as necessary.
+
+            // Insert sample data
             pstmt.setString(1, nicknameParam);
             pstmt.setInt(2, scoreParam);
             pstmt.setInt(3, modeParam);
             pstmt.setInt(4, levelParam);
             pstmt.setInt(5, linesCountParam);
             pstmt.setDate(6, Date.valueOf(LocalDate.now()));
-            pstmt.setString(7,loginIdParam);
+            pstmt.setString(7, loginIdParam);
             pstmt.executeUpdate();
 
             System.out.println("insert data to scoreboard successfully");
 
+        } catch (SQLTimeoutException e) {
+            System.err.println("The operation timed out. Please try again later.");
+            e.printStackTrace();
         } catch (SQLException e) {
+            System.err.println("A database error occurred.");
             e.printStackTrace();
         }
     }
+
 
 
     public static List<ScoreRecord> fetchData(int page) {
@@ -59,9 +68,17 @@ public class JdbcConnecter {
 
         String query = "SELECT nickname, score, mode, level, lines_count, date FROM scoreboard ORDER BY score DESC LIMIT ? OFFSET ?";
 
-        try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
+        // 연결 타임아웃 설정
+        int connectionTimeoutSeconds = 10;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Connection> future = executor.submit(() -> {
+            return DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
+        });
+
+        try (Connection conn = future.get(connectionTimeoutSeconds, TimeUnit.SECONDS);
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
+            pstmt.setQueryTimeout(10); // 쿼리 실행 타임아웃 설정 (10초)
             pstmt.setInt(1, pageSize);
             pstmt.setInt(2, offset);
 
@@ -69,39 +86,45 @@ public class JdbcConnecter {
                 while (rs.next()) {
                     String nickname = rs.getString("nickname");
                     int score = rs.getInt("score");
-                    int level = rs.getInt("level");
                     int mode = rs.getInt("mode");
+                    int level = rs.getInt("level");
                     int linesCount = rs.getInt("lines_count");
                     LocalDate date = rs.getDate("date").toLocalDate();
-                    String enLevel = "";
-                    String enMode = "";
-                    if (level == 69){
+                    String enLevel = "", enMode = "";
+                    if (level == 69) {
                         enLevel = "easy";
-                    }
-                    else if(level==78){
+                    } else if (level == 78) {
                         enLevel = "normal";
-                    }
-                    else if(level ==72){
+                    } else if (level == 72) {
                         enLevel = "hard";
-                    }
-                    else{
+                    } else {
                         enLevel = Integer.toString(level);
                     }
-                    if(mode == 0){
+                    if (mode == 0) {
                         enMode = "NormalMode";
-                    }
-                    else{
+                    } else {
                         enMode = "ItemMode";
                     }
 
                     records.add(new ScoreRecord(nickname, score, enMode, enLevel, linesCount, date));
                 }
             }
+        } catch (TimeoutException e) {
+            System.err.println("JDBC 연결 timeout");
+            records.add(new ScoreRecord("Timeout", 0, "N/A", "N/A", 0, LocalDate.now()));
         } catch (SQLException e) {
+            System.err.println("DB query error");
             e.printStackTrace();
+        } catch (InterruptedException | ExecutionException e) {
+            System.err.println("An error occurred while trying to connect to the database.");
+            e.printStackTrace();
+        } finally {
+            executor.shutdown();
         }
+
         return records;
     }
+
     public static List<ScoreRecord> fetchDataByMode(int modeParam, int page) {
         List<ScoreRecord> records = new ArrayList<>();
         int pageSize = 20; // 한 페이지당 데이터 수

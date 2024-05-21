@@ -57,6 +57,27 @@ public class SizeConstants {
     // 현재 사용중인 크기 상수들
 
 
-
+    public void setSize(int width, int height) {
+        if (width == 450 && height == 600) {
+            this.MOVE = MOVE_450x600;
+            this.SIZE = SIZE_450x600;
+            this.XMAX = XMAX_450x600;
+            this.YMAX = YMAX_450x600;
+            this.fontSize = FONTSIZE_450x600;
+        } else if (width == 300 && height == 400) {
+            this.MOVE = MOVE_300x400;
+            this.SIZE = SIZE_300x400;
+            this.XMAX = XMAX_300x400;
+            this.YMAX = YMAX_300x400;
+            this.fontSize = FONTSIZE_300x400;
+        } else if (width == 600 && height == 800) {
+            this.MOVE = MOVE_600x800;
+            this.SIZE = SIZE_600x800;
+            this.XMAX = XMAX_600x800;
+            this.YMAX = YMAX_600x800;
+            this.fontSize = FONTSIZE_600x800;
+        }
+        MESH = new int[XMAX / SIZE][YMAX / SIZE + 1];
+    }
 
 }

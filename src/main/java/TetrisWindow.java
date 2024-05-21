@@ -6,6 +6,7 @@ import ScoreBoard.JdbcConnecter;
 import Setting.Settings;
 import Setting.SettingsWindow;
 import Setting.SizeConstants;
+import Tetris.Controller;
 import User.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -40,9 +41,13 @@ public class TetrisWindow extends Application {
         settings.printSettings();
         SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
 
+
+
+        Controller controller = new Controller(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
+
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
-        HelloApplication helloApp = new HelloApplication(sizeConstants, settings);
+        HelloApplication helloApp = new HelloApplication(sizeConstants, settings, controller);
 
 
         Text logoText = new Text("TETRIS");

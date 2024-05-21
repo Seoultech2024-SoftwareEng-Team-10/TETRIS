@@ -14,5 +14,4 @@ public class Config {
     private String downKey;
     private String spaceKey;
     private char level;
-
 }

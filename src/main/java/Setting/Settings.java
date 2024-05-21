@@ -23,6 +23,7 @@ public class Settings {
     private String downKey;
     private String spaceKey;
     private char level;
+    private KeySettingsWindow keySettingsWindow;
 
     public Settings() throws IOException {
         try{
