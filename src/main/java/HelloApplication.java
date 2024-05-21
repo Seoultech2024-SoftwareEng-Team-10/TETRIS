@@ -20,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import User.SessionManager;
 
 import Setting.KeySettings;
 import static Setting.SizeConstants.*;
+import static Tetris.Controller.currentTextSetUserDate;
 
 
 public class HelloApplication extends Application {
@@ -69,6 +71,7 @@ public class HelloApplication extends Application {
         XMAX = sizeConstants.getXMAX();
         YMAX = sizeConstants.getYMAX();
         MESH = sizeConstants.getMESH();
+        MINI_MESH = sizeConstants.getMiniMesh();//미니 mesh 불러오기
 
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
@@ -108,6 +111,7 @@ public class HelloApplication extends Application {
         XMAX = sizeConstants.getXMAX();
         YMAX = sizeConstants.getYMAX();
         MESH = sizeConstants.getMESH();
+        MINI_MESH = sizeConstants.getMiniMesh();
 
         group = new Pane();
         scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
@@ -115,6 +119,7 @@ public class HelloApplication extends Application {
 
 
         group.getChildren().clear();
+
 
         for (int[] a : MESH) {
             Arrays.fill(a, 0);
@@ -139,6 +144,10 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(scoretext, line, level, wait.a, wait.b, wait.c, wait.d);
         group.setStyle("-fx-background-color: black;");
         Form a = nextObj;
+
+        currentTextSetUserDate(a);
+
+
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
@@ -794,23 +803,50 @@ public class HelloApplication extends Application {
         ArrayList<Node> texts = new ArrayList<Node>();
         ArrayList<Integer> lines = new ArrayList<Integer>();
         ArrayList<Node> newtexts = new ArrayList<Node>();
+        boolean removeCheck = false;
+        int miniLineController = 0; //미니 mesh 라인 수 역순으로 들어가기 위한 작업용
+        int constLineSize = 0; //한번에 지워지는 라인 수
         int full = 0;
         for (int i = 0; i < MESH[0].length; i++) {
             for (int j = 0; j < MESH.length; j++) {
                 if (MESH[j][i] == 1)
                     full++;
             }
-            if (full == MESH.length)
+            if (full == MESH.length) {
                 lines.add(i);
+                removeCheck = true;
+            }
             //lines.add(i + lines.size());
             full = 0;
         }
+        if(removeCheck){
+            ArrayList<Node> removeMiniTexts = new ArrayList<>();
+            for (int i = 0; i < MINI_MESH[0].length; i++) {
+                for (int j = 0; j < MINI_MESH.length; j++) {
+                    MINI_MESH[j][i] = 0;
+                }
+            }
+            for(Node node : pane.getChildren()){
+                if(node instanceof Text){
+                    if(node.getUserData()=="mini")
+                        removeMiniTexts.add(node);
+                }
+            }
+            for(Node node : removeMiniTexts){
+                pane.getChildren().remove(node);
+            }
+            removeCheck = false;
+        }
+        miniLineController = lines.size() - 1;
+        constLineSize = lines.size();
         if (lines.size() > 0)
+
             do {
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                            node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                            node.getUserData() == "waitc" || node.getUserData() == "waitd"||
+                            node.getUserData() == "mini")//예외설정
                         continue;
                     if (node instanceof Text)
                         texts.add(node);
@@ -821,11 +857,23 @@ public class HelloApplication extends Application {
                 }
                 score += 50 * scoreMultiplier;
                 linesNo++;
-
                 for (Node node : texts) {
                     Text a = (Text) node;
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                        if(constLineSize>=2) {
+                            if (node.getUserData() != "current") {
+                                MINI_MESH[(int) a.getX() / SIZE][(int) YMAX / SIZE - miniLineController] = 1;
+                                Text c = new Text("X");
+                                c.setX(XMAX + a.getX() * 0.5);
+                                c.setY(YMAX - SIZE - (miniLineController * SIZE) * 0.6);
+                                c.setUserData("mini");
+                                c.setFont(Font.font(fontSize * 0.65));
+                                c.setFill(Color.rgb(117, 0, 235));
+                                pane.getChildren().add(c);
+                            }
+                        }
+
                         pane.getChildren().remove(node);
                     } else
                         newtexts.add(node);
@@ -853,8 +901,16 @@ public class HelloApplication extends Application {
                     }
                 }
                 texts.clear();
+                miniLineController--;
             } while (lines.size() > 0);//size->0
+        for (Node node : pane.getChildren()) {
+            if (node.getUserData() == "current"){
+                node.setUserData(null);
+            }
+        }
     }
+
+
 
     private void MoveDown(Text text) {
         scoretext.setText("Score: " + score);
@@ -893,6 +949,7 @@ public class HelloApplication extends Application {
             group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             waitObj = Controller.waitingTextMake(true,difficultylevel);
             object = a;
+            currentTextSetUserDate(a);
             group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a);
             moved = false; // 이 경우에는 이동하지 않으므로 false
@@ -932,6 +989,7 @@ public class HelloApplication extends Application {
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         waitObj = Controller.waitingTextMake(true,difficultylevel);
         object = a;
+        currentTextSetUserDate(a);
         group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         moveOnKeyPress(a);
 
