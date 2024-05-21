@@ -52,6 +52,7 @@ public class HelloApplication extends Application {
     private static Form nextObj = Controller.makeText(BlockColor.colorBlindMode,difficultylevel);//makeRect->makeText
     private static Form waitObj = Controller.waitingTextMake(BlockColor.colorBlindMode,difficultylevel);
     private static int linesNo = 0;
+    private static int miniMeshLineCounter = 0;
     private Button restartButton;
     private Button exitButton;
     private Label scoreLabel;
@@ -803,8 +804,7 @@ public class HelloApplication extends Application {
         ArrayList<Node> texts = new ArrayList<Node>();
         ArrayList<Integer> lines = new ArrayList<Integer>();
         ArrayList<Node> newtexts = new ArrayList<Node>();
-        boolean removeCheck = false;
-        int miniLineController = 0; //미니 mesh 라인 수 역순으로 들어가기 위한 작업용
+        boolean removeCheck = false; //라인 지워짐 체크
         int constLineSize = 0; //한번에 지워지는 라인 수
         int full = 0;
         for (int i = 0; i < MESH[0].length; i++) {
@@ -819,7 +819,7 @@ public class HelloApplication extends Application {
             //lines.add(i + lines.size());
             full = 0;
         }
-        if(removeCheck){
+        if(false){// 초기화용 나중에 공격용 boolean 으로 바꿔야됨
             ArrayList<Node> removeMiniTexts = new ArrayList<>();
             for (int i = 0; i < MINI_MESH[0].length; i++) {
                 for (int j = 0; j < MINI_MESH.length; j++) {
@@ -835,9 +835,9 @@ public class HelloApplication extends Application {
             for(Node node : removeMiniTexts){
                 pane.getChildren().remove(node);
             }
+            miniMeshLineCounter = 0;
             removeCheck = false;
         }
-        miniLineController = lines.size() - 1;
         constLineSize = lines.size();
         if (lines.size() > 0)
 
@@ -861,15 +861,15 @@ public class HelloApplication extends Application {
                     Text a = (Text) node;
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
-                        if(constLineSize>=2) {
+                        if((constLineSize>=2) && (miniMeshLineCounter < 10)) {
                             if (node.getUserData() != "current") {
-                                MINI_MESH[(int) a.getX() / SIZE][(int) YMAX / SIZE - miniLineController] = 1;
+                                MINI_MESH[(int) a.getX() / SIZE][(int) YMAX / SIZE - miniMeshLineCounter] = 1;
                                 Text c = new Text("X");
                                 c.setX(XMAX + a.getX() * 0.5);
-                                c.setY(YMAX - SIZE - (miniLineController * SIZE) * 0.6);
+                                c.setY(YMAX - SIZE - (miniMeshLineCounter * SIZE) * 0.6);
                                 c.setUserData("mini");
                                 c.setFont(Font.font(fontSize * 0.65));
-                                c.setFill(Color.rgb(117, 0, 235));
+                                c.setFill(Color.rgb(226, 226, 226));
                                 pane.getChildren().add(c);
                             }
                         }
@@ -901,7 +901,7 @@ public class HelloApplication extends Application {
                     }
                 }
                 texts.clear();
-                miniLineController--;
+                miniMeshLineCounter++;
             } while (lines.size() > 0);//size->0
         for (Node node : pane.getChildren()) {
             if (node.getUserData() == "current"){
