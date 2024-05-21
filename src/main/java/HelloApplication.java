@@ -7,6 +7,9 @@ import Tetris.Controller;
 import Tetris.Form;
 import User.User;
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -20,6 +23,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -31,6 +35,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import User.SessionManager;
 
 import Setting.KeySettings;
+import javafx.util.Duration;
+
 import static Setting.SizeConstants.*;
 import static Tetris.Controller.currentTextSetUserDate;
 
@@ -805,6 +811,7 @@ public class HelloApplication extends Application {
         ArrayList<Integer> lines = new ArrayList<Integer>();
         ArrayList<Node> newtexts = new ArrayList<Node>();
         boolean removeCheck = false; //라인 지워짐 체크
+        int miniMeshController = 0;
         int constLineSize = 0; //한번에 지워지는 라인 수
         int full = 0;
         for (int i = 0; i < MESH[0].length; i++) {
@@ -839,6 +846,7 @@ public class HelloApplication extends Application {
             removeCheck = false;
         }
         constLineSize = lines.size();
+        miniMeshController = lines.size() - 1;
         if (lines.size() > 0)
 
             do {
@@ -863,17 +871,16 @@ public class HelloApplication extends Application {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
                         if((constLineSize>=2) && (miniMeshLineCounter < 10)) {
                             if (node.getUserData() != "current") {
-                                MINI_MESH[(int) a.getX() / SIZE][(int) YMAX / SIZE - miniMeshLineCounter] = 1;
+                                MINI_MESH[(int) a.getX() / SIZE][(int) YMAX / SIZE - miniMeshController - miniMeshLineCounter] = 1;
                                 Text c = new Text("X");
                                 c.setX(XMAX + a.getX() * 0.5);
-                                c.setY(YMAX - SIZE - (miniMeshLineCounter * SIZE) * 0.6);
+                                c.setY(YMAX - SIZE - ((miniMeshController+miniMeshLineCounter) * SIZE) * 0.6);
                                 c.setUserData("mini");
                                 c.setFont(Font.font(fontSize * 0.65));
                                 c.setFill(Color.rgb(226, 226, 226));
                                 pane.getChildren().add(c);
                             }
                         }
-
                         pane.getChildren().remove(node);
                     } else
                         newtexts.add(node);
@@ -901,8 +908,11 @@ public class HelloApplication extends Application {
                     }
                 }
                 texts.clear();
-                miniMeshLineCounter++;
+                miniMeshController--;
             } while (lines.size() > 0);//size->0
+        if(constLineSize > 1) {
+            miniMeshLineCounter+=constLineSize;
+        }
         for (Node node : pane.getChildren()) {
             if (node.getUserData() == "current"){
                 node.setUserData(null);

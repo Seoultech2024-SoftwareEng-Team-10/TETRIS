@@ -819,6 +819,7 @@ public class ItemHelloApplication extends Application {
         ArrayList<Integer> lines = new ArrayList<Integer>();
         ArrayList<Node> newtexts = new ArrayList<Node>();
         boolean removeCheck = false;
+        int miniMeshController = 0;
         int constLineSize = 0;
         int full = 0;
         for (int i = 0; i < MESH[0].length; i++) {
@@ -852,9 +853,11 @@ public class ItemHelloApplication extends Application {
             for(Node node : removeMiniTexts){
                 pane.getChildren().remove(node);
             }
+            miniMeshLineCounter = 0;
             removeCheck = false;
         }
         constLineSize = lines.size();
+        miniMeshController = lines.size() - 1;
         LineClearY = -1;
         if (lines.size() > 0)
             do {
@@ -918,8 +921,11 @@ public class ItemHelloApplication extends Application {
                     }
                 }
                 texts.clear();
-                miniMeshLineCounter++;
+                miniMeshController--;
             } while (lines.size() > 0);//size->0
+        if(constLineSize>1) {
+            miniMeshLineCounter++;
+        }
         for (Node node : pane.getChildren()) {
             if (node.getUserData() == "current"){
                 node.setUserData(null);
