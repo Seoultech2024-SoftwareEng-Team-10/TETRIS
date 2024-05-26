@@ -1,4 +1,5 @@
 
+import Animation.Flash;
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
 import Setting.SizeConstants;
@@ -146,6 +147,7 @@ public class HelloApplication extends Application {
         level.setY(350);
         level.setX(XMAX + 30);
         level.setFill(Color.GREEN);
+
         Form wait = waitObj;
 
         group.getChildren().addAll(scoretext, line, level, wait.a, wait.b, wait.c, wait.d);
@@ -194,8 +196,9 @@ public class HelloApplication extends Application {
             public void handle(long now) {
 
                 if (running) {
-                    if (now - lastUpdate >= Frame) { // 1초마다 실행
 
+                    if (now - lastUpdate >= Frame) { // 1초마다 실행
+                        group.getChildren().removeIf(node -> node.getUserData() == "effectText");//임시로 넣어둠 이펙트텍스트 지우기
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
                             group.getChildren().clear();
@@ -854,7 +857,7 @@ public class HelloApplication extends Application {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
                             node.getUserData() == "waitc" || node.getUserData() == "waitd"||
-                            node.getUserData() == "mini")//예외설정
+                            node.getUserData() == "mini" || node.getUserData() == "effectText")//예외설정
                         continue;
                     if (node instanceof Text)
                         texts.add(node);
@@ -881,12 +884,22 @@ public class HelloApplication extends Application {
                                 pane.getChildren().add(c);
                             }
                         }
+                        Text effectText = new Text("O");
+                        effectText.setX(a.getX());
+                        effectText.setY(a.getY());
+                        effectText.setUserData("effectText");
+                        effectText.setFill(Color.WHITE);
+                        effectText.setFont(Font.font(fontSize));
+                        pane.getChildren().add(effectText);
+                        new Flash(effectText).play();
                         pane.getChildren().remove(node);
                     } else
                         newtexts.add(node);
                 }
 
                 for (Node node : newtexts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     if (a.getY() < lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
@@ -897,10 +910,14 @@ public class HelloApplication extends Application {
                 texts.clear();
                 newtexts.clear();
                 for (Node node : pane.getChildren()) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     if (node instanceof Text)
                         texts.add(node);
                 }
                 for (Node node : texts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     try {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 1;
