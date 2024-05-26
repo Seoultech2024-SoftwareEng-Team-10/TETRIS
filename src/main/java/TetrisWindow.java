@@ -1,4 +1,3 @@
-//hi
 import ScoreBoard.ScoreBoard;
 import ScoreBoard.ScoreBoardWindow;
 import ScoreBoard.ScoreRecord;
@@ -35,33 +34,105 @@ public class TetrisWindow extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: rgb(211, 211, 211);");
         HelloApplication helloApp = new HelloApplication();
         ItemHelloApplication itemHelloApp = new ItemHelloApplication();
 
+        Pane bottomPane = new Pane();
+        bottomPane.setPrefSize(800, 200);
+        root.setBottom(bottomPane);
+
         // 로고 생성
-        Text logoText = new Text("TETRIS");
-        logoText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-        logoText.setFill(Color.BLACK);
-        VBox logoPane = new VBox(logoText);
-        logoPane.setPadding(new Insets(10));
-        logoPane.setStyle("-fx-background-color: #800080;");
+        Text textT = new Text("T ");
+        textT.setFont(Font.font("Arial", FontWeight.BOLD, 60));
+        textT.setFill(javafx.scene.paint.Color.web("#BC7566"));
+
+
+
+        Text textE = new Text("E ");
+        textE.setFont(Font.font("Arial", FontWeight.BOLD, 60));
+        textE.setFill(javafx.scene.paint.Color.web("#DEB242"));
+
+        Text textSecondT = new Text("T ");
+        textSecondT.setFont(Font.font("Arial", FontWeight.BOLD, 60));
+        textSecondT.setFill(javafx.scene.paint.Color.web("#BC7566"));
+
+        Text textR = new Text("R ");
+        textR.setFont(Font.font("Arial", FontWeight.BOLD, 60));
+        textR.setFill(javafx.scene.paint.Color.web("#5BB23C"));
+
+        Text textI = new Text("I ");
+        textI.setFont(Font.font("Arial", FontWeight.BOLD, 60));
+        textI.setFill(javafx.scene.paint.Color.web("4192CD"));
+
+        Text textS = new Text("S");
+        textS.setFont(Font.font("Arial", FontWeight.BOLD, 60));
+        textS.setFill(javafx.scene.paint.Color.web("464AB4"));
+
+
+        HBox logoPane = new HBox(textT, textE, textSecondT, textR, textI, textS);
+        logoPane.setAlignment(Pos.CENTER);
+        logoPane.setPadding(new Insets(20, 10, 20, 10));
+        logoPane.setStyle("-fx-background-color: white;");
+
+
 
         // 버튼 생성
         userInfoLabel = new Label("로그인이 필요합니다");
-        VBox buttonPane = new VBox(10);
-        buttonPane.setAlignment(Pos.CENTER);
-        Button gameStartButton = new Button("일반모드");
-        Button itemgameButton = new Button("아이템모드");
+        VBox leftButtonPane = new VBox(15);
+        leftButtonPane.setAlignment(Pos.CENTER);
+        leftButtonPane.setTranslateY(80);
+        leftButtonPane.setPadding(new Insets(30, 50, 20, 50));
         Button scoreBoardButton = new Button("스코어보드");
         Button settingsButton = new Button("설정");
         Button exitButton = new Button("게임종료");
         Button loginButton = new Button("로그인");
         Button signUpButton = new Button("회원가입");
 
+        leftButtonPane.getChildren().addAll(
+                scoreBoardButton,
+                settingsButton,
+                exitButton,
+                signUpButton,
+                loginButton,
+                userInfoLabel
+        );
 
+        VBox centerButtonPane = new VBox(15);
+        centerButtonPane.setPadding(new Insets(30, 50, 20, 50));
+        centerButtonPane.setAlignment(Pos.CENTER);
+        centerButtonPane.setTranslateY(60);
+        Button singleButton = new Button("싱글\n모드");
+        Button battleModeButton = new Button("배틀\n모드");
 
+        centerButtonPane.getChildren().addAll(
+                singleButton,
+                battleModeButton
+        );
 
-        buttonPane.getChildren().addAll(gameStartButton, itemgameButton, scoreBoardButton, settingsButton, exitButton, loginButton, signUpButton, userInfoLabel);
+        VBox rightButtonPane = new VBox(15);
+        rightButtonPane.setPadding(new Insets(30, 50, 20, 50));
+        rightButtonPane.setAlignment(Pos.CENTER);
+        rightButtonPane.setTranslateY(60);
+        Button gameStartButton = new Button("일반모드");
+        Button itemgameButton = new Button("아이템모드");
+
+        rightButtonPane.getChildren().addAll(
+                gameStartButton,
+                itemgameButton
+        );
+
+        //battle-button
+        battleModeButton.setOnAction(event ->BattleButton.show());
+        battleModeButton.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                // 버튼에 대한 동작 수행
+                battleModeButton.fire();
+            }
+        });
+        battleModeButton.getStyleClass().add("button");
+        battleModeButton.getStyleClass().add("battle-button");
+
 
         // 설정 창 생성
         SettingsWindow settingsWindow = new SettingsWindow(primaryStage);
@@ -167,18 +238,20 @@ public class TetrisWindow extends Application {
             }
         });
 
-        root.setTop(logoPane);
-        root.setCenter(buttonPane);
-
         Scene scene = new Scene(root, 800, 600);
 
+        root.setTop(logoPane);
+        root.setLeft(leftButtonPane);
+        root.setCenter(centerButtonPane);
+        root.setRight(rightButtonPane);
+
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() != KeyCode.UP && event.getCode() != KeyCode.DOWN && event.getCode() != KeyCode.ENTER) {
+            if (event.getCode() != KeyCode.UP && event.getCode() != KeyCode.DOWN && event.getCode() != KeyCode.ENTER && event.getCode() != KeyCode.RIGHT && event.getCode() != KeyCode.LEFT) {
                 // 방향키 또는 엔터키가 아닌 키를 입력한 경우 알림창 띄우기
                 Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("키 입력 안내");
                 alert.setHeaderText(null);
-                alert.setContentText("이동은 방향키 위/아래, 선택은 엔터키입니다!");
+                alert.setContentText("이동은 방향키 위/아래/좌/우, 선택은 엔터키입니다!");
                 alert.showAndWait();
             }
         });
@@ -197,12 +270,16 @@ public class TetrisWindow extends Application {
         scoreBoardButton.getStyleClass().add("button");
         settingsButton.getStyleClass().add("button");
         exitButton.getStyleClass().add("button");
+        battleModeButton.getStyleClass().add("button");
+        singleButton.getStyleClass().add("button");
 
         gameStartButton.getStyleClass().add("game-start-button");
         itemgameButton.getStyleClass().add("item-game-button");
         scoreBoardButton.getStyleClass().add("score-board-button");
         settingsButton.getStyleClass().add("settings-button");
         exitButton.getStyleClass().add("exit-button");
+        battleModeButton.getStyleClass().add("battle-button");
+        singleButton.getStyleClass().add("single-button");
 
         primaryStage.setScene(scene);
         primaryStage.show();
