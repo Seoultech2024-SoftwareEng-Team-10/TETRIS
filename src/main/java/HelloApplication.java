@@ -198,7 +198,7 @@ public class HelloApplication extends Application {
                 if (running) {
 
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
-                        group.getChildren().removeIf(node -> node.getUserData() == "effectText");//임시로 넣어둠 이펙트텍스트 지우기
+                        group.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
                             group.getChildren().clear();
