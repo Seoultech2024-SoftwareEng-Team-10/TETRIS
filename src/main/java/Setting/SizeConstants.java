@@ -77,7 +77,6 @@ public class SizeConstants {
             this.YMAX = YMAX_600x800;
             this.fontSize = FONTSIZE_600x800;
         }
-        MESH = new int[XMAX / SIZE][YMAX / SIZE + 1];
     }
 
 }

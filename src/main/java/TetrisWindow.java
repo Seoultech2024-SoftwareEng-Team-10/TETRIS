@@ -1,4 +1,3 @@
-//hi
 import ScoreBoard.ScoreBoard;
 import ScoreBoard.ScoreBoardWindow;
 import ScoreBoard.ScoreRecord;
@@ -23,9 +22,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLTimeoutException;
 import java.util.List;
 import java.util.Optional;
 import User.SessionManager;
@@ -41,13 +40,10 @@ public class TetrisWindow extends Application {
         settings.printSettings();
         SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
 
-
-
         Controller controller = new Controller(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
 
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
-        HelloApplication helloApp = new HelloApplication(sizeConstants, settings, controller);
 
 
         Text logoText = new Text("TETRIS");
@@ -80,7 +76,6 @@ public class TetrisWindow extends Application {
 
         // 게임 종료 버튼 동작 설정
         exitButton.setOnAction(event -> primaryStage.close());
-
 
         //로그인 버튼 동작 설정
         loginButton.setOnKeyPressed(event -> {
@@ -124,8 +119,7 @@ public class TetrisWindow extends Application {
                 if(user!=null) {
                     // 새 Stage 생성
                     Stage gameStage = new Stage();
-
-                    // HelloApplication의 start 메소드 호출
+                    HelloApplication helloApp = new HelloApplication(sizeConstants, settings, controller);
                     helloApp.start(gameStage);
                 }
             } catch (Exception e) {
@@ -133,10 +127,10 @@ public class TetrisWindow extends Application {
             }
         });
 
+
         // 엔터 키로 버튼 선택하기
         itemgameButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-
                 itemgameButton.fire();
             }
         });
@@ -221,7 +215,8 @@ public class TetrisWindow extends Application {
         dialog.setHeaderText("사용자 이름과 비밀번호를 입력하세요.");
 
         ButtonType loginButtonType = new ButtonType("로그인", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType guestButtonType = new ButtonType("게스트", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType,guestButtonType, ButtonType.CANCEL);
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -249,12 +244,14 @@ public class TetrisWindow extends Application {
         grid.add(password, 1, 1);
 
         dialog.getDialogPane().setContent(grid);
-
         Platform.runLater(username::requestFocus);
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
                 return new String[] {username.getText(), password.getText()};
+            }
+            else if (dialogButton == guestButtonType){
+                return new String[] {"Guest", "abc123"};
             }
             return null;
         });
@@ -262,13 +259,26 @@ public class TetrisWindow extends Application {
         Optional<String[]> result = dialog.showAndWait();
 
         result.ifPresent(usernamePassword -> {
-            user = JdbcConnecter.SuccessLogin(username.getText(), password.getText());
             Alert alert = new Alert(AlertType.CONFIRMATION);
-            if (user != null) {
-                alert.setContentText(user.getNickname() + "님 환영합니다");
-                SessionManager.setCurrentUser(user);
-                alert.showAndWait();
-                userInfoLabel.setText(user.getNickname() + "님 환영합니다");
+            try{
+                System.out.println(username.getText());
+                if (username.getText().equals("")){
+                    alert.setContentText("게스트유저님 환영합니다");
+                    user = new User("Guest", "Guest","abc123");
+                }
+                else{
+                    user = JdbcConnecter.SuccessLogin(username.getText(), password.getText());
+                }
+
+                if (user != null ) {
+                    alert.setContentText(user.getNickname() + "님 환영합니다");
+                    SessionManager.setCurrentUser(user);
+                    alert.showAndWait();
+                    userInfoLabel.setText(user.getNickname() + "님 환영합니다");
+                }
+            }
+            catch (Exception e){
+               System.out.println(e);
             }
         });
     }

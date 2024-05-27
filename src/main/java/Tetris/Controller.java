@@ -57,7 +57,7 @@ public class Controller {
 
 
 
-    public Form makeText(boolean colorBlindMode, char difficultyLevel) {
+    public Form makeText(boolean colorBlindMode, char difficultyLevel, int XMAX) {
         int block = 0;
         if(difficultyLevel == 'E'){
             block = (int) (Math.random() * 72);
@@ -380,8 +380,8 @@ public class Controller {
 
         return new Form(a, b, c, d, name);
     }
-    public Form waitingTextMake(boolean colorBlindMode, char difficultyLevel){
-        Form waitObj = makeText(colorBlindMode, difficultyLevel);
+    public Form waitingTextMake(boolean colorBlindMode, char difficultyLevel, int XMAX){
+        Form waitObj = makeText(colorBlindMode, difficultyLevel, XMAX);
 
         waitObj.a.setX(waitObj.a.getX()+SIZE*7);
         waitObj.b.setX(waitObj.b.getX()+SIZE*7);

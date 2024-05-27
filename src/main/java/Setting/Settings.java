@@ -43,6 +43,24 @@ public class Settings {
             System.out.println(e.getMessage());
         }
     }
+    public Settings(String upKey, String downKey, String rightKey, String leftKey) throws IOException {
+        try{
+            InputStream inputStream = Files.newInputStream(Paths.get("src/main/resources/key.yml"));
+            Yaml yaml = new Yaml(new Constructor(Config.class));
+            Config config = yaml.load(inputStream);
+            this.windowWidth = config.getWindowWidth();
+            this.windowHeight = config.getWindowHeight();
+            this.rightKey = rightKey;
+            this.leftKey = leftKey;
+            this.upKey = upKey;
+            this.downKey =downKey;
+            this.spaceKey = config.getSpaceKey();
+            this.level = config.getLevel();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
 
     public void updateAndSaveKey(String keyType, String newValue) {
         try {

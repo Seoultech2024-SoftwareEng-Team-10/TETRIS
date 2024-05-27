@@ -18,6 +18,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -30,39 +31,44 @@ import User.SessionManager;
 
 
 public class HelloApplication extends Application {
+    private HBox hbox;
     private AnimationTimer timer;
+    private Text scoretext1, scoretext2;
     public boolean running;
     private static Form object;
-    private static Pane group = new Pane();
+    private static Form object2;
+    private static Pane group1 = new Pane();
+    private static Pane group2 = new Pane();
     private static Scene scene;
-    public int score;
     private static int top;
     private static boolean game = true;
     private ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
     private static char difficultylevel = LevelConstants.difficultyLevel;
-    private Form nextObj;
-    private Form waitObj;
+    private Form nextObj, nextObj2;
+    private Form waitObj, waitObj2;
+    private final int[][] MESH, MESH2;
     private static int linesNo = 0;
     private Button restartButton;
     private Button exitButton;
     private Label scoreLabel;
-    private double Frame = 1000000000;
     private static double scoreMultiplier = 1.0;
     private static double frameMultiplier = 0.8;
     private JdbcConnecter scoreboardDataInserter;
-    private Text scoretext;
-    private final User user;
+
+    //private final User user;
     private final Controller controller;
     private final int MOVE;
     private final int SIZE;
     private final int XMAX;
     private final int YMAX;
-    private final int[][] MESH;
     private final String rightKey;
     private final String leftKey;
     private final String spaceKey;
     private final String upKey;
     private final String downKey;
+
+    private int score;
+    private double Frame;
     public HelloApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
         this.controller = controller;
         this.score = 0;
@@ -72,28 +78,40 @@ public class HelloApplication extends Application {
         this.upKey = settings.getUpKey();
         this.downKey = settings.getDownKey();
         this.spaceKey  = settings.getSpaceKey();
-        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
-        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel);
+        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 200);
+        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel, 200);
+        this.waitObj2 = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 800);
+        this.nextObj2 = controller.makeText(BlockColor.colorBlindMode, difficultylevel,800);
         this.MOVE = sizeConstants.getMOVE();
         this.SIZE = sizeConstants.getSIZE();
         this.XMAX = sizeConstants.getXMAX();
         this.YMAX = sizeConstants.getYMAX();
-        this.MESH = sizeConstants.getMESH();
-        this.group = new Pane();
-        this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
+        this.MESH = new int[20][21];
+        this.MESH2 = new int[20][21];
         this.running = true;
-        this.user = TetrisWindow.user;
+        //this.user = TetrisWindow.user;
         this.linesNo = 0;
+        this.Frame = 1000000000;
     }
-
-
+    public Text styleScoretext(int Pos){
+        Text scoretext = new Text();
+        scoretext = new Text("SCORE: ");
+        scoretext.setUserData("scoretext");
+        scoretext.setFill(Color.WHITE);
+        scoretext.setStyle("-fx-font: 20  Lato;");
+        scoretext.setY(50);
+        scoretext.setX(XMAX + 30);
+        scoretext.setY(300);
+        return scoretext;
+    }
     @Override
     public void start(Stage stage) throws IOException {
-        User currentUser = SessionManager.getCurrentUser();
-        System.out.println(currentUser.getNickname());
+        System.out.println(Frame);
+        System.out.println(score);
+        System.out.println(linesNo);
+        //User currentUser = SessionManager.getCurrentUser();
+        //System.out.println(currentUser.getNickname());
         stage.close();
-        Frame = 1000000000;
-        running = true;
         if(LevelConstants.getLevel()=='E'){
             frameMultiplier = 0.8;
             scoreMultiplier = 1.0;
@@ -108,25 +126,26 @@ public class HelloApplication extends Application {
         }
 
 
-        group = new Pane();
-        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+        group1 = new Pane();
+        group2 = new Pane();
+        hbox = new HBox(20);
+        hbox.getChildren().addAll(group2,group1);
+        scene = new Scene(hbox, 900, 800);
         running = true;
 
 
-        group.getChildren().clear();
+        group1.getChildren().clear();
+        group2.getChildren().clear();
 
         for (int[] a : MESH) {
             Arrays.fill(a, 0);
         }
-        drawGridLines();
+        drawGridLines(group1);
+        drawGridLines(group2);
         Line line = new Line(XMAX, 0, XMAX, YMAX);
-        scoretext = new Text("SCORE: ");
-        scoretext.setUserData("scoretext");
-        scoretext.setFill(Color.WHITE);
-        scoretext.setStyle("-fx-font: 20  Lato;");
-        scoretext.setY(50);
-        scoretext.setX(XMAX + 30);
-        scoretext.setY(300);
+        scoretext1 = styleScoretext(XMAX+30);
+        scoretext2 = styleScoretext(XMAX/2 +30);
+
         Text level = new Text("LINES: ");//scoretext,level userdata추가
         level.setUserData("level");
         level.setStyle("-fx-font: 20 Lato;");
@@ -134,14 +153,23 @@ public class HelloApplication extends Application {
         level.setX(XMAX + 30);
         level.setFill(Color.GREEN);
         Form wait = waitObj;
+        Form wait2 = waitObj2;
 
-        group.getChildren().addAll(scoretext, line, level, wait.a, wait.b, wait.c, wait.d);
-        group.setStyle("-fx-background-color: black;");
+        group1.getChildren().addAll(scoretext1, line, level, wait.a, wait.b, wait.c, wait.d);
+        group1.setStyle("-fx-background-color: black;");
+        group2.getChildren().addAll(scoretext2, line, level, wait2.a, wait2.b, wait2.c, wait2.d);
+        group2.setStyle("-fx-background-color: black;");
         Form a = nextObj;
-        group.getChildren().addAll(a.a, a.b, a.c, a.d);
+        Form a2 = nextObj;
+
+        group1.getChildren().addAll(a.a, a.b, a.c, a.d);
+        group2.getChildren().addAll(a2.a, a2.b, a2.c, a2.d);
+
         moveOnKeyPress(a);
         object = a;
-        nextObj = controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
+        object2 = a;
+        nextObj = controller.makeText(true,difficultylevel, 200);//색맹 모드가 아님을 의미
+        nextObj2 = controller.makeText(true,difficultylevel, 800);//색맹 모드가 아님을 의미
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -169,19 +197,18 @@ public class HelloApplication extends Application {
         exitButton.setOnAction(e -> GameStopped(stage));
 
         // 그룹에 버튼 추가
-        group.getChildren().addAll(restartButton, exitButton);
+        group1.getChildren().addAll(restartButton, exitButton);
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
-
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
-
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
-                            group.getChildren().clear();
+                            group1.getChildren().clear();
+                            group2.getChildren().clear();
                         });
                         lastUpdate = now;
 
@@ -191,18 +218,22 @@ public class HelloApplication extends Application {
                             top = 0;
 
                         if (top == 2) {
+                            running = false;
                             GameOver();
 
                         }
                         // Exit
                         if (top == 15) {
+                            running = false;
                             GameOver();
                             stage.close();
                         }
 
                         if (game) {
                             MoveDown(object);
-                            scoretext.setText("Score: " + score);
+                            MoveDown(object2);
+                            scoretext1.setText("Score: " + score);
+                            scoretext2 .setText("Score: " + score);
                             level.setText("Lines: " + linesNo);
                         }
 
@@ -213,16 +244,16 @@ public class HelloApplication extends Application {
         stage.setOnCloseRequest(event -> {
             // 게임 종료 시 실행되는 코드
             timer.stop(); // AnimationTimer 중지
-            group.getChildren().clear(); // 모든 노드 제거
+            group1.getChildren().clear(); // 모든 노드 제거
+            group2.getChildren().clear(); // 모든 노드 제거
             // 필요한 경우 추가적인 리소스 해제 코드 추가
         });
-
         timer.start();
     }
 
 
 
-    private void drawGridLines() {
+    private void drawGridLines(Pane group) {
         for (int x = 0; x <= XMAX / SIZE; x++) {
             Line line = new Line(x * SIZE, 0, x * SIZE, YMAX);
             line.setStroke(Color.DARKGRAY);
@@ -250,14 +281,14 @@ public class HelloApplication extends Application {
                         controller.MoveRight(form);
                     } else if (pressedKey.equals(downKey)) {
                         MoveDown(form);
-                        scoretext.setText("Score: " + score);
+                        scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals(leftKey)) {
                         controller.MoveLeft(form);
                     } else if (pressedKey.equals(upKey)) {
                         MoveTurn(form);
                     } else if (pressedKey.equals(spaceKey)) {
                         DirectMoveDown(form);
-                        scoretext.setText("Score: " + score);
+                        scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals("ESCAPE")) {
                         stopAnimation();
                     }
@@ -856,7 +887,8 @@ public class HelloApplication extends Application {
     }
 
     private void MoveDown(Text text) {
-        scoretext.setText("Score: " + score);
+        scoretext1.setText("Score: " + score);
+        scoretext2.setText("Score: " + score);
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 
@@ -886,13 +918,15 @@ public class HelloApplication extends Application {
             MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
             MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
             MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
-            RemoveRows(group);
+            RemoveRows(group1);
+            RemoveRows(group2);
             // 새 블록 생성
             Form a = controller.makeText(waitObj.getName(), true);
-            group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-            waitObj = controller.waitingTextMake(true,difficultylevel);
+            group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+            waitObj = controller.waitingTextMake(true,difficultylevel, 200);
+            waitObj2 = controller.waitingTextMake(true,difficultylevel, 800);
             object = a;
-            group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+            group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a);
             moved = false; // 이 경우에는 이동하지 않으므로 false
         }
@@ -926,12 +960,16 @@ public class HelloApplication extends Application {
         MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
-        RemoveRows(group);
+        RemoveRows(group1);
         Form a = controller.makeText(waitObj.getName(), true);
-        group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        waitObj = controller.waitingTextMake(true,difficultylevel);
+        Form b = controller.makeText(waitObj.getName(), true);
+        group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+        waitObj = controller.waitingTextMake(true,difficultylevel, 200);
+        waitObj2 = controller.waitingTextMake(true,difficultylevel, 800);
         object = a;
-        group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+        object2 = b;
+        group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+        group1.getChildren().addAll(b.a, b.b, b.c, b.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
         moveOnKeyPress(a);
 
     }
@@ -971,7 +1009,7 @@ public class HelloApplication extends Application {
     public void stopAnimation() {
         running = false;
         applyGrayscaleEffect();
-        for (Node node : group.getChildren()) {
+        for (Node node : group1.getChildren()) {
             if (node instanceof Button) {
                 node.setVisible(true);
             }
@@ -985,7 +1023,7 @@ public class HelloApplication extends Application {
         // 게임 재시작 및 종료 버튼 숨김
         // 흑백 효과 해제
         clearGrayscaleEffect();
-        for (Node node : group.getChildren()) {
+        for (Node node : group1.getChildren()) {
             if (node instanceof Button) {
                 node.setVisible(false);
             }
@@ -996,16 +1034,16 @@ public class HelloApplication extends Application {
 
     public void GameOver(){
         running = false;
-        User user = SessionManager.getCurrentUser();
+        //User user = SessionManager.getCurrentUser();
         applyGrayscaleEffect();
-        Label scoreLabel = new Label("score: " + score);
+        scoreLabel = new Label("score: " + score);
         scoreLabel.setLayoutX(XMAX/2 - 10);
         scoreLabel.setLayoutY(YMAX/2);
         scoreLabel.setStyle("-fx-font-size: XMAX/3; -fx-text-fill: red; -fx-background-color: blue;");
-        group.getChildren().addAll(scoreLabel);
+        group1.getChildren().addAll(scoreLabel);
 
         scoreLabel.setVisible(true);
-        TextArea nicknameTextArea = new TextArea(user.getNickname());
+        TextArea nicknameTextArea = new TextArea("dafd");
         nicknameTextArea.setLayoutX(XMAX / 2);
         nicknameTextArea.setLayoutY(YMAX / 3);
         nicknameTextArea.setPrefWidth(XMAX / 4);
@@ -1018,7 +1056,7 @@ public class HelloApplication extends Application {
         NameLabel.setLayoutX(XMAX/2 - 10);
         NameLabel.setLayoutY(YMAX/2 - 40);
         NameLabel.setStyle("-fx-font-size: XMAX; -fx-text-fill: red; -fx-background-color: blue;");
-        group.getChildren().addAll(nicknameTextArea, NameLabel);
+        group1.getChildren().addAll(nicknameTextArea, NameLabel);
 
         NameLabel.setVisible(true);
         Button yesButton = new Button("Yes");
@@ -1029,7 +1067,7 @@ public class HelloApplication extends Application {
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
-        yesButton.setOnAction(e -> {
+        /*yesButton.setOnAction(e -> {
             String newNickname = nicknameTextArea.getText();
             try {
                 JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
@@ -1039,19 +1077,19 @@ public class HelloApplication extends Application {
             } catch (Exception ex) {
                 System.out.println("jdbc error");
             }
-        });
-        group.getChildren().addAll(yesButton);
+        });*/
+        group1.getChildren().addAll(yesButton);
     }
     private void GameStopped(Stage stage){
         timer.stop();
         stage.close();
     }
     public void applyGrayscaleEffect() {
-        group.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
+        group1.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
     }
 
     public void clearGrayscaleEffect() {
-        group.setEffect(null); // 흑백 효과 해제
+        group1.setEffect(null); // 흑백 효과 해제
     }
     private void bringButtonsToFront() {
         if (restartButton != null) restartButton.toFront();
