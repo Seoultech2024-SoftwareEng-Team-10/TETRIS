@@ -10,6 +10,7 @@ import User.User;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -66,6 +67,11 @@ public class HelloApplication extends Application {
     private final String spaceKey;
     private final String upKey;
     private final String downKey;
+    private final String dKey;
+    private final String aKey;
+    private final String shiftKey;
+    private final String wKey;
+    private final String sKey;
 
     private int score;
     private double Frame;
@@ -73,15 +79,22 @@ public class HelloApplication extends Application {
         this.controller = controller;
         this.score = 0;
         this.running = true;
+        this.wKey = "W";
+        this.aKey = "A";
+        this.sKey = "S";
+        this.shiftKey = "SHIFT";
+        this.dKey = "D";
         this.rightKey = settings.getRightKey();
         this.leftKey = settings.getLeftKey();
         this.upKey = settings.getUpKey();
         this.downKey = settings.getDownKey();
         this.spaceKey  = settings.getSpaceKey();
-        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 200);
+        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 400);
         this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel, 200);
-        this.waitObj2 = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 800);
-        this.nextObj2 = controller.makeText(BlockColor.colorBlindMode, difficultylevel,800);
+
+        this.waitObj2 = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 400);
+        this.nextObj2 = controller.makeText(BlockColor.colorBlindMode, difficultylevel,200);
+
         this.MOVE = sizeConstants.getMOVE();
         this.SIZE = sizeConstants.getSIZE();
         this.XMAX = sizeConstants.getXMAX();
@@ -130,10 +143,8 @@ public class HelloApplication extends Application {
         group2 = new Pane();
         hbox = new HBox(20);
         hbox.getChildren().addAll(group2,group1);
-        scene = new Scene(hbox, 900, 800);
+        scene = new Scene(hbox, 1500, YMAX-40);
         running = true;
-
-
         group1.getChildren().clear();
         group2.getChildren().clear();
 
@@ -144,7 +155,7 @@ public class HelloApplication extends Application {
         drawGridLines(group2);
         Line line = new Line(XMAX, 0, XMAX, YMAX);
         scoretext1 = styleScoretext(XMAX+30);
-        scoretext2 = styleScoretext(XMAX/2 +30);
+        scoretext2 = styleScoretext(XMAX+30);
 
         Text level = new Text("LINES: ");//scoretext,level userdata추가
         level.setUserData("level");
@@ -154,50 +165,23 @@ public class HelloApplication extends Application {
         level.setFill(Color.GREEN);
         Form wait = waitObj;
         Form wait2 = waitObj2;
-
         group1.getChildren().addAll(scoretext1, line, level, wait.a, wait.b, wait.c, wait.d);
         group1.setStyle("-fx-background-color: black;");
         group2.getChildren().addAll(scoretext2, line, level, wait2.a, wait2.b, wait2.c, wait2.d);
         group2.setStyle("-fx-background-color: black;");
         Form a = nextObj;
-        Form a2 = nextObj;
-
+        Form b = nextObj2;
         group1.getChildren().addAll(a.a, a.b, a.c, a.d);
-        group2.getChildren().addAll(a2.a, a2.b, a2.c, a2.d);
-
-        moveOnKeyPress(a);
+        group2.getChildren().addAll(b.a, b.b, b.c, b.d);
+        moveOnKeyPress(a,b);
         object = a;
-        object2 = a;
-        nextObj = controller.makeText(true,difficultylevel, 200);//색맹 모드가 아님을 의미
-        nextObj2 = controller.makeText(true,difficultylevel, 800);//색맹 모드가 아님을 의미
+        object2 = b;
+        nextObj = controller.makeText(true,difficultylevel, 200);
+        nextObj2 = controller.makeText(true,difficultylevel, 200);
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
 
-
-        // 흑백 효과 초기 설정
-        colorAdjust.setSaturation(-1);
-        colorAdjust.setBrightness(-0.3);
-
-        // 게임 재시작 및 종료 버튼 추가
-        restartButton = new Button("게임 재시작");
-        restartButton.setLayoutX(XMAX/2);
-        restartButton.setLayoutY(YMAX/2);
-        restartButton.setVisible(false); // 초기에는 보이지 않게 설정
-
-        exitButton = new Button("메뉴화면");
-        exitButton.setLayoutX(XMAX/2);
-        exitButton.setLayoutY(YMAX/2+30);
-        exitButton.setVisible(false); // 초기에는 보이지 않게 설정
-
-        // 버튼 이벤트 핸들러 설정
-        restartButton.setOnAction(e -> {
-            startAnimation();
-        });
-        exitButton.setOnAction(e -> GameStopped(stage));
-
-        // 그룹에 버튼 추가
-        group1.getChildren().addAll(restartButton, exitButton);
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
@@ -230,8 +214,8 @@ public class HelloApplication extends Application {
                         }
 
                         if (game) {
-                            MoveDown(object);
-                            MoveDown(object2);
+                            MoveDown(object, MESH, group1, true);
+                            MoveDown(object2, MESH2, group2, false);
                             scoretext1.setText("Score: " + score);
                             scoretext2 .setText("Score: " + score);
                             level.setText("Lines: " + linesNo);
@@ -271,7 +255,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void moveOnKeyPress(Form form) {
+    private void moveOnKeyPress(Form form, Form form2) {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -280,17 +264,29 @@ public class HelloApplication extends Application {
                     if (pressedKey.equals(rightKey)) {
                         controller.MoveRight(form);
                     } else if (pressedKey.equals(downKey)) {
-                        MoveDown(form);
+                        MoveDown(form, MESH, group1, true);
                         scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals(leftKey)) {
                         controller.MoveLeft(form);
                     } else if (pressedKey.equals(upKey)) {
                         MoveTurn(form);
                     } else if (pressedKey.equals(spaceKey)) {
-                        DirectMoveDown(form);
+                        DirectMoveDown(form, form2, group1, true, MESH);
                         scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals("ESCAPE")) {
                         stopAnimation();
+                    } else if (pressedKey.equals(dKey)) {
+                        controller.MoveRight(form2);
+                    } else if (pressedKey.equals(sKey)) {
+                        MoveDown(form2, MESH2, group2, false);
+                        scoretext1.setText("Score: " + score);
+                    } else if (pressedKey.equals(aKey)) {
+                        controller.MoveLeft(form2);
+                    } else if (pressedKey.equals(wKey)) {
+                        MoveTurn(form2);
+                    } else if (pressedKey.equals(shiftKey)) {
+                        DirectMoveDown(form2, form, group2, false, MESH2);
+                        scoretext1.setText("Score: " + score);
                     }
                 }
                 else{
@@ -887,8 +883,6 @@ public class HelloApplication extends Application {
     }
 
     private void MoveDown(Text text) {
-        scoretext1.setText("Score: " + score);
-        scoretext2.setText("Score: " + score);
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
 
@@ -907,31 +901,38 @@ public class HelloApplication extends Application {
     private void MoveUp(Text text) {
         if (text.getY() - MOVE > 0)
             text.setY(text.getY() - MOVE);
-    }//move명령어들 Text로 변경함
+    }
 
-    private boolean MoveDown(Form form) {
+    private boolean MoveDown(Form form,int [][] MESH, Pane group, boolean isGroupOne) {
         boolean moved = false; // 이동 여부를 추적하는 변수입니다.
         if (form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
-                || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form)) {
+                || form.d.getY() == YMAX - SIZE || moveA(form, MESH) || moveB(form, MESH) || moveC(form, MESH) || moveD(form, MESH)) {
             // 여기서는 블록이 다음 위치로 이동할 수 없으므로, 현재 위치를 고정하고 새로운 블록을 생성합니다.
             MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
             MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
             MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
             MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
-            RemoveRows(group1);
-            RemoveRows(group2);
-            // 새 블록 생성
-            Form a = controller.makeText(waitObj.getName(), true);
-            group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-            waitObj = controller.waitingTextMake(true,difficultylevel, 200);
-            waitObj2 = controller.waitingTextMake(true,difficultylevel, 800);
-            object = a;
-            group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-            moveOnKeyPress(a);
-            moved = false; // 이 경우에는 이동하지 않으므로 false
+            if (isGroupOne){
+                RemoveRows(group1);
+                Form a = controller.makeText(waitObj.getName(), true);
+                waitObj = controller.waitingTextMake(true,difficultylevel, 200);
+                object = a;
+                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+                moveOnKeyPress(a,object2);
+                // 이 경우에는 이동하지 않으므로 false
+            }
+            else{
+                RemoveRows(group2);
+                Form a = controller.makeText(waitObj2.getName(), true);
+                waitObj2 = controller.waitingTextMake(true,difficultylevel, 200);
+                object2 = a;
+                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
+                moveOnKeyPress(object,a);
+                // 이 경우에는 이동하지 않으므로 false
+            }
         }
         if (form.a.getY() + MOVE < YMAX && form.b.getY() + MOVE < YMAX && form.c.getY() + MOVE < YMAX
-                && form.d.getY() + MOVE < YMAX && !(moveA(form) || moveB(form) || moveC(form) || moveD(form))) {
+                && form.d.getY() + MOVE < YMAX && !(moveA(form, MESH) || moveB(form, MESH) || moveC(form, MESH) || moveD(form, MESH))) {
             form.a.setY(form.a.getY() + MOVE);
             form.b.setY(form.b.getY() + MOVE);
             form.c.setY(form.c.getY() + MOVE);
@@ -939,55 +940,57 @@ public class HelloApplication extends Application {
             moved = true; // 실제로 이동했으므로 true로 설정
             score += scoreMultiplier;
         }
-
-
-
         return moved; // 이동 여부를 반환
     }
 
-    private void DirectMoveDown(Form form) {
+    private void DirectMoveDown(Form form,Form form2, Pane group, boolean isGroupOne, int [][] MESH) {
         while (!(form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
-                || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form))){
+                || form.d.getY() == YMAX - SIZE || moveA(form, MESH) || moveB(form, MESH) || moveC(form, MESH) || moveD(form, MESH))){
             form.a.setY(form.a.getY() + MOVE);
             form.b.setY(form.b.getY() + MOVE);
             form.c.setY(form.c.getY() + MOVE);
             form.d.setY(form.d.getY() + MOVE);
             // 실제로 이동했으므로 true로 설정
             score += scoreMultiplier;
-            top = 0; // directmovedown 호출시 object 겹침 버그 방지용
+            top = 0;
+            //directmovedown 호출시 object 겹침 버그 방지용
         }
         MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
         MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
-        RemoveRows(group1);
-        Form a = controller.makeText(waitObj.getName(), true);
-        Form b = controller.makeText(waitObj.getName(), true);
-        group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        waitObj = controller.waitingTextMake(true,difficultylevel, 200);
-        waitObj2 = controller.waitingTextMake(true,difficultylevel, 800);
-        object = a;
-        object2 = b;
-        group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        group1.getChildren().addAll(b.a, b.b, b.c, b.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
-        moveOnKeyPress(a);
-
+        if (isGroupOne){
+            RemoveRows(group1);
+            Form a = controller.makeText(waitObj.getName(), true);
+            waitObj = controller.waitingTextMake(true,difficultylevel, 200);
+            object = a;
+            group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+            moveOnKeyPress(a,form2);
+        }
+        else{
+            RemoveRows(group2);
+            Form a = controller.makeText(waitObj2.getName(), true);
+            waitObj2 = controller.waitingTextMake(true,difficultylevel, 200);
+            object2 = a;
+            group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
+            moveOnKeyPress(form2,a);
+        }
     }
 
 
-    private boolean moveA(Form form) {
+    private boolean moveA(Form form, int [][] MESH) {
         return (MESH[(int) form.a.getX() / SIZE][((int) form.a.getY() / SIZE) +1] == 1);
     }
 
-    private boolean moveB(Form form) {
+    private boolean moveB(Form form, int [][] MESH) {
         return (MESH[(int) form.b.getX() / SIZE][((int) form.b.getY() / SIZE) +1] == 1);
     }
 
-    private boolean moveC(Form form) {
+    private boolean moveC(Form form, int [][] MESH) {
         return (MESH[(int) form.c.getX() / SIZE][((int) form.c.getY() / SIZE) +1] == 1);
     }
 
-    private boolean moveD(Form form) {
+    private boolean moveD(Form form, int [][] MESH) {
         return (MESH[(int) form.d.getX() / SIZE][((int) form.d.getY() / SIZE) +1] == 1);
     }
 
