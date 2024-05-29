@@ -55,6 +55,19 @@ public class Controller {
         }
     }
 
+    public static void currentTextSetUserData(Form form){
+        form.a.setUserData("current");
+        form.b.setUserData("current");
+        form.c.setUserData("current");
+        form.d.setUserData("current");
+    }// 현재 운용중인 블록 userData 추가
+
+    public Text makeTextOne(int X, int Y){
+        Text a = new Text(X,Y,"O");
+        a.setFont(Font.font(fontSize));
+        a.setFill(Color.GRAY);
+        return a;
+    }
 
 
     public Form makeText(boolean colorBlindMode, char difficultyLevel, int XMAX) {

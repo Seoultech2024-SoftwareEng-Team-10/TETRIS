@@ -1,4 +1,5 @@
 
+import Animation.Flash;
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
 import Setting.Settings;
@@ -23,12 +24,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
+
+import static Tetris.Controller.currentTextSetUserData;
 
 
 public class HelloApplication extends Application {
@@ -49,13 +53,23 @@ public class HelloApplication extends Application {
     private Form nextObj, nextObj2;
     private Form waitObj, waitObj2;
     private final int[][] MESH, MESH2;
+    private final int[][] miniMESH, miniMESH2;
     private static int linesNo = 0;
+    private int linesNo2 = 0;
     private Button restartButton;
     private Button exitButton;
     private Label scoreLabel;
     private static double scoreMultiplier = 1.0;
+    private static double scoreMultiplier2 = 1.0;
     private static double frameMultiplier = 0.8;
     private JdbcConnecter scoreboardDataInserter;
+
+    private static int miniMeshLineCounter = 0;
+    private static int miniMeshLineCounter2 = 0;
+
+    private static int meshTop = 0;
+    private static int meshTop2 = 0;
+    private static double fontSize;
 
     //private final User user;
     private final Controller controller;
@@ -74,11 +88,12 @@ public class HelloApplication extends Application {
     private final String wKey;
     private final String sKey;
 
-    private int score;
+    private int score, score2;
     private double Frame;
     public HelloApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
         this.controller = controller;
         this.score = 0;
+        this.score2 = 0;
         this.running = true;
         this.wKey = "W";
         this.aKey = "A";
@@ -105,11 +120,19 @@ public class HelloApplication extends Application {
         this.nextObj2 = controller.makeText(BlockColor.colorBlindMode, difficultylevel,XMAX);
 
 
+        this.fontSize = sizeConstants.getFontSize();
         this.MESH = new int[10][21];
         this.MESH2 = new int[10][21];
+        this.miniMESH = new int[10][11];
+        this.miniMESH2 = new int[10][11];
+        this.meshTop = 0;
+        this.meshTop2 = 0;
+
         this.running = true;
+
         //this.user = TetrisWindow.user;
         this.linesNo = 0;
+        this.linesNo2 = 0;
         this.Frame = 1000000000;
     }
     public Text styleScoretext(int Pos){
@@ -144,20 +167,23 @@ public class HelloApplication extends Application {
         if(LevelConstants.getLevel()=='E'){
             frameMultiplier = 0.8;
             scoreMultiplier = 1.0;
+            scoreMultiplier2 = 1.0;
         }
         else if(LevelConstants.getLevel()=='N'){
             frameMultiplier = 1.0;
             scoreMultiplier = 1.2;
+            scoreMultiplier2 = 1.2;
         }
         else{
             frameMultiplier = 1.2;
             scoreMultiplier = 1.4;
+            scoreMultiplier2 = 1.4;
         }
 
 
         group1 = new Pane();
         group2 = new Pane();
-        hbox = new HBox(20);
+        hbox = new HBox(50);
         hbox.getChildren().addAll(group2,group1);
         scene = new Scene(hbox, 1500, YMAX-40);
         running = true;
@@ -186,11 +212,15 @@ public class HelloApplication extends Application {
         Form b = nextObj2;
         group1.getChildren().addAll(a.a, a.b, a.c, a.d);
         group2.getChildren().addAll(b.a, b.b, b.c, b.d);
+
         moveOnKeyPress(a,b);
         object = a;
         object2 = b;
         nextObj = controller.makeText(true,difficultylevel, 200);
         nextObj2 = controller.makeText(true,difficultylevel, 200);
+        currentTextSetUserData(a);
+        currentTextSetUserData(b);
+
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -202,6 +232,8 @@ public class HelloApplication extends Application {
             public void handle(long now) {
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
+                        group1.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
+                        group2.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
                             group1.getChildren().clear();
@@ -230,9 +262,9 @@ public class HelloApplication extends Application {
                             MoveDown(object, MESH, group1, true);
                             MoveDown(object2, MESH2, group2, false);
                             scoretext1.setText("Score: " + score);
-                            scoretext2 .setText("Score: " + score);
+                            scoretext2 .setText("Score: " + score2);
                             linetext1.setText("Lines: " + linesNo);
-                            linetext2.setText("Lines: " +linesNo);
+                            linetext2.setText("Lines: " +linesNo2);
                         }
 
                     }
@@ -830,48 +862,127 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void RemoveRows(Pane pane ,int [][] MESH) {
+    private void RemoveRows(Pane pane ,int [][] MESH,int groupnumber) {
         ArrayList<Node> texts = new ArrayList<Node>();
         ArrayList<Integer> lines = new ArrayList<Integer>();
         ArrayList<Node> newtexts = new ArrayList<Node>();
+        boolean removeCheck = false; //지워야될 라인이 있나
+        int miniMeshCountController = 0;
+        int constClearLineSize = 0; //한번에 지워지는 라인 수
         int full = 0;
         for (int i = 0; i < MESH[0].length; i++) {
             for (int j = 0; j < MESH.length; j++) {
-                if (MESH[j][i] == 1)
+                if (MESH[j][i] == 1) {
                     full++;
+                    if(groupnumber ==0){
+                        if(meshTop!=0){
+                            continue;
+                        }else{
+                            meshTop = i;
+                        }
+                    }else{
+                        if(meshTop2!=0){
+                            continue;
+                        }else{
+                            meshTop2 = i;
+                        }
+                    }
+                }
+
             }
-            if (full == MESH.length)
+            if (full == MESH.length) {
                 lines.add(i);
+                removeCheck = true;
+            }
             //lines.add(i + lines.size());
             full = 0;
         }
+        constClearLineSize = lines.size();
+        miniMeshCountController = lines.size() - 1;
+        if(groupnumber == 0)
+            meshTop -= lines.size();
+        else
+            meshTop2 -= lines.size();
         if (lines.size() > 0)
             do {
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                            node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                            node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                            node.getUserData() =="mini" || node.getUserData()=="effectText")//예외설정
                         continue;
                     if (node instanceof Text)
                         texts.add(node);
                 }
-                if (Frame > 150000000) {
-                    Frame -= 50000000 * frameMultiplier;
-                    scoreMultiplier++;
+                if(groupnumber == 0) {
+                    if (Frame > 150000000) {
+                        Frame -= 50000000 * frameMultiplier;
+                        scoreMultiplier++;
+                    }
+                    score += 50 * scoreMultiplier;
+                    linesNo++;
+                }else{
+                    if (Frame > 150000000) {
+                        Frame -= 50000000 * frameMultiplier;//이거 프레임도 2붙여야 하나요..?
+                        scoreMultiplier2++;
+                    }
+                    score2 += 50 * scoreMultiplier2;
+                    linesNo2++;
                 }
-                score += 50 * scoreMultiplier;
-                linesNo++;
-
                 for (Node node : texts) {
                     Text a = (Text) node;
+
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                        if(groupnumber == 0) {
+                            if((constClearLineSize>=2) && (miniMeshLineCounter2 < 10)) {
+                                if (node.getUserData() != "current") {
+                                    miniMESH2[(int) a.getX() / SIZE][(int) ((YMAX / SIZE)/2) - miniMeshCountController - miniMeshLineCounter2] = 1;
+                                    Text c = new Text("X");
+                                    c.setX(XMAX + a.getX() * 0.5);
+                                    c.setY(YMAX - SIZE - ((miniMeshCountController + miniMeshLineCounter2) * SIZE) * 0.6);
+                                    c.setUserData("mini");
+                                    c.setFont(Font.font(fontSize * 0.65));
+                                    c.setFill(Color.rgb(226, 226, 226));
+                                    group2.getChildren().add(c);
+                                }
+                            }
+                        }else{
+                            if((constClearLineSize>=2) && (miniMeshLineCounter < 10)) {
+                                if (node.getUserData() != "current") {
+                                    miniMESH[(int) a.getX() / SIZE][(int) ((YMAX / SIZE)/2) - miniMeshCountController - miniMeshLineCounter] = 1;
+
+
+                                    Text c = new Text("X");
+                                    c.setX(XMAX + a.getX() * 0.5);
+                                    c.setY(YMAX - SIZE - ((miniMeshCountController+miniMeshLineCounter) * SIZE) * 0.6);
+                                    c.setUserData("mini");
+                                    c.setFont(Font.font(fontSize * 0.65));
+                                    c.setFill(Color.rgb(226, 226, 226));
+                                    group1.getChildren().add(c);
+                                }
+                            }
+                        }
+
+
+                        //////효과
+                        Text effectText = new Text("O");
+                        effectText.setX(a.getX());
+                        effectText.setY(a.getY());
+                        effectText.setUserData("effectText");
+                        effectText.setFill(Color.WHITE);
+                        effectText.setFont(Font.font(fontSize));
+                        pane.getChildren().add(effectText);
+                        new Flash(effectText).play();
+                        ///////효과
                         pane.getChildren().remove(node);
                     } else
                         newtexts.add(node);
                 }
 
                 for (Node node : newtexts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     if (a.getY() < lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
@@ -882,10 +993,14 @@ public class HelloApplication extends Application {
                 texts.clear();
                 newtexts.clear();
                 for (Node node : pane.getChildren()) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     if (node instanceof Text)
                         texts.add(node);
                 }
                 for (Node node : texts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     try {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 1;
@@ -893,7 +1008,127 @@ public class HelloApplication extends Application {
                     }
                 }
                 texts.clear();
+                miniMeshCountController--;
             } while (lines.size() > 0);//size->0
+
+
+        if(constClearLineSize>1){
+            if(groupnumber == 0)
+                miniMeshLineCounter2+=constClearLineSize;
+            else
+                miniMeshLineCounter+=constClearLineSize;
+        }
+
+
+        for(Node node:pane.getChildren()){
+            if(node.getUserData()=="current"){
+                node.setUserData(null);
+            }
+        }
+
+        if(groupnumber == 0 && (miniMeshLineCounter>0)){
+            //미니메쉬만큼 올라오는 기능필요
+            if(((int)(YMAX/SIZE)-meshTop) + miniMeshLineCounter >=20){//meshtop 제일상단의 블록 mesh y값
+                top = 2;
+            }else if(miniMeshLineCounter > 0){
+                ArrayList<Node> currentMeshText = new ArrayList<>();
+                for (Node node : pane.getChildren()) {
+                    if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
+                            node.getUserData() == "waita" || node.getUserData() == "waitb" ||
+                            node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                            node.getUserData() =="mini" || node.getUserData()=="effectText")//예외설정
+                        continue;
+                    if (node instanceof Text)
+                        currentMeshText.add(node);
+                }
+
+                for (Node node : currentMeshText) {
+                    Text a = (Text) node;
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                }
+                for (Node node : currentMeshText) {
+                    Text a = (Text) node;
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE - miniMeshLineCounter] = 1;
+                    a.setY(a.getY() - SIZE*miniMeshLineCounter);
+                }
+                //minimesh초기화
+                ArrayList<Node> removeMiniTexts = new ArrayList<>();
+                for (int i = 0; i < miniMESH[0].length; i++) {
+                    for (int j = 0; j < miniMESH.length; j++) {
+                        if(miniMESH[j][i]==1){
+                            MESH[j][i+10] = 1;
+                            Text soloText=new Text(j*SIZE,(i+10)*SIZE,"O");
+                            soloText.setFont(Font.font(fontSize));
+                            soloText.setFill(Color.GRAY);
+                            group1.getChildren().add(soloText);
+                        }
+                        miniMESH[j][i] = 0;
+                    }
+                }
+                for (Node node : pane.getChildren()) {
+                    if (node instanceof Text) {
+                        if (node.getUserData() == "mini")
+                            removeMiniTexts.add(node);
+                    }
+                }
+                for (Node node : removeMiniTexts) {
+                    pane.getChildren().remove(node);
+                }
+                miniMeshLineCounter = 0;
+                removeCheck = false;
+                //^^^^^^^^^^^^^^^^^^^^^^minimesh초기화
+            }
+        }if(groupnumber == 1 && (miniMeshLineCounter2>0)){
+            //미니메쉬만큼 올라오는 기능필요
+            if ((((int)(YMAX/SIZE)-meshTop2) + miniMeshLineCounter2) >= 20) {//meshtop 제일상단의 블록 mesh y값
+                top = 2;
+            } else if(miniMeshLineCounter2>0){
+                ArrayList<Node> currentMeshText = new ArrayList<>();
+                for (Node node : pane.getChildren()) {
+                    if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
+                            node.getUserData() == "waita" || node.getUserData() == "waitb" ||
+                            node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                            node.getUserData() == "mini" || node.getUserData() == "effectText")//예외설정
+                        continue;
+                    if (node instanceof Text)
+                        currentMeshText.add(node);
+                }
+
+                for (Node node : currentMeshText) {
+                    Text a = (Text) node;
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                }
+                for (Node node : currentMeshText) {
+                    Text a = (Text) node;
+                    MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE - miniMeshLineCounter2] = 1;
+                    a.setY(a.getY() - (SIZE * miniMeshLineCounter2));
+                }
+                ArrayList<Node> removeMiniTexts = new ArrayList<>();
+                for (int i = 0; i < miniMESH2[0].length; i++) {
+                    for (int j = 0; j < miniMESH2.length; j++) {
+                        if(miniMESH2[j][i]==1){
+                            MESH[j][i+10] = 1;
+                            Text soloText=new Text(j*SIZE,(i+10)*SIZE,"O");
+                            soloText.setFont(Font.font(fontSize));
+                            soloText.setFill(Color.GRAY);
+                            group2.getChildren().add(soloText);
+                        }
+                        miniMESH2[j][i] = 0;
+                    }
+                }
+                for (Node node : pane.getChildren()) {
+                    if (node instanceof Text) {
+                        if (node.getUserData() == "mini")
+                            removeMiniTexts.add(node);
+                    }
+                }
+                for (Node node : removeMiniTexts) {
+                    pane.getChildren().remove(node);
+                }
+                miniMeshLineCounter2 = 0;
+                removeCheck = false;
+            }
+        }
     }
 
     private void MoveDown(Text text) {
@@ -927,21 +1162,23 @@ public class HelloApplication extends Application {
             MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
             MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
             if (isGroupOne){
-                RemoveRows(group1,MESH);
+                RemoveRows(group1,MESH,0);
                 Form a = controller.makeText(waitObj.getName(), true);
                 group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
                 waitObj = controller.waitingTextMake(true,difficultylevel, XMAX);
                 object = a;
+                currentTextSetUserData(a);
                 group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
                 moveOnKeyPress(a,object2);
                 // 이 경우에는 이동하지 않으므로 false
             }
             else{
-                RemoveRows(group2, MESH);
+                RemoveRows(group2, MESH,1);
                 Form a = controller.makeText(waitObj2.getName(), true);
                 group2.getChildren().removeAll(waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
                 waitObj2 = controller.waitingTextMake(true,difficultylevel, XMAX);
                 object2 = a;
+                currentTextSetUserData(a);
                 group2.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
                 moveOnKeyPress(object,a);
                 // 이 경우에는 이동하지 않으므로 false
@@ -954,7 +1191,10 @@ public class HelloApplication extends Application {
             form.c.setY(form.c.getY() + MOVE);
             form.d.setY(form.d.getY() + MOVE);
             moved = true; // 실제로 이동했으므로 true로 설정
-            score += scoreMultiplier;
+            if(isGroupOne)
+                score += scoreMultiplier;
+            else
+                score2 += scoreMultiplier;
         }
         return moved; // 이동 여부를 반환
     }
@@ -967,7 +1207,10 @@ public class HelloApplication extends Application {
             form.c.setY(form.c.getY() + MOVE);
             form.d.setY(form.d.getY() + MOVE);
             // 실제로 이동했으므로 true로 설정
-            score += scoreMultiplier;
+            if(isGroupOne)
+                score += scoreMultiplier;
+            else
+                score2 += scoreMultiplier;
             top = 0;
             //directmovedown 호출시 object 겹침 버그 방지용
         }
@@ -976,20 +1219,22 @@ public class HelloApplication extends Application {
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
         if (isGroupOne){
-            RemoveRows(group1 , MESH);
+            RemoveRows(group1 , MESH,0);
             Form a = controller.makeText(waitObj.getName(), true);
             group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             waitObj = controller.waitingTextMake(true,difficultylevel, XMAX);
             object = a;
+            currentTextSetUserData(a);
             group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a,form2);
         }
         else{
-            RemoveRows(group2, MESH);
+            RemoveRows(group2, MESH,1);
             Form a = controller.makeText(waitObj2.getName(), true);
             group2.getChildren().removeAll(waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
             waitObj2 = controller.waitingTextMake(true,difficultylevel, XMAX);
             object2 = a;
+            currentTextSetUserData(a);
             group2.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
             moveOnKeyPress(form2,a);
         }
