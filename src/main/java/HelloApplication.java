@@ -35,6 +35,7 @@ public class HelloApplication extends Application {
     private HBox hbox;
     private AnimationTimer timer;
     private Text scoretext1, scoretext2;
+    private Text linetext1,linetext2;
     public boolean running;
     private static Form object;
     private static Form object2;
@@ -89,18 +90,23 @@ public class HelloApplication extends Application {
         this.upKey = settings.getUpKey();
         this.downKey = settings.getDownKey();
         this.spaceKey  = settings.getSpaceKey();
-        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 400);
-        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel, 200);
 
-        this.waitObj2 = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, 400);
-        this.nextObj2 = controller.makeText(BlockColor.colorBlindMode, difficultylevel,200);
 
         this.MOVE = sizeConstants.getMOVE();
         this.SIZE = sizeConstants.getSIZE();
         this.XMAX = sizeConstants.getXMAX();
         this.YMAX = sizeConstants.getYMAX();
-        this.MESH = new int[20][21];
-        this.MESH2 = new int[20][21];
+
+
+        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, XMAX);
+        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel, XMAX);
+
+        this.waitObj2 = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, XMAX);
+        this.nextObj2 = controller.makeText(BlockColor.colorBlindMode, difficultylevel,XMAX);
+
+
+        this.MESH = new int[10][21];
+        this.MESH2 = new int[10][21];
         this.running = true;
         //this.user = TetrisWindow.user;
         this.linesNo = 0;
@@ -116,6 +122,16 @@ public class HelloApplication extends Application {
         scoretext.setX(XMAX + 30);
         scoretext.setY(300);
         return scoretext;
+    }
+
+    public Text styleLineText(int Pos){
+        Text level = new Text("LINES: ");//scoretext,level userdata추가
+        level.setUserData("level");
+        level.setStyle("-fx-font: 20 Lato;");
+        level.setY(350);
+        level.setX(XMAX + 30);
+        level.setFill(Color.GREEN);
+        return level;
     }
     @Override
     public void start(Stage stage) throws IOException {
@@ -157,17 +173,14 @@ public class HelloApplication extends Application {
         scoretext1 = styleScoretext(XMAX+30);
         scoretext2 = styleScoretext(XMAX+30);
 
-        Text level = new Text("LINES: ");//scoretext,level userdata추가
-        level.setUserData("level");
-        level.setStyle("-fx-font: 20 Lato;");
-        level.setY(350);
-        level.setX(XMAX + 30);
-        level.setFill(Color.GREEN);
+        linetext1 = styleLineText(XMAX+30);
+        linetext2 = styleLineText(XMAX+30);
+
         Form wait = waitObj;
         Form wait2 = waitObj2;
-        group1.getChildren().addAll(scoretext1, line, level, wait.a, wait.b, wait.c, wait.d);
+        group1.getChildren().addAll(scoretext1, line, linetext1, wait.a, wait.b, wait.c, wait.d);
         group1.setStyle("-fx-background-color: black;");
-        group2.getChildren().addAll(scoretext2, line, level, wait2.a, wait2.b, wait2.c, wait2.d);
+        group2.getChildren().addAll(scoretext2, line, linetext2, wait2.a, wait2.b, wait2.c, wait2.d);
         group2.setStyle("-fx-background-color: black;");
         Form a = nextObj;
         Form b = nextObj2;
@@ -218,7 +231,8 @@ public class HelloApplication extends Application {
                             MoveDown(object2, MESH2, group2, false);
                             scoretext1.setText("Score: " + score);
                             scoretext2 .setText("Score: " + score);
-                            level.setText("Lines: " + linesNo);
+                            linetext1.setText("Lines: " + linesNo);
+                            linetext2.setText("Lines: " +linesNo);
                         }
 
                     }
@@ -816,7 +830,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    private void RemoveRows(Pane pane) {
+    private void RemoveRows(Pane pane ,int [][] MESH) {
         ArrayList<Node> texts = new ArrayList<Node>();
         ArrayList<Integer> lines = new ArrayList<Integer>();
         ArrayList<Node> newtexts = new ArrayList<Node>();
@@ -913,20 +927,22 @@ public class HelloApplication extends Application {
             MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
             MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
             if (isGroupOne){
-                RemoveRows(group1);
+                RemoveRows(group1,MESH);
                 Form a = controller.makeText(waitObj.getName(), true);
-                waitObj = controller.waitingTextMake(true,difficultylevel, 200);
+                group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+                waitObj = controller.waitingTextMake(true,difficultylevel, XMAX);
                 object = a;
-                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+                group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
                 moveOnKeyPress(a,object2);
                 // 이 경우에는 이동하지 않으므로 false
             }
             else{
-                RemoveRows(group2);
+                RemoveRows(group2, MESH);
                 Form a = controller.makeText(waitObj2.getName(), true);
-                waitObj2 = controller.waitingTextMake(true,difficultylevel, 200);
+                group2.getChildren().removeAll(waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
+                waitObj2 = controller.waitingTextMake(true,difficultylevel, XMAX);
                 object2 = a;
-                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
+                group2.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
                 moveOnKeyPress(object,a);
                 // 이 경우에는 이동하지 않으므로 false
             }
@@ -960,19 +976,21 @@ public class HelloApplication extends Application {
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
         if (isGroupOne){
-            RemoveRows(group1);
+            RemoveRows(group1 , MESH);
             Form a = controller.makeText(waitObj.getName(), true);
-            waitObj = controller.waitingTextMake(true,difficultylevel, 200);
+            group1.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+            waitObj = controller.waitingTextMake(true,difficultylevel, XMAX);
             object = a;
-            group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+            group1.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a,form2);
         }
         else{
-            RemoveRows(group2);
+            RemoveRows(group2, MESH);
             Form a = controller.makeText(waitObj2.getName(), true);
-            waitObj2 = controller.waitingTextMake(true,difficultylevel, 200);
+            group2.getChildren().removeAll(waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
+            waitObj2 = controller.waitingTextMake(true,difficultylevel, XMAX);
             object2 = a;
-            group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
+            group2.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj2.a, waitObj2.b, waitObj2.c, waitObj2.d);
             moveOnKeyPress(form2,a);
         }
     }
