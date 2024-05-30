@@ -5,44 +5,98 @@
 
 .button {
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-pref-width: 100px;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 100px;
 }
 
-.game-start-button, .item-game-button, .score-board-button, .settings-button, .exit-button {
+.game-start-button, .item-game-button, .score-board-button, .settings-button, .exit-button, .battle-button, .single-button, .timer-game-button{
     -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-border-color: transparent;
     -fx-border-width: 2px;
 }
 
-.game-start-button:focused, .item-game-button:focused, .score-board-button:focused, .settings-button:focused, .exit-button:focused {
-    -fx-border-color: black;
+.game-start-button:focused, .item-game-button:focused, .score-board-button:focused, .settings-button:focused, .exit-button:focused, .single-button:focused, .battle-button:focused, .timer-game-button:focused{
+    -fx-background-color: white; /* 버튼 색상의 알파값을 조절하여 투명도를 변경합니다. */
+        -fx-background-insets: 0, 1, 2;
+        -fx-background-radius: 5, 4, 3;
+        -fx-padding: 15 30 15 30;
+        -fx-font-size: 18px;
+        -fx-text-fill: gray;
+        -fx-font-family: "Arial";
+        -fx-font-weight: bold;
+        -fx-effect: dropshadow( three-pass-box , gray , 5, 0.0 , 0 , 1 ); /* 입체감을 추가합니다. */
+        -fx-transition: background-color 0.3s;
 }
 
+.game-start-button:hover, .item-game-button:hover, .score-board-button:hover, .settings-button:hover, .exit-button:hover, .single-button:hover, .battle-button:hover, .timer-game-button:hover {
+    /* 마우스 호버 시 색상 변경 효과를 줍니다. */
+    -fx-background-color: white; /* 버튼 색상의 알파값을 조절하여 투명도를 변경합니다. */
+            -fx-background-insets: 0, 1, 2;
+            -fx-background-radius: 5, 4, 3;
+            -fx-padding: 15 30 15 30;
+            -fx-font-size: 18px;
+            -fx-text-fill: gray;
+            -fx-font-family: "Arial";
+            -fx-font-weight: bold;
+            -fx-effect: dropshadow( three-pass-box , gray , 5, 0.0 , 0 , 1 ); /* 입체감을 추가합니다. */
+            -fx-transition: background-color 0.3s;
+ }
 
 
 .game-start-button {
-    -fx-background-color: #4CAF50;
+    -fx-background-color: #add8e6;
     -fx-text-fill: white;
+    -fx-font-size: 25px;
 }
 
 .item-game-button {
-    -fx-background-color: #66FFFF;
+    -fx-background-color: #6495ed;
     -fx-text-fill: white;
+    -fx-font-size: 25px;
 }
 
 .score-board-button {
-    -fx-background-color: #FFC107;
+    -fx-background-color: #FFB6C1;
     -fx-text-fill: white;
+    -fx-font-size: 19px;
 }
 
 .settings-button {
-    -fx-background-color: #2196F3;
+    -fx-background-color: #ffa07a;
     -fx-text-fill: white;
+    -fx-font-size: 19px;
 }
 
 .exit-button {
-    -fx-background-color: #F44336;
+    -fx-background-color: #ff6347;
     -fx-text-fill: white;
+    -fx-font-size: 19px;
 }
+
+.single-button{
+  -fx-background-color: #ffd700;
+  -fx-text-fill: white;
+  -fx-font-size: 19px;
+}
+
+.battle-button{
+  -fx-background-color: #ffa500;
+  -fx-text-fill: white;
+  -fx-font-size: 19px;
+}
+
+.timer-game-button{
+  -fx-background-color: #6a5acd;
+  -fx-text-fill: white;
+  -fx-font-size: 25px;
+}
+
+
+.buttonPane {
+    -fx-font-weight: bold;
+    -fx-font-size: 30px;
+    -fx-pref-width: 500px;
+    -fx-pref-height: 600px; /* 예시로 300px로 설정했습니다. 원하는 높이로 조절해주세요. */
+}
+
