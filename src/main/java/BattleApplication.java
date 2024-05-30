@@ -219,17 +219,17 @@ public class BattleApplication extends Application {
         currentTextSetUserData(b);
 
         restartButton = new Button("게임 재시작");
-        restartButton.setLayoutX(XMAX/2);
+        restartButton.setLayoutX(0);
         restartButton.setLayoutY(YMAX/2);
         restartButton.setVisible(false); // 초기에는 보이지 않게 설정
 
         exitButton = new Button("메뉴화면");
-        exitButton.setLayoutX(XMAX/2);
+        exitButton.setLayoutX(0);
         exitButton.setLayoutY(YMAX/2+30);
         exitButton.setVisible(false); // 초기에는 보이지 않게 설정
 
         terminateButton = new Button("게임 나가기");
-        terminateButton.setLayoutX(XMAX / 2);
+        terminateButton.setLayoutX(0);
         terminateButton.setLayoutY(YMAX / 2 + 60);
         terminateButton.setVisible(false);
 

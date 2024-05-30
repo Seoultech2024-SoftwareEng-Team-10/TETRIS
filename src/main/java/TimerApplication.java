@@ -56,6 +56,7 @@ public class TimerApplication extends Application {
     private int linesNo2 = 0;
     private Button restartButton;
     private Button exitButton;
+    private Button terminateButton;
     private Label scoreLabel;
     private static double scoreMultiplier = 1.0;
     private static double scoreMultiplier2 = 1.0;
@@ -229,9 +230,35 @@ public class TimerApplication extends Application {
         currentTextSetUserData(a);
         currentTextSetUserData(b);
 
+
+        restartButton = new Button("게임 재시작");
+        restartButton.setLayoutX(0);
+        restartButton.setLayoutY(YMAX/2);
+        restartButton.setVisible(false); // 초기에는 보이지 않게 설정
+
+        exitButton = new Button("메뉴화면");
+        exitButton.setLayoutX(0);
+        exitButton.setLayoutY(YMAX/2+30);
+        exitButton.setVisible(false); // 초기에는 보이지 않게 설정
+
+        terminateButton = new Button("게임 나가기");
+        terminateButton.setLayoutX(0);
+        terminateButton.setLayoutY(YMAX / 2 + 60);
+        terminateButton.setVisible(false);
+
+
+        // 버튼 이벤트 핸들러 설정
+        restartButton.setOnAction(e -> {startAnimation(hbox);});
+        exitButton.setOnAction(e -> GameStopped(stage));
+        terminateButton.setOnAction(e->System.exit(0));
+
+        group1.getChildren().addAll(restartButton,exitButton, terminateButton);
+
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
+
+
 
 
 
@@ -401,7 +428,7 @@ public class TimerApplication extends Application {
                 }
                 else{
                     if(event.getCode() == KeyCode.ESCAPE) {
-                        startAnimation();
+                        startAnimation(hbox);
                     }
                 }
             }
@@ -1363,12 +1390,12 @@ public class TimerApplication extends Application {
         bringButtonsToFront();
     }
 
-    public void startAnimation() {
+    public void startAnimation(HBox hbox) {
         running = true;
 
         // 게임 재시작 및 종료 버튼 숨김
         // 흑백 효과 해제
-        clearGrayscaleEffect();
+        clearGrayscaleEffect(hbox);
         for (Node node : group1.getChildren()) {
             if (node instanceof Button) {
                 node.setVisible(false);
@@ -1434,12 +1461,13 @@ public class TimerApplication extends Application {
         group1.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
     }
 
-    public void clearGrayscaleEffect() {
-        group1.setEffect(null); // 흑백 효과 해제
+    public void clearGrayscaleEffect(HBox hbox) {
+        hbox.setEffect(null); // 흑백 효과 해제
     }
     private void bringButtonsToFront() {
         if (restartButton != null) restartButton.toFront();
         if (exitButton != null) exitButton.toFront();
+        if(terminateButton!=null) terminateButton.toFront();
     }
 
     public void main(String[] args) {
