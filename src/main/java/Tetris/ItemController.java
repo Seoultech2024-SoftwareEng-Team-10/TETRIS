@@ -24,7 +24,7 @@ public class ItemController {
     }
 
 
-    public static void MoveRight(ItemForm form) {
+    public void MoveRight(ItemForm form) {
         if (form.a.getX() + MOVE <= XMAX - SIZE && form.b.getX() + MOVE <= XMAX - SIZE
                 && form.c.getX() + MOVE <= XMAX - SIZE && form.d.getX() + MOVE <= XMAX - SIZE) {
             int movea = MESH[((int) form.a.getX() / SIZE) + 1][((int) form.a.getY() / SIZE)];
@@ -40,7 +40,7 @@ public class ItemController {
         }
     }
 
-    public static void MoveLeft(ItemForm form) {
+    public void MoveLeft(ItemForm form) {
         if (form.a.getX() - MOVE >= 0 && form.b.getX() - MOVE >= 0 && form.c.getX() - MOVE >= 0
                 && form.d.getX() - MOVE >= 0) {
             int movea = MESH[((int) form.a.getX() / SIZE) - 1][((int) form.a.getY() / SIZE)];
@@ -58,7 +58,7 @@ public class ItemController {
 
 
 
-    public static ItemForm makeText(boolean colorBlindMode, char difficultyLevel,String item,int itemRotate, int XMAX) {
+    public ItemForm makeText(boolean colorBlindMode, char difficultyLevel,String item,int itemRotate, int XMAX) {
 
         int block = 0;
         if(difficultyLevel == 'E'){
@@ -229,7 +229,7 @@ public class ItemController {
 
         return new ItemForm(a, b, c, d, name, colorBlindMode,item,itemRotate);
     }
-    public static ItemForm makeText(String name, boolean colorBlindMode,String item,int itemRotate) {
+    public ItemForm makeText(String name, boolean colorBlindMode,String item,int itemRotate) {
         Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
                 d = new Text(0, 0, "O");//Rectangle --> Text
         if(item == "LineClear"){
@@ -412,7 +412,7 @@ public class ItemController {
 
         return new ItemForm(a, b, c, d, name, colorBlindMode,item,itemRotate);
     }
-    public static ItemForm waitingTextMake(boolean colorBlindMode, char difficultyLevel, String item, int itemRotate, int XMAX){
+    public ItemForm waitingTextMake(boolean colorBlindMode, char difficultyLevel, String item, int itemRotate, int XMAX){
         ItemForm waitObj;
         if(item == "Weight"){
             waitObj = makeText("i",colorBlindMode,"Weight",itemRotate);
@@ -421,7 +421,7 @@ public class ItemController {
             waitObj.c.setText("X");
             waitObj.d.setText("X");
         }else
-            waitObj = makeText(colorBlindMode, difficultyLevel,item,itemRotate);
+            waitObj = makeText(colorBlindMode, difficultyLevel,item,itemRotate, XMAX);
         if(item == "LineClear"){
             switch (itemRotate){
                 case 1: waitObj.a.setText("L"); break;

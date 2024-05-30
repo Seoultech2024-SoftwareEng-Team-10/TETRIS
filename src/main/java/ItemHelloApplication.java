@@ -99,7 +99,7 @@ public class ItemHelloApplication extends Application {
         this.YMAX = sizeConstants.getYMAX();
         this.MESH = sizeConstants.getMESH();
         this.waitObj = itemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
-        this.nextObj = ItemController.makeText(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
+        this.nextObj = itemController.makeText(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
         this.group = new Pane();
         this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
         this.running = true;
@@ -265,9 +265,9 @@ public class ItemHelloApplication extends Application {
                 if(running) {
                     if (pressedKey.equals(KeySettings.getRightKey())) {
                         if (form.getItem() == "Inverse") {
-                            ItemController.MoveLeft(form);
+                            itemController.MoveLeft(form);
                         } else {
-                            ItemController.MoveRight(form);
+                            itemController.MoveRight(form);
                         }
                     } else if (pressedKey.equals(KeySettings.getDownKey())) {
                         if(!(form.getItem()=="Weight"&&!(WeightMove))){
@@ -276,9 +276,9 @@ public class ItemHelloApplication extends Application {
                         }
                     } else if (pressedKey.equals(KeySettings.getLeftKey())) {
                         if (form.getItem() == "Inverse") {
-                            ItemController.MoveRight(form);
+                            itemController.MoveRight(form);
                         } else {
-                            ItemController.MoveLeft(form);
+                            itemController.MoveLeft(form);
                         }
                     } else if (pressedKey.equals(KeySettings.getUpKey())) {
                         MoveTurn(form);
@@ -290,9 +290,9 @@ public class ItemHelloApplication extends Application {
                             MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
                             RemoveRows(group);
                             // 새 블록 생성
-                            ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
+                            ItemForm a = itemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
                             group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-                            waitObj = ItemController.waitingTextMake(true, difficultylevel, item, itemRotate);
+                            waitObj = itemController.waitingTextMake(true, difficultylevel, item, itemRotate,XMAX);
                             object = a;
                             group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
                             moveOnKeyPress(a);
@@ -1051,7 +1051,7 @@ public class ItemHelloApplication extends Application {
                 BombRemoveRows(group,form);
             }
             // 새 블록 생성
-            ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
+            ItemForm a = itemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
             group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             if(itemCounter>=10){
                 int itemNumber = (int)(Math.random()*100);
@@ -1076,7 +1076,7 @@ public class ItemHelloApplication extends Application {
                     itemRotate = 4;
                 itemCounter = 0;
             }
-            waitObj = ItemController.waitingTextMake(true,difficultylevel,item,itemRotate);
+            waitObj = itemController.waitingTextMake(true,difficultylevel,item,itemRotate,XMAX);
             object = a;
             group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a);
@@ -1125,7 +1125,7 @@ public class ItemHelloApplication extends Application {
         }if(form.getItem()=="Bomb"){
             BombRemoveRows(group,form);
         }
-        ItemForm a = ItemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
+        ItemForm a = itemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         if(itemCounter>=10){
             int itemNumber = (int)(Math.random()*100);
@@ -1150,7 +1150,7 @@ public class ItemHelloApplication extends Application {
                 itemRotate = 4;
             itemCounter = 0;
         }
-        waitObj = ItemController.waitingTextMake(true,difficultylevel,item,itemRotate);
+        waitObj = itemController.waitingTextMake(true,difficultylevel,item,itemRotate,XMAX);
         object = a;
         group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         moveOnKeyPress(a);
@@ -1252,7 +1252,7 @@ public class ItemHelloApplication extends Application {
         yesButton.setOnAction(e -> {
             String newNickname = nicknameTextArea.getText();
             try {
-                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 1, LevelConstants.getLevel(), linesNo);
+                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 1, LevelConstants.getLevel(), linesNo,XMAX);
                 yesButton.setVisible(false);
             } catch (Exception ex) {
                 System.out.println("jdbc error");

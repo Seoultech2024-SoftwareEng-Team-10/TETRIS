@@ -6,6 +6,7 @@ import Setting.Settings;
 import Setting.SettingsWindow;
 import Setting.SizeConstants;
 import Tetris.Controller;
+import Tetris.ItemController;
 import User.User;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -41,11 +42,13 @@ public class TetrisWindow extends Application {
         SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
         Controller controller = new Controller(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
         HelloApplication helloApp = new HelloApplication(sizeConstants, controller);
+        ItemController itemController = new ItemController(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
+        ItemHelloApplication itemHelloApp = new ItemHelloApplication(sizeConstants,itemController);
 
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: rgb(211, 211, 211);");
-        //ItemHelloApplication itemHelloApp = new ItemHelloApplication();
+
 
         Pane bottomPane = new Pane();
         bottomPane.setPrefSize(800, 200);
@@ -200,8 +203,7 @@ public class TetrisWindow extends Application {
                     // 새 Stage 생성
                     Stage gameStage = new Stage();
 
-                    // HelloApplication의 start 메소드 호출
-                    //itemHelloApp.start(gameStage);
+                    itemHelloApp.start(gameStage);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
