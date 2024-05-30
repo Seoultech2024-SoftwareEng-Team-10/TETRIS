@@ -1,9 +1,7 @@
 import ScoreBoard.JdbcConnecter;
-import ScoreBoard.ScoreBoard;
 import ScoreBoard.ScoreBoardWindow;
-import ScoreBoard.ScoreRecord;
 import Setting.LevelConstants;
-//import Setting.Settings;
+import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.BlockColor;
 import Tetris.Controller;
@@ -69,20 +67,15 @@ public class HelloApplication extends Application {
     private final String spaceKey;
     private final String upKey;
     private final String downKey;
-    public HelloApplication(SizeConstants sizeConstants,/* Settings settings*/ Controller controller){
+    public HelloApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
         this.controller = controller;
         this.score = 0;
         this.running = true;
-        /*this.rightKey = settings.getRightKey();
-        this.leftKey = settings.getLeftKey();
-        this.upKey = settings.getUpKey();
-        this.downKey = settings.getDownKey();
-        this.spaceKey  = settings.getSpaceKey();*/
-        this.rightKey = "RIGHT";
-        this.leftKey = "LEFT";
-        this.upKey = "UP";
-        this.downKey = "DOWN";
-        this.spaceKey  = "SPACE";
+        this.rightKey = settings.getP1rightKey();
+        this.leftKey = settings.getP1leftKey();
+        this.upKey = settings.getP1upKey();
+        this.downKey = settings.getP1downKey();
+        this.spaceKey  = settings.getSpaceKey();
         this.MOVE = sizeConstants.getMOVE();
         this.SIZE = sizeConstants.getSIZE();
         this.XMAX = sizeConstants.getXMAX();

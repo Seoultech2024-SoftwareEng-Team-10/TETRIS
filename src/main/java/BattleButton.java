@@ -1,3 +1,4 @@
+import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.Controller;
 import javafx.geometry.Insets;
@@ -37,7 +38,7 @@ public class BattleButton {
         normalModeButton.setOnAction(event -> {
             try {
                 Stage gameStage = new Stage();
-                BattleApplication battleApp = new BattleApplication(sizeConstants, controller);
+                BattleApplication battleApp = new BattleApplication(sizeConstants,new Settings(), controller);
                 // HelloApplication의 start 메소드 호출
                 battleApp.start(gameStage);
             } catch (IOException e) {
@@ -54,7 +55,7 @@ public class BattleButton {
         itemModeButton.setOnAction(event -> {
             try {
                 Stage gameStage = new Stage();
-                BattleApplication battleApp = new BattleApplication(sizeConstants, controller);
+                BattleApplication battleApp = new BattleApplication(sizeConstants,new Settings(), controller);
                 //item start 메소드 호출
                 battleApp.start(gameStage);
             } catch (IOException e) {
@@ -71,8 +72,8 @@ public class BattleButton {
 
         timerModeButton.setOnAction(event ->{
             Stage gameStage = new Stage();
-            TimerApplication timerApp = new TimerApplication(sizeConstants,  controller);
             try {
+                TimerApplication timerApp = new TimerApplication(sizeConstants, new Settings(),controller);
                 timerApp.start(gameStage);
             } catch (IOException e) {
                 throw new RuntimeException(e);

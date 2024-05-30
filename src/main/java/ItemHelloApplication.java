@@ -2,6 +2,7 @@
 import ScoreBoard.JdbcConnecter;
 import ScoreBoard.ScoreBoardWindow;
 import Setting.LevelConstants;
+import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.*;
 import User.User;
@@ -28,8 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-import static Setting.SizeConstants.*;
-import Setting.KeySettings;
+
 
 
 
@@ -81,20 +81,15 @@ public class ItemHelloApplication extends Application {
 
     //private JdbcConnecter scoreboardDataInserter;
     //private Text scoretext;
-    public ItemHelloApplication(SizeConstants sizeConstants,/* Settings settings*/ ItemController itemController) {
+    public ItemHelloApplication(SizeConstants sizeConstants, Settings settings, ItemController itemController) {
         this.itemController = itemController;
         this.score = 0;
         this.running = true;
-        /*this.rightKey = settings.getRightKey();
-        this.leftKey = settings.getLeftKey();
-        this.upKey = settings.getUpKey();
-        this.downKey = settings.getDownKey();
-        this.spaceKey  = settings.getSpaceKey();*/
-        this.rightKey = "RIGHT";
-        this.leftKey = "LEFT";
-        this.upKey = "UP";
-        this.downKey = "DOWN";
-        this.spaceKey = "SPACE";
+        this.rightKey = settings.getP1rightKey();
+        this.leftKey = settings.getP1leftKey();
+        this.upKey = settings.getP1upKey();
+        this.downKey = settings.getP1downKey();
+        this.spaceKey  = settings.getSpaceKey();
         this.MOVE = sizeConstants.getMOVE();
         this.SIZE = sizeConstants.getSIZE();
         this.XMAX = sizeConstants.getXMAX();
@@ -265,27 +260,27 @@ public class ItemHelloApplication extends Application {
             public void handle(KeyEvent event) {
                 String pressedKey = event.getCode().toString();
                 if(running) {
-                    if (pressedKey.equals(KeySettings.getRightKey())) {
+                    if (pressedKey.equals(rightKey)) {
                         if (form.getItem() == "Inverse") {
                             itemController.MoveLeft(form);
                         } else {
                             itemController.MoveRight(form);
                         }
-                    } else if (pressedKey.equals(KeySettings.getDownKey())) {
+                    } else if (pressedKey.equals(downKey)){
                         if(!(form.getItem()=="Weight"&&!(WeightMove))){
                             MoveDown(form);
                             scoretext.setText("Score: " + score);
                         }
-                    } else if (pressedKey.equals(KeySettings.getLeftKey())) {
+                    } else if (pressedKey.equals(leftKey)) {
                         if (form.getItem() == "Inverse") {
                             itemController.MoveRight(form);
                         } else {
                             itemController.MoveLeft(form);
                         }
-                    } else if (pressedKey.equals(KeySettings.getUpKey())) {
+                    } else if (pressedKey.equals(upKey)) {
                         if(!(form.getItem()=="Weight"))
                             MoveTurn(form);
-                    } else if (pressedKey.equals(KeySettings.getSpaceKey())) {
+                    } else if (pressedKey.equals(spaceKey)) {
                         if (form.getItem() == "Fixed") {
                             MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
                             MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
@@ -1102,185 +1097,86 @@ public class ItemHelloApplication extends Application {
         return moved; // 이동 여부를 반환
     }*/
     private boolean MoveDown(ItemForm form) {
-        if(form.getItem()=="LineClear"){
-            boolean moved = false; // 이동 여부를 추적하는 변수입니다.
-            if (form.getItem() == "Weight") {
-                if (!(form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
-                        || form.d.getY() == YMAX - SIZE)) {
-                    MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE + 1] = 0;
-                    MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE + 1] = 0;
-                    MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE + 1] = 0;
-                    MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE + 1] = 0;
-                    WeightRemoveRows(group, form);
-                }
+        boolean moved = false; // 이동 여부를 추적하는 변수입니다.
+        if (form.getItem() == "Weight") {
+            if (!(form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
+                    || form.d.getY() == YMAX - SIZE)) {
+                MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE + 1] = 0;
+                MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE + 1] = 0;
+                MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE + 1] = 0;
+                MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE + 1] = 0;
+                WeightRemoveRows(group, form);
             }
-
-            if (form.a.getY() + MOVE < YMAX && form.b.getY() + MOVE < YMAX && form.c.getY() + MOVE < YMAX
-                    && form.d.getY() + MOVE < YMAX && !(moveA(form) || moveB(form) || moveC(form) || moveD(form))) {
-                form.a.setY(form.a.getY() + MOVE);
-                form.b.setY(form.b.getY() + MOVE);
-                form.c.setY(form.c.getY() + MOVE);
-                form.d.setY(form.d.getY() + MOVE);
-                moved = true; // 실제로 이동했으므로 true로 설정
-                score += scoreMultiplier;
-            } if (form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
-                    || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form)) {
-                // 여기서는 블록이 다음 위치로 이동할 수 없으므로, 현재 위치를 고정하고 새로운 블록을 생성합니다.
-                MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
-                MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
-                MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
-                MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
-                RemoveRows(group);
-                WeightMove = true;
-                if (form.getItem() == "LineClear") {
-                    switch (form.getItemRotate()) {
-                        case 1:
-                            LineClearY = (int) form.a.getY() / SIZE;
-                            break;
-                        case 2:
-                            LineClearY = (int) form.b.getY() / SIZE;
-                            break;
-                        case 3:
-                            LineClearY = (int) form.c.getY() / SIZE;
-                            break;
-                        case 4:
-                            LineClearY = (int) form.d.getY() / SIZE;
-                            break;
-                    }
-                }
-                if (form.getItem() == "Bomb") {
-                    BombRemoveRows(group, form);
-                }
-                // 새 블록 생성
-                ItemForm a = itemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
-                group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-                if (itemCounter >= 10) {
-                    int itemNumber = (int) (Math.random() * 100);
-                    int itemRotateNumber = (int) (Math.random() * 100);
-                    if (itemNumber < 20)
-                        item = "LineClear";
-                    else if (itemNumber < 40)
-                        item = "Weight";
-                    else if (itemNumber < 60)
-                        item = "Inverse";
-                    else if (itemNumber < 80)
-                        item = "Bomb";
-                    else
-                        item = "Fixed";
-                    if (itemRotateNumber < 25)
-                        itemRotate = 1;
-                    else if (itemRotateNumber < 50)
-                        itemRotate = 2;
-                    else if (itemRotateNumber < 75)
-                        itemRotate = 3;
-                    else
-                        itemRotate = 4;
-                    itemCounter = 0;
-                }
-                waitObj = itemController.waitingTextMake(true, difficultylevel, item, itemRotate, XMAX);
-                object = a;
-                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-                moveOnKeyPress(a);
-                moved = false; // 이 경우에는 이동하지 않으므로 false
-                item = "";
-                itemRotate = 0;
-            }
-
-
-            return moved; // 이동 여부를 반환
-
-        }else {
-            boolean moved = false; // 이동 여부를 추적하는 변수입니다.
-            if (form.getItem() == "Weight") {
-                if (!(form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
-                        || form.d.getY() == YMAX - SIZE)) {
-                    MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE + 1] = 0;
-                    MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE + 1] = 0;
-                    MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE + 1] = 0;
-                    MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE + 1] = 0;
-                    WeightRemoveRows(group, form);
-                }
-            }
-            if (form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
-                    || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form)) {
-                // 여기서는 블록이 다음 위치로 이동할 수 없으므로, 현재 위치를 고정하고 새로운 블록을 생성합니다.
-                MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
-                MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
-                MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
-                MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
-                RemoveRows(group);
-                WeightMove = true;
-                if (form.getItem() == "LineClear") {
-                    switch (form.getItemRotate()) {
-                        case 1:
-                            LineClearY = (int) form.a.getY() / SIZE;
-                            break;
-                        case 2:
-                            LineClearY = (int) form.b.getY() / SIZE;
-                            break;
-                        case 3:
-                            LineClearY = (int) form.c.getY() / SIZE;
-                            break;
-                        case 4:
-                            LineClearY = (int) form.d.getY() / SIZE;
-                            break;
-                    }
-                }
-                if (form.getItem() == "Bomb") {
-                    BombRemoveRows(group, form);
-                }
-                // 새 블록 생성
-                ItemForm a = itemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
-                group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-                if (itemCounter >= 10) {
-                    int itemNumber = (int) (Math.random() * 100);
-                    int itemRotateNumber = (int) (Math.random() * 100);
-                    if (itemNumber < 20)
-                        item = "LineClear";
-                    else if (itemNumber < 40)
-                        item = "Weight";
-                    else if (itemNumber < 60)
-                        item = "Inverse";
-                    else if (itemNumber < 80)
-                        item = "Bomb";
-                    else
-                        item = "Fixed";
-                    if (itemRotateNumber < 25)
-                        itemRotate = 1;
-                    else if (itemRotateNumber < 50)
-                        itemRotate = 2;
-                    else if (itemRotateNumber < 75)
-                        itemRotate = 3;
-                    else
-                        itemRotate = 4;
-                    itemCounter = 0;
-                }
-                waitObj = itemController.waitingTextMake(true, difficultylevel, item, itemRotate, XMAX);
-                object = a;
-                group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-                moveOnKeyPress(a);
-                moved = false; // 이 경우에는 이동하지 않으므로 false
-                item = "";
-                itemRotate = 0;
-            }
-            if (form.a.getY() + MOVE < YMAX && form.b.getY() + MOVE < YMAX && form.c.getY() + MOVE < YMAX
-                    && form.d.getY() + MOVE < YMAX && !(moveA(form) || moveB(form) || moveC(form) || moveD(form))) {
-                form.a.setY(form.a.getY() + MOVE);
-                form.b.setY(form.b.getY() + MOVE);
-                form.c.setY(form.c.getY() + MOVE);
-                form.d.setY(form.d.getY() + MOVE);
-                moved = true; // 실제로 이동했으므로 true로 설정
-                score += scoreMultiplier;
-            }
-
-
-            return moved; // 이동 여부를 반환
         }
+        if (form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
+                || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form)) {
+            MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
+            MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;
+            MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
+            MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
+            RemoveRows(group);
+            WeightMove = true;
+            if (form.getItem() == "LineClear") {
+                switch (form.getItemRotate()) {
+                    case 1: LineClearY = (int) form.a.getY() / SIZE; break;
+                    case 2: LineClearY = (int) form.b.getY() / SIZE; break;
+                    case 3: LineClearY = (int) form.c.getY() / SIZE; break;
+                    case 4: LineClearY = (int) form.d.getY() / SIZE; break;
+                }
+                RemoveRows(group);  // 즉시 행 삭제
+            }
+            if (form.getItem() == "Bomb") {
+                BombRemoveRows(group, form);
+            }
+            ItemForm a = itemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
+            group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+            if (itemCounter >= 10) {
+                int itemNumber = (int) (Math.random() * 100);
+                int itemRotateNumber = (int) (Math.random() * 100);
+                if (itemNumber < 20)
+                    item = "LineClear";
+                else if (itemNumber < 40)
+                    item = "Weight";
+                else if (itemNumber < 60)
+                    item = "Inverse";
+                else if (itemNumber < 80)
+                    item = "Bomb";
+                else
+                    item = "Fixed";
+                if (itemRotateNumber < 25)
+                    itemRotate = 1;
+                else if (itemRotateNumber < 50)
+                    itemRotate = 2;
+                else if (itemRotateNumber < 75)
+                    itemRotate = 3;
+                else
+                    itemRotate = 4;
+                itemCounter = 0;
+            }
+            waitObj = itemController.waitingTextMake(true, difficultylevel, item, itemRotate, XMAX);
+            object = a;
+            group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
+            moveOnKeyPress(a);
+            moved = false; // 이 경우에는 이동하지 않으므로 false
+            item = "";
+            itemRotate = 0;
+        }
+        if (form.a.getY() + MOVE < YMAX && form.b.getY() + MOVE < YMAX && form.c.getY() + MOVE < YMAX
+                && form.d.getY() + MOVE < YMAX && !(moveA(form) || moveB(form) || moveC(form) || moveD(form))) {
+            form.a.setY(form.a.getY() + MOVE);
+            form.b.setY(form.b.getY() + MOVE);
+            form.c.setY(form.c.getY() + MOVE);
+            form.d.setY(form.d.getY() + MOVE);
+            moved = true; // 실제로 이동했으므로 true로 설정
+            score += scoreMultiplier;
+        }
+
+        return moved; // 이동 여부를 반환
     }
 
     private void DirectMoveDown(ItemForm form) {
         while (!(form.a.getY() == YMAX - SIZE || form.b.getY() == YMAX - SIZE || form.c.getY() == YMAX - SIZE
-                || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form))){
+                || form.d.getY() == YMAX - SIZE || moveA(form) || moveB(form) || moveC(form) || moveD(form))) {
             form.a.setY(form.a.getY() + MOVE);
             form.b.setY(form.b.getY() + MOVE);
             form.c.setY(form.c.getY() + MOVE);
@@ -1294,47 +1190,49 @@ public class ItemHelloApplication extends Application {
         MESH[(int) form.c.getX() / SIZE][(int) form.c.getY() / SIZE] = 1;
         MESH[(int) form.d.getX() / SIZE][(int) form.d.getY() / SIZE] = 1;
         RemoveRows(group);
-        if(form.getItem()=="LineClear"){
-            switch (form.getItemRotate()){
-                case 1: LineClearY = (int)form.a.getY()/SIZE;break;
-                case 2: LineClearY = (int)form.b.getY()/SIZE;break;
-                case 3: LineClearY = (int)form.c.getY()/SIZE;break;
-                case 4: LineClearY = (int)form.d.getY()/SIZE;break;
+        if (form.getItem() == "LineClear") {
+            switch (form.getItemRotate()) {
+                case 1: LineClearY = (int) form.a.getY() / SIZE; break;
+                case 2: LineClearY = (int) form.b.getY() / SIZE; break;
+                case 3: LineClearY = (int) form.c.getY() / SIZE; break;
+                case 4: LineClearY = (int) form.d.getY() / SIZE; break;
             }
-        }if(form.getItem()=="Bomb"){
-            BombRemoveRows(group,form);
+            RemoveRows(group);  // 즉시 행 삭제
+        }
+        if (form.getItem() == "Bomb") {
+            BombRemoveRows(group, form);
         }
         ItemForm a = itemController.makeText(waitObj.getName(), true, waitObj.getItem(), waitObj.getItemRotate());
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        if(itemCounter>=10){
-            int itemNumber = (int)(Math.random()*100);
-            int itemRotateNumber = (int)(Math.random()*100);
-            if(itemNumber<20)
-                item="LineClear";
-            else if(itemNumber<40)
-                item="Weight";
-            else if(itemNumber<60)
-                item="Inverse";
-            else if(itemNumber<80)
+        if (itemCounter >= 10) {
+            int itemNumber = (int) (Math.random() * 100);
+            int itemRotateNumber = (int) (Math.random() * 100);
+            if (itemNumber < 20)
+                item = "LineClear";
+            else if (itemNumber < 40)
+                item = "Weight";
+            else if (itemNumber < 60)
+                item = "Inverse";
+            else if (itemNumber < 80)
                 item = "Bomb";
             else
                 item = "Fixed";
-            if(itemRotateNumber<25)
+            if (itemRotateNumber < 25)
                 itemRotate = 1;
-            else if(itemRotateNumber<50)
+            else if (itemRotateNumber < 50)
                 itemRotate = 2;
-            else if(itemRotateNumber<75)
+            else if (itemRotateNumber < 75)
                 itemRotate = 3;
             else
                 itemRotate = 4;
             itemCounter = 0;
         }
-        waitObj = itemController.waitingTextMake(true,difficultylevel,item,itemRotate,XMAX);
+        waitObj = itemController.waitingTextMake(true, difficultylevel, item, itemRotate, XMAX);
         object = a;
         group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         moveOnKeyPress(a);
-        item ="";
-        itemRotate=0;
+        item = "";
+        itemRotate = 0;
     }
 
 

@@ -94,26 +94,21 @@ public class TimerApplication extends Application {
 
     private int score, score2;
     private double Frame;
-    public TimerApplication(SizeConstants sizeConstants /*Settings settings*/, Controller controller){
+    public TimerApplication(SizeConstants sizeConstants ,Settings settings, Controller controller){
         this.controller = controller;
         this.score = 0;
         this.score2 = 0;
         this.running = true;
-        this.wKey = "W";
-        this.aKey = "A";
-        this.sKey = "S";
-        this.shiftKey = "SHIFT";
-        this.dKey = "D";
-        this.rightKey = "RIGHT";
-        this.leftKey = "LEFT";
-        this.upKey = "UP";
-        this.downKey = "DOWN";
-        this.spaceKey  = "SPACE";
-        /*this.rightKey = settings.getRightKey();
-        this.leftKey = settings.getLeftKey();
-        this.upKey = settings.getUpKey();
-        this.downKey = settings.getDownKey();
-        this.spaceKey  = settings.getSpaceKey();*/
+        this.wKey = settings.getP2upKey();
+        this.aKey = settings.getP2leftKey();
+        this.sKey = settings.getP2downKey();
+        this.dKey = settings.getP2rightKey();
+        this.shiftKey = settings.getShiftKey();
+        this.rightKey = settings.getP1rightKey();
+        this.leftKey = settings.getP1leftKey();
+        this.upKey = settings.getP1upKey();
+        this.downKey = settings.getP1downKey();
+        this.spaceKey  = settings.getSpaceKey();
 
 
         this.MOVE = sizeConstants.getMOVE();

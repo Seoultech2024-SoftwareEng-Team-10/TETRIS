@@ -1,6 +1,7 @@
 import ScoreBoard.ScoreBoard;
 import ScoreBoard.ScoreBoardWindow;
 import ScoreBoard.ScoreRecord;
+import Setting.Settings;
 import ScoreBoard.JdbcConnecter;
 import Setting.Settings;
 import Setting.SettingsWindow;
@@ -40,10 +41,7 @@ public class TetrisWindow extends Application {
         Settings settings = new Settings();
         settings.printSettings();
         SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
-        Controller controller = new Controller(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
-        HelloApplication helloApp = new HelloApplication(sizeConstants, controller);
-        ItemController itemController = new ItemController(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
-        ItemHelloApplication itemHelloApp = new ItemHelloApplication(sizeConstants,itemController);
+
 
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
@@ -125,7 +123,17 @@ public class TetrisWindow extends Application {
         );
 
         //battle-button
-        battleModeButton.setOnAction(event ->BattleButton.show(sizeConstants, controller));
+        battleModeButton.setOnAction(event ->{
+            try {
+                Settings setting = new Settings();
+                SizeConstants sizeConstant = new SizeConstants(setting.getWindowWidth(), setting.getWindowHeight());
+                Controller controller = new Controller(sizeConstant.getMOVE(), sizeConstant.getXMAX(),sizeConstant.getYMAX(), sizeConstant.getSIZE(), sizeConstant.getFontSize() ,sizeConstant.getMESH());
+                BattleButton.show(sizeConstant, controller);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
         battleModeButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 // 버튼에 대한 동작 수행
@@ -182,6 +190,11 @@ public class TetrisWindow extends Application {
                 if(user!=null) {
                     // 새 Stage 생성
                     Stage gameStage = new Stage();
+                    Settings setting = new Settings();
+                    setting.printSettings();
+                    SizeConstants sizeConstant = new SizeConstants(setting.getWindowWidth(), setting.getWindowHeight());
+                    Controller  controller = new Controller(sizeConstant.getMOVE(), sizeConstant.getXMAX(),sizeConstant.getYMAX(), sizeConstant.getSIZE(), sizeConstant.getFontSize() ,sizeConstant.getMESH());
+                    HelloApplication helloApp = new HelloApplication(sizeConstant, setting,controller);
                     helloApp.start(gameStage);
                 }
             } catch (Exception e) {
@@ -202,7 +215,11 @@ public class TetrisWindow extends Application {
                 if(user!=null) {
                     // 새 Stage 생성
                     Stage gameStage = new Stage();
-
+                    Settings setting = new Settings();
+                    setting.printSettings();
+                    SizeConstants sizeConstant = new SizeConstants(setting.getWindowWidth(), setting.getWindowHeight());
+                    ItemController itemController = new ItemController(sizeConstant.getMOVE(), sizeConstant.getXMAX(),sizeConstant.getYMAX(), sizeConstant.getSIZE(), sizeConstant.getFontSize() ,sizeConstant.getMESH());
+                    ItemHelloApplication itemHelloApp = new ItemHelloApplication(sizeConstant,setting,itemController);
                     itemHelloApp.start(gameStage);
                 }
             } catch (Exception e) {
