@@ -22,17 +22,23 @@ public class KeySettingsWindow extends Application {
     private SettingsWindow settingsWindow;
     private Settings settings;
 
-    public static Label rightKeyLabel;
-    public static Label downKeyLabel;
-    public static Label leftKeyLabel;
-    public static Label upKeyLabel;
+    public static Label p1rightKeyLabel;
+    public static Label p1downKeyLabel;
+    public static Label p1leftKeyLabel;
+    public static Label p1upKeyLabel;
     public static Label spaceKeyLabel;
+    public static Label p2rightKeyLabel;
+    public static Label p2downKeyLabel;
+    public static Label p2leftKeyLabel;
+    public static Label p2upKeyLabel;
+    public static Label shiftKeyLabel;
+
     private KeyCode currentlyEditingKeyCode;
 
     public KeySettingsWindow(SettingsWindow settingsWindow, Settings settings) {
         this.settingsWindow = settingsWindow;
         this.settings = settings;
-    }
+        }
 
     @Override
     public void start(Stage stage) {
@@ -44,30 +50,55 @@ public class KeySettingsWindow extends Application {
         grid.setPadding(new Insets(25, 25, 25, 25));
 
         // 현재 설정된 키 정보를 표시하는 라벨 생성
-        grid.add(new Label("Right Key:"), 0, 0);
-        rightKeyLabel = new Label(settings.getRightKey());
-        rightKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getRightKey())));
-        grid.add(rightKeyLabel, 1, 0);
+        grid.add(new Label("P1 Right Key:"), 0, 0);
+        p1rightKeyLabel = new Label(settings.getP1rightKey());
+        p1rightKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP1rightKey())));
+        grid.add(p1rightKeyLabel, 1, 0);
 
-        grid.add(new Label("Down Key:"), 0, 1);
-        downKeyLabel = new Label(settings.getDownKey());
-        downKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getDownKey())));
-        grid.add(downKeyLabel, 1, 1);
+        grid.add(new Label("P1 Down Key:"), 0, 1);
+        p1downKeyLabel = new Label(settings.getP1downKey());
+        p1downKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP1downKey())));
+        grid.add(p1downKeyLabel, 1, 1);
 
-        grid.add(new Label("Left Key:"), 0, 2);
-        leftKeyLabel = new Label(settings.getLeftKey());
-        leftKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getLeftKey())));
-        grid.add(leftKeyLabel, 1, 2);
+        grid.add(new Label("P1 Left Key:"), 0, 2);
+        p1leftKeyLabel = new Label(settings.getP1leftKey());
+        p1leftKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP1leftKey())));
+        grid.add(p1leftKeyLabel, 1, 2);
 
-        grid.add(new Label("Up Key:"), 0, 3);
-        upKeyLabel = new Label(settings.getUpKey());
-        upKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getUpKey())));
-        grid.add(upKeyLabel, 1, 3);
+        grid.add(new Label("P1 Up Key:"), 0, 3);
+        p1upKeyLabel = new Label(settings.getP1upKey());
+        p1upKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP1upKey())));
+        grid.add(p1upKeyLabel, 1, 3);
 
         grid.add(new Label("Space Key:"), 0, 4);
         spaceKeyLabel = new Label(settings.getSpaceKey());
         spaceKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getSpaceKey())));
         grid.add(spaceKeyLabel, 1, 4);
+
+        grid.add(new Label("P2 Right Key:"), 5, 0);
+        p2rightKeyLabel = new Label(settings.getP2rightKey());
+        p2rightKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP2rightKey())));
+        grid.add(p2rightKeyLabel, 6, 0);
+
+        grid.add(new Label("P2 Down Key:"), 5, 1);
+        p2downKeyLabel = new Label(settings.getP2downKey());
+        p2downKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP2downKey())));
+        grid.add(p2downKeyLabel, 6, 1);
+
+        grid.add(new Label("P2 Left Key:"), 5, 2);
+        p2leftKeyLabel = new Label(settings.getP2leftKey());
+        p2leftKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP2leftKey())));
+        grid.add(p2leftKeyLabel, 6, 2);
+
+        grid.add(new Label("P2 Up Key:"), 5, 3);
+        p2upKeyLabel = new Label(settings.getP2upKey());
+        p2upKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getP2upKey())));
+        grid.add(p2upKeyLabel, 6, 3);
+
+        grid.add(new Label("Shift Key:"), 5, 4);
+        shiftKeyLabel = new Label(settings.getShiftKey());
+        shiftKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getShiftKey())));
+        grid.add(shiftKeyLabel, 6, 4);
 
         Button saveButton = new Button("Save");
         saveButton.setOnAction(event -> {
@@ -79,7 +110,7 @@ public class KeySettingsWindow extends Application {
         });
         grid.add(saveButton, 0, 5, 2, 1); // 저장 버튼 GridPane에 추가
 
-        Scene scene = new Scene(grid, 300, 200);
+        Scene scene = new Scene(grid, 450, 200);
         stage.setScene(scene);
 
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -90,7 +121,6 @@ public class KeySettingsWindow extends Application {
                 showDuplicateKeyAlert();
                 event.consume(); // 창 닫힘 이벤트를 소비하여 창이 닫히지 않도록 함
             } else {
-                //settings.saveSettings(); // 여기에 Settings 인스턴스 저장 코드 추가
                 event.consume(); // 창 닫힘 이벤트를 소비하여 창이 닫히도록 함
             }
         });
@@ -123,6 +153,7 @@ public class KeySettingsWindow extends Application {
             updateKeySettings(currentlyEditingKeyCode, newKeyCode);
             updateKeyLabelText(currentlyEditingKeyCode, newKeyCode);
             currentlyEditingKeyCode = null;
+            settings.printSettings();
             stage.close();
         });
         grid.add(saveButton, 0, 3, 2, 1);
@@ -139,9 +170,10 @@ public class KeySettingsWindow extends Application {
 
     private boolean isKeyCodeDuplicated() {
         Set<String> keyCodes = new HashSet<>(Arrays.asList(
-                settings.getRightKey(), settings.getDownKey(), settings.getLeftKey(), settings.getUpKey(), settings.getSpaceKey()
-        ));
-        return keyCodes.size() != 5;
+                settings.getP1rightKey(), settings.getP1downKey(), settings.getP1leftKey(), settings.getP1upKey(), settings.getSpaceKey(),
+                settings.getP2rightKey(), settings.getP2downKey(), settings.getP2leftKey(), settings.getP2upKey(), settings.getShiftKey()
+                ));
+        return keyCodes.size() != 10;
     }
 
     private void showDuplicateKeyAlert() {
@@ -155,15 +187,25 @@ public class KeySettingsWindow extends Application {
     private String getCurrentKeyLabel(KeyCode keyCode) {
         switch (keyCode) {
             case UP:
-                return "Up";
+                return "P1 Up";
             case LEFT:
-                return "Left";
+                return "P1 Left";
             case DOWN:
-                return "Down";
+                return "P1 Down";
             case RIGHT:
-                return "Right";
+                return "P1 Right";
             case SPACE:
                 return "Space";
+            case W:
+                return "P2 Right";
+            case A:
+                return "P2 Left";
+            case S:
+                return "P2 Down";
+            case D:
+                return "P2 Right";
+            case SHIFT:
+                return "Shift";
             default:
                 return "";
         }
@@ -179,48 +221,88 @@ public class KeySettingsWindow extends Application {
     }
 
     private void updateKeyLabelText(KeyCode oldKeyCode, KeyCode newKeyCode) {
-        //Settings settings = Settings.getInstance();
 
-        if (oldKeyCode == KeyCode.valueOf(settings.getUpKey())) {
-            upKeyLabel.setText(newKeyCode.getName());
-            settings.setUpKey(newKeyCode.toString());
-        } else if (oldKeyCode == KeyCode.valueOf(settings.getLeftKey())) {
-            leftKeyLabel.setText(newKeyCode.getName());
-            settings.setLeftKey(newKeyCode.toString());
-        } else if (oldKeyCode == KeyCode.valueOf(settings.getDownKey())) {
-            downKeyLabel.setText(newKeyCode.getName());
-            settings.setDownKey(newKeyCode.toString());
-        } else if (oldKeyCode == KeyCode.valueOf(settings.getRightKey())) {
-            rightKeyLabel.setText(newKeyCode.getName());
-            settings.setRightKey(newKeyCode.toString());
+        if (oldKeyCode == KeyCode.valueOf(settings.getP1upKey())) {
+            p1upKeyLabel.setText(newKeyCode.getName());
+            settings.setP1upKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getP1leftKey())) {
+            p1leftKeyLabel.setText(newKeyCode.getName());
+            settings.setP1leftKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getP1downKey())) {
+            p1downKeyLabel.setText(newKeyCode.getName());
+            settings.setP1downKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getP1rightKey())) {
+            p1rightKeyLabel.setText(newKeyCode.getName());
+            settings.setP1rightKey(newKeyCode.toString());
         } else if (oldKeyCode == KeyCode.valueOf(settings.getSpaceKey())) {
             spaceKeyLabel.setText(newKeyCode.getName());
             settings.setSpaceKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getP2leftKey())) {
+            p2leftKeyLabel.setText(newKeyCode.getName());
+            settings.setP2leftKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getP2downKey())) {
+            p2downKeyLabel.setText(newKeyCode.getName());
+            settings.setP2downKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getP2rightKey())) {
+            p2rightKeyLabel.setText(newKeyCode.getName());
+            settings.setP2rightKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getShiftKey())) {
+            shiftKeyLabel.setText(newKeyCode.getName());
+            settings.setShiftKey(newKeyCode.toString());
         }
     }
 
     public void updateKeySettings(KeyCode oldKeyCode, KeyCode newKeyCode) {
-        //Settings settings = Settings.getInstance(); // Settings 인스턴스를 가져옵니다.
         switch (oldKeyCode) {
             case UP:
-                settings.setUpKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
-                upKeyLabel.setText(settings.getUpKey());
+                settings.setP1upKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
+                p1upKeyLabel.setText(settings.getP1upKey());
+                settings.updateAndSaveKey("UP", String.valueOf(newKeyCode));
                 break;
             case LEFT:
-                settings.setLeftKey(newKeyCode.toString());
-                leftKeyLabel.setText(settings.getLeftKey());
+                settings.setP1leftKey(newKeyCode.toString());
+                p1leftKeyLabel.setText(settings.getP1leftKey());
+                settings.updateAndSaveKey("LEFT", String.valueOf(newKeyCode));
                 break;
             case DOWN:
-                settings.setDownKey(newKeyCode.toString());
-                downKeyLabel.setText(settings.getDownKey());
+                settings.setP1downKey(newKeyCode.toString());
+                p1downKeyLabel.setText(settings.getP1downKey());
+                settings.updateAndSaveKey("DOWN", String.valueOf(newKeyCode));
                 break;
             case RIGHT:
-                settings.setRightKey(newKeyCode.toString());
-                rightKeyLabel.setText(settings.getRightKey());
+                settings.setP1rightKey(newKeyCode.toString());
+                p1rightKeyLabel.setText(settings.getP1rightKey());
+                settings.updateAndSaveKey("RIGHT", String.valueOf(newKeyCode));
                 break;
             case SPACE:
                 settings.setSpaceKey(newKeyCode.toString());
                 spaceKeyLabel.setText(settings.getSpaceKey());
+                settings.updateAndSaveKey("SPACE", String.valueOf(newKeyCode));
+                break;
+            case W:
+                settings.setP2upKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
+                p2upKeyLabel.setText(settings.getP2upKey());
+                settings.updateAndSaveKey("W", String.valueOf(newKeyCode));
+                break;
+            case A:
+                settings.setP2leftKey(newKeyCode.toString());
+                p2leftKeyLabel.setText(settings.getP2leftKey());
+                settings.updateAndSaveKey("A", String.valueOf(newKeyCode));
+                break;
+            case S:
+                settings.setP2downKey(newKeyCode.toString());
+                p2downKeyLabel.setText(settings.getP2downKey());
+                settings.updateAndSaveKey("S", String.valueOf(newKeyCode));
+                break;
+            case D:
+                settings.setP2rightKey(newKeyCode.toString());
+                p2rightKeyLabel.setText(settings.getP2rightKey());
+                settings.updateAndSaveKey("D", String.valueOf(newKeyCode));
+                break;
+            case SHIFT:
+                settings.setShiftKey(newKeyCode.toString());
+                shiftKeyLabel.setText(settings.getShiftKey());
+                settings.updateAndSaveKey("SHIFT", String.valueOf(newKeyCode));
                 break;
             default:
                 // 기타 키에 대한 처리 추가
@@ -228,7 +310,7 @@ public class KeySettingsWindow extends Application {
         }
     }
 
-    public static void main(String[] args) {
-        launch(args);
+        public static void main(String[] args) {
+            launch(args);
+        }
     }
-}
