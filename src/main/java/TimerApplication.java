@@ -2,6 +2,7 @@
 import Animation.Flash;
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
+import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.BlockColor;
 import Tetris.Controller;
@@ -19,7 +20,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -28,12 +28,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import User.SessionManager;
 
 import static Tetris.Controller.currentTextSetUserData;
 
 
-public class BattleApplication extends Application {
+public class TimerApplication extends Application {
     private HBox hbox;
     private AnimationTimer timer;
     private Text scoretext1, scoretext2;
@@ -45,7 +44,9 @@ public class BattleApplication extends Application {
     private static Pane group2 = new Pane();
     private static Scene scene;
     private static int top;
+    private static int top2;
     private static boolean game = true;
+    private ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
     private static char difficultylevel = LevelConstants.difficultyLevel;
     private Form nextObj, nextObj2;
     private Form waitObj, waitObj2;
@@ -54,6 +55,8 @@ public class BattleApplication extends Application {
     private static int linesNo = 0;
     private int linesNo2 = 0;
     private Button restartButton;
+    private Button exitButton;
+    private Label scoreLabel;
     private static double scoreMultiplier = 1.0;
     private static double scoreMultiplier2 = 1.0;
     private static double frameMultiplier = 0.8;
@@ -65,7 +68,10 @@ public class BattleApplication extends Application {
     private static int meshTop = 0;
     private static int meshTop2 = 0;
     private static double fontSize;
+    private static int timerSecCounter = 0;
+    private static int winner = 0;
 
+    //private final User user;
     private final Controller controller;
     private final int MOVE;
     private final int SIZE;
@@ -84,7 +90,7 @@ public class BattleApplication extends Application {
 
     private int score, score2;
     private double Frame;
-    public BattleApplication(SizeConstants sizeConstants, /*Settings settings,*/ Controller controller){
+    public TimerApplication(SizeConstants sizeConstants /*Settings settings*/, Controller controller){
         this.controller = controller;
         this.score = 0;
         this.score2 = 0;
@@ -126,9 +132,12 @@ public class BattleApplication extends Application {
         this.miniMESH2 = new int[10][11];
         this.meshTop = 0;
         this.meshTop2 = 0;
+        this.timerSecCounter = 0;
+        this.winner = 0;
 
         this.running = true;
 
+        //this.user = TetrisWindow.user;
         this.linesNo = 0;
         this.linesNo2 = 0;
         this.Frame = 1000000000;
@@ -156,6 +165,11 @@ public class BattleApplication extends Application {
     }
     @Override
     public void start(Stage stage) throws IOException {
+        System.out.println(Frame);
+        System.out.println(score);
+        System.out.println(linesNo);
+        //User currentUser = SessionManager.getCurrentUser();
+        //System.out.println(currentUser.getNickname());
         stage.close();
         if(LevelConstants.getLevel()=='E'){
             frameMultiplier = 0.8;
@@ -176,9 +190,9 @@ public class BattleApplication extends Application {
 
         group1 = new Pane();
         group2 = new Pane();
-        hbox = new HBox(0);
+        hbox = new HBox(50);
         hbox.getChildren().addAll(group2,group1);
-        scene = new Scene(hbox,-1 , YMAX-30);
+        scene = new Scene(hbox, 1500, YMAX-40);
         running = true;
         group1.getChildren().clear();
         group2.getChildren().clear();
@@ -201,6 +215,7 @@ public class BattleApplication extends Application {
         group1.setStyle("-fx-background-color: black;");
         group2.getChildren().addAll(scoretext2, line, linetext2, wait2.a, wait2.b, wait2.c, wait2.d);
         group2.setStyle("-fx-background-color: black;");
+
         Form a = nextObj;
         Form b = nextObj2;
         group1.getChildren().addAll(a.a, a.b, a.c, a.d);
@@ -218,12 +233,38 @@ public class BattleApplication extends Application {
         stage.setTitle("T E T R I S");
         stage.show();
 
+
+
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
                 if (running) {
+                    if(timerSecCounter >=20){//timeSecCounter = 1초마다 카운팅 +1
+                        if(winner == 1){
+                            //유저1 승리
+                            Text winnerText = new Text("player 1 win");
+                            winnerText.setUserData("level");
+                            winnerText.setStyle("-fx-font: 60 Lato;");
+                            winnerText.setY(350);
+                            winnerText.setX(XMAX + 60);
+                            winnerText.setFill(Color.GREEN);
+                            group1.getChildren().add(winnerText);
+                        }else{
+                            Text winnerText = new Text("player 2 win");
+                            winnerText.setUserData("level");
+                            winnerText.setStyle("-fx-font: 60 Lato;");
+                            winnerText.setY(350);
+                            winnerText.setX(XMAX + 60);
+                            winnerText.setFill(Color.GREEN);
+                            group1.getChildren().add(winnerText);
+                            //유저2 승리
+                        }
+                        running = false;
+                        GameOver();
+                    }
+
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
                         group1.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         group2.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
@@ -232,20 +273,50 @@ public class BattleApplication extends Application {
                             group1.getChildren().clear();
                             group2.getChildren().clear();
                         });
+                        timerSecCounter++;
                         lastUpdate = now;
+                        winner = meshTop < meshTop2 ?  1 : 2;//meshTop = 맨위의 블록 위치
+                        System.out.println(timerSecCounter); //그냥 확인용 나중에 제출때 지워야됨
 
                         if (object.a.getY() == 0 || object.b.getY() == 0 || object.c.getY() == 0 || object.d.getY() == 0)
                             top++;
                         else
                             top = 0;
 
-                        if (top == 2) {
+                        if (object2.a.getY() == 0 || object2.b.getY() == 0 || object2.c.getY() == 0 || object2.d.getY() == 0)
+                            top2++;
+                        else
+                            top2 = 0;
+
+                        if (top == 2 || top2 == 2) {
+
+                            if(winner == 1){
+                                //유저1 승리
+                                Text winnerText = new Text("player 1 win");
+                                winnerText.setUserData("level");
+                                winnerText.setStyle("-fx-font: 60 Lato;");
+                                winnerText.setY(350);
+                                winnerText.setX(XMAX + 60);
+                                winnerText.setFill(Color.GREEN);
+                                group1.getChildren().add(winnerText);
+                            }else{
+                                Text winnerText = new Text("player 2 win");
+                                winnerText.setUserData("level");
+                                winnerText.setStyle("-fx-font: 60 Lato;");
+                                winnerText.setY(350);
+                                winnerText.setX(XMAX + 60);
+                                winnerText.setFill(Color.GREEN);
+                                group1.getChildren().add(winnerText);
+                                //유저2 승리
+                            }
+
+
                             running = false;
                             GameOver();
 
                         }
                         // Exit
-                        if (top == 15) {
+                        if (top == 15 || top2 ==15) {
                             running = false;
                             GameOver();
                             stage.close();
@@ -254,8 +325,8 @@ public class BattleApplication extends Application {
                         if (game) {
                             MoveDown(object, MESH, group1, true);
                             MoveDown(object2, MESH2, group2, false);
-                            scoretext1.setText("Score: " + score + "                    ");
-                            scoretext2 .setText("Score: " + score2+ "                    ");
+                            scoretext1.setText("Score: " + score);
+                            scoretext2 .setText("Score: " + score2);
                             linetext1.setText("Lines: " + linesNo);
                             linetext2.setText("Lines: " +linesNo2);
                         }
@@ -304,28 +375,28 @@ public class BattleApplication extends Application {
                         controller.MoveRight(form);
                     } else if (pressedKey.equals(downKey)) {
                         MoveDown(form, MESH, group1, true);
-                        scoretext1.setText("Score: " + score+"                  ");
+                        scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals(leftKey)) {
                         controller.MoveLeft(form);
                     } else if (pressedKey.equals(upKey)) {
                         MoveTurn(form);
                     } else if (pressedKey.equals(spaceKey)) {
                         DirectMoveDown(form, form2, group1, true, MESH);
-                        scoretext1.setText("Score: " + score+"                  ");
+                        scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals("ESCAPE")) {
-                        stopAnimation(hbox);
+                        stopAnimation();
                     } else if (pressedKey.equals(dKey)) {
                         controller.MoveRight(form2);
                     } else if (pressedKey.equals(sKey)) {
                         MoveDown(form2, MESH2, group2, false);
-                        scoretext1.setText("Score: " + score+"                  ");
+                        scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals(aKey)) {
                         controller.MoveLeft(form2);
                     } else if (pressedKey.equals(wKey)) {
                         MoveTurn(form2);
                     } else if (pressedKey.equals(shiftKey)) {
                         DirectMoveDown(form2, form, group2, false, MESH2);
-                        scoretext1.setText("Score: " + score+"                  ");
+                        scoretext1.setText("Score: " + score);
                     }
                 }
                 else{
@@ -862,6 +933,8 @@ public class BattleApplication extends Application {
         boolean removeCheck = false; //지워야될 라인이 있나
         int miniMeshCountController = 0;
         int constClearLineSize = 0; //한번에 지워지는 라인 수
+        int miniMeshTopChecker1 = 0;
+        int miniMeshTopChecker2 = 0;
         int full = 0;
         for (int i = 0; i < MESH[0].length; i++) {
             for (int j = 0; j < MESH.length; j++) {
@@ -892,12 +965,23 @@ public class BattleApplication extends Application {
         }
         constClearLineSize = lines.size();
         miniMeshCountController = lines.size() - 1;
+        miniMeshTopChecker1 = miniMeshLineCounter;
+        miniMeshTopChecker2 = miniMeshLineCounter2;
+
+
         if(groupnumber == 0)
             meshTop -= lines.size();
         else
             meshTop2 -= lines.size();
         if (lines.size() > 0)
             do {
+                if(constClearLineSize>1){
+                    if(groupnumber==0){
+                        miniMeshTopChecker2++;
+                    }else{
+                        miniMeshTopChecker1++;
+                    }
+                }
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
@@ -928,7 +1012,7 @@ public class BattleApplication extends Application {
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
                         if(groupnumber == 0) {
-                            if((constClearLineSize>=2) && (miniMeshLineCounter2 < 10)) {
+                            if((constClearLineSize>=2) && (miniMeshTopChecker2 < 10)) {
                                 if (node.getUserData() != "current") {
                                     miniMESH2[(int) a.getX() / SIZE][(int) ((YMAX / SIZE)/2) - miniMeshCountController - miniMeshLineCounter2] = 1;
                                     Text c = new Text("X");
@@ -941,7 +1025,7 @@ public class BattleApplication extends Application {
                                 }
                             }
                         }else{
-                            if((constClearLineSize>=2) && (miniMeshLineCounter < 10)) {
+                            if((constClearLineSize>=2) && (miniMeshTopChecker1 < 10)) {
                                 if (node.getUserData() != "current") {
                                     miniMESH[(int) a.getX() / SIZE][(int) ((YMAX / SIZE)/2) - miniMeshCountController - miniMeshLineCounter] = 1;
 
@@ -1003,15 +1087,14 @@ public class BattleApplication extends Application {
                 texts.clear();
                 miniMeshCountController--;
             } while (lines.size() > 0);//size->0
-
-
         if(constClearLineSize>1){
-            if(groupnumber == 0)
+            if(groupnumber == 0) {
                 miniMeshLineCounter2+=constClearLineSize;
-            else
+            }
+            else {
                 miniMeshLineCounter+=constClearLineSize;
+            }
         }
-
 
         for(Node node:pane.getChildren()){
             if(node.getUserData()=="current"){
@@ -1074,7 +1157,7 @@ public class BattleApplication extends Application {
         }if(groupnumber == 1 && (miniMeshLineCounter2>0)){
             //미니메쉬만큼 올라오는 기능필요
             if ((((int)(YMAX/SIZE)-meshTop2) + miniMeshLineCounter2) >= 20) {//meshtop 제일상단의 블록 mesh y값
-                top = 2;
+                top2 = 2;
             } else if(miniMeshLineCounter2>0){
                 ArrayList<Node> currentMeshText = new ArrayList<>();
                 for (Node node : pane.getChildren()) {
@@ -1200,11 +1283,15 @@ public class BattleApplication extends Application {
             form.c.setY(form.c.getY() + MOVE);
             form.d.setY(form.d.getY() + MOVE);
             // 실제로 이동했으므로 true로 설정
-            if(isGroupOne)
+            if(isGroupOne) {
                 score += scoreMultiplier;
-            else
-                score2 += scoreMultiplier;
-            top = 0;
+                top = 0;
+            }
+            else {
+                score2 += scoreMultiplier2;
+                top2 = 0;
+            }
+
             //directmovedown 호출시 object 겹침 버그 방지용
         }
         MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
@@ -1265,10 +1352,10 @@ public class BattleApplication extends Application {
     }//Text로 변경
 
 
-    public void stopAnimation(HBox hbox) {
-
-        applyGrayscaleEffect(hbox);
-        for (Node node : hbox.getChildren()) {
+    public void stopAnimation() {
+        running = false;
+        applyGrayscaleEffect();
+        for (Node node : group1.getChildren()) {
             if (node instanceof Button) {
                 node.setVisible(true);
             }
@@ -1290,46 +1377,61 @@ public class BattleApplication extends Application {
         bringButtonsToFront();
     }
 
-    public void applyGrayscaleEffect(HBox hbox) {
-        ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
-        colorAdjust.setSaturation(-1);
-        colorAdjust.setBrightness(-0.3);
-        hbox.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
-    }
 
     public void GameOver(){
-        applyGrayscaleEffect(hbox);  // HBox에 흑백 효과 적용
         running = false;
+        //User user = SessionManager.getCurrentUser();
+        applyGrayscaleEffect();
+        scoreLabel = new Label("score: " + score);
+        scoreLabel.setLayoutX(XMAX/2 - 10);
+        scoreLabel.setLayoutY(YMAX/2);
+        scoreLabel.setStyle("-fx-font-size: XMAX/3; -fx-text-fill: red; -fx-background-color: blue;");
+        group1.getChildren().addAll(scoreLabel);
 
-        Label scoreLabel = new Label("score: " + score + "\n" + "WIN!");
-        Label scoreLabel2 = new Label("score: " + score2 + "\n" + "WIN!");
-
-        scoreLabel.setLayoutX(XMAX/4 - 10);
-        scoreLabel.setLayoutY(YMAX/4);
-        scoreLabel2.setLayoutX(XMAX/4 - 10);
-        scoreLabel2.setLayoutY(YMAX/4);
-
-        scoreLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: red; -fx-background-color: black;");
-        scoreLabel2.setStyle("-fx-font-size: 20px; -fx-text-fill: red; -fx-background-color: black;");
-
-        // 색상 조정 효과 다시 적용
-        ColorAdjust resetColorAdjust = new ColorAdjust();
-        resetColorAdjust.setSaturation(3.0); // 채도를 조금 증가시켜 원래 색상에 가깝게 조정
-        resetColorAdjust.setBrightness(0.2); // 명도를 살짝 높여주어 밝기 조정
-        resetColorAdjust.setContrast(0.2);   // 대비를 살짝 높여주어 색상의 구분을 명확히
-
-        scoreLabel.setEffect(resetColorAdjust);
-        scoreLabel2.setEffect(resetColorAdjust);
-
-        group1.getChildren().add(scoreLabel);
-        group2.getChildren().add(scoreLabel2);
         scoreLabel.setVisible(true);
-        scoreLabel2.setVisible(true);
-    }
+        TextArea nicknameTextArea = new TextArea("dafd");
+        nicknameTextArea.setLayoutX(XMAX / 2);
+        nicknameTextArea.setLayoutY(YMAX / 3);
+        nicknameTextArea.setPrefWidth(XMAX / 4);
+        nicknameTextArea.setPrefHeight(XMAX / 10);
+        //1 코드정리와 함께UI 정리
+        //2. 스코어보드 띄워놓을 부분 냄겨주기
+        //3. GamePause에서 끄는거
+        //4.
+        Label NameLabel = new Label("점수를 저장하시겠습니까?");
+        NameLabel.setLayoutX(XMAX/2 - 10);
+        NameLabel.setLayoutY(YMAX/2 - 40);
+        NameLabel.setStyle("-fx-font-size: XMAX; -fx-text-fill: red; -fx-background-color: blue;");
+        group1.getChildren().addAll(nicknameTextArea, NameLabel);
 
+        NameLabel.setVisible(true);
+        Button yesButton = new Button("Yes");
+        yesButton.setLayoutX(XMAX / 2 - 50); //
+        yesButton.setLayoutY(YMAX / 2 + 50); //
+        exitButton.setLayoutX(XMAX/2+50);
+        exitButton.setLayoutY(YMAX/2+50);
+        if (exitButton != null)
+            exitButton.toFront();
+        exitButton.setVisible(true);
+        /*yesButton.setOnAction(e -> {
+            String newNickname = nicknameTextArea.getText();
+            try {
+                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
+                yesButton.setVisible(false);
+
+                //여기서 Scoreboard 보여주기
+            } catch (Exception ex) {
+                System.out.println("jdbc error");
+            }
+        });*/
+        group1.getChildren().addAll(yesButton);
+    }
     private void GameStopped(Stage stage){
         timer.stop();
         stage.close();
+    }
+    public void applyGrayscaleEffect() {
+        group1.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
     }
 
     public void clearGrayscaleEffect() {
@@ -1337,6 +1439,7 @@ public class BattleApplication extends Application {
     }
     private void bringButtonsToFront() {
         if (restartButton != null) restartButton.toFront();
+        if (exitButton != null) exitButton.toFront();
     }
 
     public void main(String[] args) {

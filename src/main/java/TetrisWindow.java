@@ -169,11 +169,7 @@ public class TetrisWindow extends Application {
 
         //스코어보드 버튼 동작 설정
         scoreBoardButton.setOnAction(event -> {
-            List<ScoreRecord> scoreboardData = JdbcConnecter.fetchData(1);
-            System.out.println(scoreboardData.getClass());
-            ScoreBoard scoreBoard = new ScoreBoard(scoreboardData);
-            System.out.println(scoreBoard);
-            ScoreBoardWindow window = new ScoreBoardWindow(scoreBoard);
+            ScoreBoardWindow window = new ScoreBoardWindow();
             System.out.println(window);
             window.show();
         });

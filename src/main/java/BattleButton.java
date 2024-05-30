@@ -38,6 +38,15 @@ public class BattleButton {
             }
         });
 
+        timerModeButton.setOnAction(event ->{
+            Stage gameStage = new Stage();
+            TimerApplication timerApp = new TimerApplication(sizeConstants,  controller);
+            try {
+                timerApp.start(gameStage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         stage.setScene(scene);
         stage.show();
     }

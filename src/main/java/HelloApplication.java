@@ -1,4 +1,7 @@
 import ScoreBoard.JdbcConnecter;
+import ScoreBoard.ScoreBoard;
+import ScoreBoard.ScoreBoardWindow;
+import ScoreBoard.ScoreRecord;
 import Setting.LevelConstants;
 //import Setting.Settings;
 import Setting.SizeConstants;
@@ -25,6 +28,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import User.SessionManager;
 
 
@@ -999,9 +1005,9 @@ public class HelloApplication extends Application {
 
 
     public void GameOver(){
-        running = false;
-        User user = SessionManager.getCurrentUser();
-        applyGrayscaleEffect();
+        running = false;    //멈추기
+        User user = SessionManager.getCurrentUser(); //유저조회
+        applyGrayscaleEffect();     //흑백적용
         Label scoreLabel = new Label("score: " + score);
         scoreLabel.setLayoutX(XMAX/2 - 10);
         scoreLabel.setLayoutY(YMAX/2);
@@ -1033,21 +1039,28 @@ public class HelloApplication extends Application {
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
+        String newNickname = nicknameTextArea.getText();
+        Date date = new Date();
+        long now = date.getTime();
         yesButton.setOnAction(e -> {
-            String newNickname = nicknameTextArea.getText();
             try {
-                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
+                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo, now);
                 yesButton.setVisible(false);
-
-                //여기서 Scoreboard 보여주기
+                System.out.println(newNickname);
+                int pageNo = JdbcConnecter.fetchPageOfUser(newNickname, now);
+                System.out.println("PAGENO: "+pageNo);
+                ScoreBoardWindow window = new ScoreBoardWindow(pageNo, newNickname,now);
+                window.show();
             } catch (Exception ex) {
                 System.out.println("jdbc error");
             }
         });
         group.getChildren().addAll(yesButton);
+
     }
     private void GameStopped(Stage stage){
         timer.stop();
+
         stage.close();
     }
     public void applyGrayscaleEffect() {

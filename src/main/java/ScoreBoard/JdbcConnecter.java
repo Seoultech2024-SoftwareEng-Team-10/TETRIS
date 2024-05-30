@@ -28,9 +28,9 @@ public class JdbcConnecter {
         }
     }
 
-    public static void insertData(String loginIdParam, String nicknameParam, int scoreParam, int modeParam, int levelParam, int linesCountParam) {
-        String query = "INSERT INTO scoreboard (nickname, score, mode, level, lines_count, date, loginId) VALUES (?, ?, ?, ?, ?, ?,?)";
-
+    public static void insertData(String loginIdParam, String nicknameParam, int scoreParam, int modeParam, int levelParam, int linesCountParam, long now) {
+        String query = "INSERT INTO scoreboard (nickname, score, mode, level, lines_count, date, loginId, time_stamp) VALUES (?, ?, ?, ?, ?, ?,?,?)";
+        System.out.println(now);
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
@@ -42,9 +42,9 @@ public class JdbcConnecter {
             pstmt.setInt(5, linesCountParam);
             pstmt.setDate(6, Date.valueOf(LocalDate.now()));
             pstmt.setString(7,loginIdParam);
+            pstmt.setLong(8, now);
             pstmt.executeUpdate();
 
-            System.out.println("insert data to scoreboard successfully");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,10 +54,10 @@ public class JdbcConnecter {
 
     public static List<ScoreRecord> fetchData(int page) {
         List<ScoreRecord> records = new ArrayList<>();
-        int pageSize = 20; // 한 페이지당 데이터 수
+        int pageSize = 10; // 한 페이지당 데이터 수
         int offset = (page - 1) * pageSize; // SQL 쿼리에서 사용할 OFFSET 계산
 
-        String query = "SELECT nickname, score, mode, level, lines_count, date FROM scoreboard ORDER BY score DESC LIMIT ? OFFSET ?";
+        String query = "SELECT nickname, score, mode, level, lines_count, date, time_stamp FROM scoreboard ORDER BY score DESC LIMIT ? OFFSET ?";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -73,6 +73,7 @@ public class JdbcConnecter {
                     int mode = rs.getInt("mode");
                     int linesCount = rs.getInt("lines_count");
                     LocalDate date = rs.getDate("date").toLocalDate();
+                    long timeStamp = rs.getLong("time_stamp");
                     String enLevel = "";
                     String enMode = "";
                     if (level == 69){
@@ -93,8 +94,7 @@ public class JdbcConnecter {
                     else{
                         enMode = "ItemMode";
                     }
-
-                    records.add(new ScoreRecord(nickname, score, enMode, enLevel, linesCount, date));
+                    records.add(new ScoreRecord(nickname, score, enMode, enLevel, linesCount, date, timeStamp));
                 }
             }
         } catch (SQLException e) {
@@ -104,7 +104,7 @@ public class JdbcConnecter {
     }
     public static List<ScoreRecord> fetchDataByMode(int modeParam, int page) {
         List<ScoreRecord> records = new ArrayList<>();
-        int pageSize = 20; // 한 페이지당 데이터 수
+        int pageSize = 10; // 한 페이지당 데이터 수
         int offset = (page - 1) * pageSize; // SQL 쿼리에서 사용할 OFFSET 계산
 
         // mode를 필터링 조건으로 추가
@@ -125,6 +125,7 @@ public class JdbcConnecter {
                     int mode = rs.getInt("mode");
                     int linesCount = rs.getInt("lines_count");
                     LocalDate date = rs.getDate("date").toLocalDate();
+                    Long timeStamp = rs.getLong("time_stamp");
                     String enLevel = "";
                     String enMode = "";
                     if (level == 69){
@@ -146,7 +147,7 @@ public class JdbcConnecter {
                         enMode = "ItemMode";
                     }
 
-                    records.add(new ScoreRecord(nickname, score, enMode,enLevel, linesCount, date));
+                    records.add(new ScoreRecord(nickname, score, enMode,enLevel, linesCount, date,timeStamp));
                 }
             }
         } catch (SQLException e) {
@@ -232,5 +233,26 @@ public class JdbcConnecter {
         }
     }
 
+    public static int fetchPageOfUser(String name, long dateNow) {
+        int pageSize = 10; // 한 페이지당 데이터 수
+        String query = "SELECT nickname, time_stamp FROM scoreboard ORDER BY score DESC"; // 모든 데이터 가져오기
+        try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                int position = 0; // 현재 사용자의 위치
+                while (rs.next()) {
+                    position++; // 모든 레코드에 대해 위치 증가
+                    // 사용자의 이름과 타임스탬프가 일치하는지 확인
+                    if (rs.getString("nickname").equals(name) && rs.getLong("time_stamp") == dateNow) {
+                        System.out.println("Position of user: " + position);
+                        return (position - 1) / pageSize + 1; // 페이지 번호 계산
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // 사용자를 찾지 못했거나 데이터베이스 연결에 실패한 경우
+    }
 
 }
