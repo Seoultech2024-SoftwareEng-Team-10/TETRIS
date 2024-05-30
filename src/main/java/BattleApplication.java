@@ -182,7 +182,7 @@ public class BattleApplication extends Application {
         group2 = new Pane();
         hbox = new HBox(0);
         hbox.getChildren().addAll(group2,group1);
-        scene = new Scene(hbox,-1 , YMAX-30);
+        scene = new Scene(hbox,-1 , YMAX - SIZE);
         running = true;
         group1.getChildren().clear();
         group2.getChildren().clear();
@@ -935,7 +935,7 @@ public class BattleApplication extends Application {
                         texts.add(node);
                 }
                 if(groupnumber == 0) {
-                    if (Frame > 150000000) {
+                    if (Frame > 200000000) {
                         Frame -= 50000000 * frameMultiplier;
                         scoreMultiplier++;
                     }

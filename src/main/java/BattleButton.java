@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 
@@ -27,6 +28,12 @@ public class BattleButton {
 
         Scene scene = new Scene(root, 400, 300); // 창 크기 400x300
 
+        normalModeButton.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                normalModeButton.fire();
+            }
+        });
+
         normalModeButton.setOnAction(event -> {
             try {
                 Stage gameStage = new Stage();
@@ -35,6 +42,30 @@ public class BattleButton {
                 battleApp.start(gameStage);
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }
+        });
+
+        itemModeButton.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                itemModeButton.fire();
+            }
+        });
+
+        itemModeButton.setOnAction(event -> {
+            try {
+                Stage gameStage = new Stage();
+                BattleApplication battleApp = new BattleApplication(sizeConstants, controller);
+                //item start 메소드 호출
+                battleApp.start(gameStage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+
+        timerModeButton.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                timerModeButton.fire();
             }
         });
 

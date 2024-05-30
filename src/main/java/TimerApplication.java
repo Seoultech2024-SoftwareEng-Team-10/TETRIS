@@ -1028,7 +1028,7 @@ public class TimerApplication extends Application {
                         texts.add(node);
                 }
                 if(groupnumber == 0) {
-                    if (Frame > 150000000) {
+                    if (Frame > 200000000) {
                         Frame -= 50000000 * frameMultiplier;
                         scoreMultiplier++;
                     }

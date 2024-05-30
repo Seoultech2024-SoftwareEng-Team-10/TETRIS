@@ -830,7 +830,7 @@ public class HelloApplication extends Application {
                     if (node instanceof Text)
                         texts.add(node);
                 }
-                if (Frame > 150000000) {
+                if (Frame > 200000000) {
                     Frame -= 50000000 * frameMultiplier;
                     scoreMultiplier++;
                 }
