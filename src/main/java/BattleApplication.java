@@ -298,7 +298,7 @@ public class BattleApplication extends Application {
                             MoveDown(object, MESH, group1, true);
                             MoveDown(object2, MESH2, group2, false);
                             scoretext1.setText("Score: " + score);
-                            scoretext2 .setText("Score: " + score2);
+                            scoretext2.setText("Score: " + score2);
                             linetext1.setText("Lines: " + linesNo);
                             linetext2.setText("Lines: " +linesNo2);
                         }
@@ -348,6 +348,7 @@ public class BattleApplication extends Application {
                     } else if (pressedKey.equals(downKey)) {
                         MoveDown(form, MESH, group1, true);
                         scoretext1.setText("Score: " + score);
+                        scoretext2.setText("Score: " + score2);
                     } else if (pressedKey.equals(leftKey)) {
                         controller.MoveLeft(form,MESH);
                     } else if (pressedKey.equals(upKey)) {
@@ -355,6 +356,7 @@ public class BattleApplication extends Application {
                     } else if (pressedKey.equals(spaceKey)) {
                         DirectMoveDown(form, form2, group1, true, MESH);
                         scoretext1.setText("Score: " + score);
+                        scoretext2.setText("Score: " + score2);
                     } else if (pressedKey.equals("ESCAPE")) {
                         stopAnimation(hbox);
                     } else if (pressedKey.equals(dKey)) {
@@ -362,6 +364,7 @@ public class BattleApplication extends Application {
                     } else if (pressedKey.equals(sKey)) {
                         MoveDown(form2, MESH2, group2, false);
                         scoretext1.setText("Score: " + score);
+                        scoretext2.setText("Score: " + score2);
                     } else if (pressedKey.equals(aKey)) {
                         controller.MoveLeft(form2,MESH2);
                     } else if (pressedKey.equals(wKey)) {
@@ -369,6 +372,7 @@ public class BattleApplication extends Application {
                     } else if (pressedKey.equals(shiftKey)) {
                         DirectMoveDown(form2, form, group2, false, MESH2);
                         scoretext1.setText("Score: " + score);
+                        scoretext2.setText("Score: " + score2);
                     }
                 }
                 else{
