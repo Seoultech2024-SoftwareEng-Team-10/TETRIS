@@ -189,9 +189,10 @@ public class TimerApplication extends Application {
 
         group1 = new Pane();
         group2 = new Pane();
-        hbox = new HBox(50);
+        hbox = new HBox(2);
+        hbox.setStyle("-fx-background-color: black;"); // CSS를 사용하여 배경색 설정
         hbox.getChildren().addAll(group2,group1);
-        scene = new Scene(hbox, 1500, YMAX-40);
+        scene = new Scene(hbox,XMAX+XMAX+XMAX , YMAX - SIZE);
         running = true;
         group1.getChildren().clear();
         group2.getChildren().clear();
@@ -202,19 +203,23 @@ public class TimerApplication extends Application {
         drawGridLines(group1);
         drawGridLines(group2);
         Line line = new Line(XMAX, 0, XMAX, YMAX);
-        scoretext1 = styleScoretext(XMAX+30);
-        scoretext2 = styleScoretext(XMAX+30);
+        Line margin = new Line(0,100,XMAX+XMAX*0.5,100);
+        scoretext1 = styleScoretext(XMAX+3);
+        scoretext2 = styleScoretext(XMAX+3);
+        scoretext1.setStyle("-fx-font-size: " + fontSize/2 + "px;"); // CSS를 사용하여 폰트 크기 설정
+        scoretext2.setStyle("-fx-font-size: " + fontSize/2 + "px;"); // CSS를 사용하여 폰트 크기 설정
 
-        linetext1 = styleLineText(XMAX+30);
-        linetext2 = styleLineText(XMAX+30);
+        linetext1 = styleLineText(XMAX+3);
+        linetext2 = styleLineText(XMAX+3);
+        linetext1.setStyle("-fx-font-size: " + fontSize/2 + "px;"); // CSS를 사용하여 폰트 크기 설정
+        linetext2.setStyle("-fx-font-size: " + fontSize/2 + "px;"); // CSS를 사용하여 폰트 크기 설정
 
         Form wait = waitObj;
         Form wait2 = waitObj2;
-        group1.getChildren().addAll(scoretext1, line, linetext1, wait.a, wait.b, wait.c, wait.d);
+        group1.getChildren().addAll(scoretext1, line,margin, linetext1, wait.a, wait.b, wait.c, wait.d);
         group1.setStyle("-fx-background-color: black;");
-        group2.getChildren().addAll(scoretext2, line, linetext2, wait2.a, wait2.b, wait2.c, wait2.d);
+        group2.getChildren().addAll(scoretext2, line,margin, linetext2, wait2.a, wait2.b, wait2.c, wait2.d);
         group2.setStyle("-fx-background-color: black;");
-
         Form a = nextObj;
         Form b = nextObj2;
         group1.getChildren().addAll(a.a, a.b, a.c, a.d);
@@ -223,8 +228,8 @@ public class TimerApplication extends Application {
         moveOnKeyPress(a,b);
         object = a;
         object2 = b;
-        nextObj = controller.makeText(true,difficultylevel, 200);
-        nextObj2 = controller.makeText(true,difficultylevel, 200);
+        nextObj = controller.makeText(true,difficultylevel, XMAX);
+        nextObj2 = controller.makeText(true,difficultylevel, XMAX);
         currentTextSetUserData(a);
         currentTextSetUserData(b);
 
@@ -261,10 +266,6 @@ public class TimerApplication extends Application {
         stage.setTitle("T E T R I S");
         stage.show();
 
-
-
-
-
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
@@ -272,25 +273,7 @@ public class TimerApplication extends Application {
             public void handle(long now) {
                 if (running) {
                     if(timeDiff/1000 >= 20){//timeSecCounter = 1초마다 카운팅 +1
-                        if(winner == 1){
-                            //유저1 승리
-                            Text winnerText = new Text("player 1 win");
-                            winnerText.setUserData("level");
-                            winnerText.setStyle("-fx-font: 60 Lato;");
-                            winnerText.setY(350);
-                            winnerText.setX(XMAX + 60);
-                            winnerText.setFill(Color.GREEN);
-                            group1.getChildren().add(winnerText);
-                        }else{
-                            Text winnerText = new Text("player 2 win");
-                            winnerText.setUserData("level");
-                            winnerText.setStyle("-fx-font: 60 Lato;");
-                            winnerText.setY(350);
-                            winnerText.setX(XMAX + 60);
-                            winnerText.setFill(Color.GREEN);
-                            group1.getChildren().add(winnerText);
-                            //유저2 승리
-                        }
+
                         running = false;
                         GameOver();
                     }
@@ -306,7 +289,7 @@ public class TimerApplication extends Application {
                             group2.getChildren().clear();
                         });
                         lastUpdate = now;
-                        winner = meshTop < meshTop2 ?  1 : 2;//meshTop = 맨위의 블록 위치
+                        //winner = meshTop < meshTop2 ?  1 : 2;//meshTop = 맨위의 블록 위치
                         System.out.println(timeDiff/1000); //그냥 확인용 나중에 제출때 지워야됨
 
                         if (object.a.getY() == 0 || object.b.getY() == 0 || object.c.getY() == 0 || object.d.getY() == 0)
@@ -320,28 +303,11 @@ public class TimerApplication extends Application {
                             top2 = 0;
 
                         if (top == 2 || top2 == 2) {
-
-                            if(winner == 1){
-                                //유저1 승리
-                                Text winnerText = new Text("player 1 win");
-                                winnerText.setUserData("level");
-                                winnerText.setStyle("-fx-font: 60 Lato;");
-                                winnerText.setY(350);
-                                winnerText.setX(XMAX + 60);
-                                winnerText.setFill(Color.GREEN);
-                                group1.getChildren().add(winnerText);
-                            }else{
-                                Text winnerText = new Text("player 2 win");
-                                winnerText.setUserData("level");
-                                winnerText.setStyle("-fx-font: 60 Lato;");
-                                winnerText.setY(350);
-                                winnerText.setX(XMAX + 60);
-                                winnerText.setFill(Color.GREEN);
-                                group1.getChildren().add(winnerText);
-                                //유저2 승리
+                            if(top==2){
+                                winner = 1;
+                            }else if(top2 == 2){
+                                winner = 2;
                             }
-
-
                             running = false;
                             GameOver();
 
@@ -375,7 +341,6 @@ public class TimerApplication extends Application {
         });
         timer.start();
     }
-
 
 
     private void drawGridLines(Pane group) {
@@ -415,7 +380,7 @@ public class TimerApplication extends Application {
                         DirectMoveDown(form, form2, group1, true, MESH);
                         scoretext1.setText("Score: " + score);
                     } else if (pressedKey.equals("ESCAPE")) {
-                        stopAnimation();
+                        stopAnimation(hbox);
                     } else if (pressedKey.equals(dKey)) {
                         controller.MoveRight(form2);
                     } else if (pressedKey.equals(sKey)) {
@@ -964,8 +929,6 @@ public class TimerApplication extends Application {
         boolean removeCheck = false; //지워야될 라인이 있나
         int miniMeshCountController = 0;
         int constClearLineSize = 0; //한번에 지워지는 라인 수
-        int miniMeshTopChecker1 = 0;
-        int miniMeshTopChecker2 = 0;
         int full = 0;
         for (int i = 0; i < MESH[0].length; i++) {
             for (int j = 0; j < MESH.length; j++) {
@@ -996,23 +959,12 @@ public class TimerApplication extends Application {
         }
         constClearLineSize = lines.size();
         miniMeshCountController = lines.size() - 1;
-        miniMeshTopChecker1 = miniMeshLineCounter;
-        miniMeshTopChecker2 = miniMeshLineCounter2;
-
-
         if(groupnumber == 0)
             meshTop -= lines.size();
         else
             meshTop2 -= lines.size();
         if (lines.size() > 0)
             do {
-                if(constClearLineSize>1){
-                    if(groupnumber==0){
-                        miniMeshTopChecker2++;
-                    }else{
-                        miniMeshTopChecker1++;
-                    }
-                }
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
@@ -1043,7 +995,7 @@ public class TimerApplication extends Application {
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
                         if(groupnumber == 0) {
-                            if((constClearLineSize>=2) && (miniMeshTopChecker2 < 10)) {
+                            if((constClearLineSize>=2) && (miniMeshLineCounter2 < 10)) {
                                 if (node.getUserData() != "current") {
                                     miniMESH2[(int) a.getX() / SIZE][(int) ((YMAX / SIZE)/2) - miniMeshCountController - miniMeshLineCounter2] = 1;
                                     Text c = new Text("X");
@@ -1056,7 +1008,7 @@ public class TimerApplication extends Application {
                                 }
                             }
                         }else{
-                            if((constClearLineSize>=2) && (miniMeshTopChecker1 < 10)) {
+                            if((constClearLineSize>=2) && (miniMeshLineCounter < 10)) {
                                 if (node.getUserData() != "current") {
                                     miniMESH[(int) a.getX() / SIZE][(int) ((YMAX / SIZE)/2) - miniMeshCountController - miniMeshLineCounter] = 1;
 
@@ -1118,14 +1070,15 @@ public class TimerApplication extends Application {
                 texts.clear();
                 miniMeshCountController--;
             } while (lines.size() > 0);//size->0
+
+
         if(constClearLineSize>1){
-            if(groupnumber == 0) {
+            if(groupnumber == 0)
                 miniMeshLineCounter2+=constClearLineSize;
-            }
-            else {
+            else
                 miniMeshLineCounter+=constClearLineSize;
-            }
         }
+
 
         for(Node node:pane.getChildren()){
             if(node.getUserData()=="current"){
@@ -1237,7 +1190,6 @@ public class TimerApplication extends Application {
             }
         }
     }
-
     private void MoveDown(Text text) {
         if (text.getY() + MOVE < YMAX)
             text.setY(text.getY() + MOVE);
@@ -1298,10 +1250,14 @@ public class TimerApplication extends Application {
             form.c.setY(form.c.getY() + MOVE);
             form.d.setY(form.d.getY() + MOVE);
             moved = true; // 실제로 이동했으므로 true로 설정
-            if(isGroupOne)
+            if(isGroupOne) {
                 score += scoreMultiplier;
-            else
+                top = 0;
+            }
+            else {
                 score2 += scoreMultiplier;
+                top2 = 0;
+            }
         }
         return moved; // 이동 여부를 반환
     }
@@ -1319,7 +1275,7 @@ public class TimerApplication extends Application {
                 top = 0;
             }
             else {
-                score2 += scoreMultiplier2;
+                score2 += scoreMultiplier;
                 top2 = 0;
             }
 
@@ -1383,9 +1339,9 @@ public class TimerApplication extends Application {
     }//Text로 변경
 
 
-    public void stopAnimation() {
+    public void stopAnimation(HBox hbox) {
         running = false;
-        applyGrayscaleEffect();
+        applyGrayscaleEffect(hbox);
         for (Node node : group1.getChildren()) {
             if (node instanceof Button) {
                 node.setVisible(true);
@@ -1410,59 +1366,46 @@ public class TimerApplication extends Application {
 
 
     public void GameOver(){
+        applyGrayscaleEffect(hbox);  // HBox에 흑백 효과 적용
         running = false;
-        //User user = SessionManager.getCurrentUser();
-        applyGrayscaleEffect();
-        scoreLabel = new Label("score: " + score);
-        scoreLabel.setLayoutX(XMAX/2 - 10);
-        scoreLabel.setLayoutY(YMAX/2);
-        scoreLabel.setStyle("-fx-font-size: XMAX/3; -fx-text-fill: red; -fx-background-color: blue;");
-        group1.getChildren().addAll(scoreLabel);
 
-        scoreLabel.setVisible(true);
-        TextArea nicknameTextArea = new TextArea("dafd");
-        nicknameTextArea.setLayoutX(XMAX / 2);
-        nicknameTextArea.setLayoutY(YMAX / 3);
-        nicknameTextArea.setPrefWidth(XMAX / 4);
-        nicknameTextArea.setPrefHeight(XMAX / 10);
-        //1 코드정리와 함께UI 정리
-        //2. 스코어보드 띄워놓을 부분 냄겨주기
-        //3. GamePause에서 끄는거
-        //4.
-        Label NameLabel = new Label("점수를 저장하시겠습니까?");
-        NameLabel.setLayoutX(XMAX/2 - 10);
-        NameLabel.setLayoutY(YMAX/2 - 40);
-        NameLabel.setStyle("-fx-font-size: XMAX; -fx-text-fill: red; -fx-background-color: blue;");
-        group1.getChildren().addAll(nicknameTextArea, NameLabel);
+        Label scoreLabel = new Label("score: " + score + "\n" + "player " + winner + " WIN!");
+        Label scoreLabel2 = new Label("score: " + score2 + "\n" + "player " + winner + " WIN!");
 
-        NameLabel.setVisible(true);
-        Button yesButton = new Button("Yes");
-        yesButton.setLayoutX(XMAX / 2 - 50); //
-        yesButton.setLayoutY(YMAX / 2 + 50); //
-        exitButton.setLayoutX(XMAX/2+50);
-        exitButton.setLayoutY(YMAX/2+50);
+        exitButton.setLayoutX(XMAX/2-220);
+        exitButton.setLayoutY(YMAX/2-30);
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
-        /*yesButton.setOnAction(e -> {
-            String newNickname = nicknameTextArea.getText();
-            try {
-                JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
-                yesButton.setVisible(false);
 
-                //여기서 Scoreboard 보여주기
-            } catch (Exception ex) {
-                System.out.println("jdbc error");
-            }
-        });*/
-        group1.getChildren().addAll(yesButton);
+        scoreLabel.setLayoutX(XMAX/4 - 10);
+        scoreLabel.setLayoutY(YMAX/4);
+        scoreLabel2.setLayoutX(XMAX/4 - 10);
+        scoreLabel2.setLayoutY(YMAX/4);
+
+        scoreLabel.setStyle("-fx-font-size: 20px; -fx-text-fill: red; -fx-background-color: black;");
+        scoreLabel2.setStyle("-fx-font-size: 20px; -fx-text-fill: red; -fx-background-color: black;");
+
+        // 색상 조정 효과 다시 적용
+        ColorAdjust resetColorAdjust = new ColorAdjust();
+        resetColorAdjust.setSaturation(3.0); // 채도를 조금 증가시켜 원래 색상에 가깝게 조정
+        resetColorAdjust.setBrightness(0.2); // 명도를 살짝 높여주어 밝기 조정
+        resetColorAdjust.setContrast(0.2);   // 대비를 살짝 높여주어 색상의 구분을 명확히
+
+        scoreLabel.setEffect(resetColorAdjust);
+        scoreLabel2.setEffect(resetColorAdjust);
+
+        group1.getChildren().add(scoreLabel);
+        group2.getChildren().add(scoreLabel2);
+        scoreLabel.setVisible(true);
+        scoreLabel2.setVisible(true);
     }
     private void GameStopped(Stage stage){
         timer.stop();
         stage.close();
     }
-    public void applyGrayscaleEffect() {
-        group1.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
+    public void applyGrayscaleEffect(HBox hbox) {
+        hbox.setEffect(colorAdjust); // 전체 그룹에 흑백 효과 적용
     }
 
     public void clearGrayscaleEffect(HBox hbox) {
