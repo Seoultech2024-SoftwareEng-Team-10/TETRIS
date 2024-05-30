@@ -7,11 +7,9 @@ import Setting.SizeConstants;
 import Tetris.BlockColor;
 import Tetris.Controller;
 import Tetris.Form;
-import User.User;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -30,7 +28,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import User.SessionManager;
 
 import static Tetris.Controller.currentTextSetUserData;
 
@@ -70,6 +67,8 @@ public class HelloApplication extends Application {
     private static int meshTop = 0;
     private static int meshTop2 = 0;
     private static double fontSize;
+    private static int timerSecCounter = 0;
+    private static int winner = 0;
 
     //private final User user;
     private final Controller controller;
@@ -127,6 +126,8 @@ public class HelloApplication extends Application {
         this.miniMESH2 = new int[10][11];
         this.meshTop = 0;
         this.meshTop2 = 0;
+        this.timerSecCounter = 0;
+        this.winner = 0;
 
         this.running = true;
 
@@ -225,12 +226,38 @@ public class HelloApplication extends Application {
         stage.setTitle("T E T R I S");
         stage.show();
 
+
+
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
             @Override
             public void handle(long now) {
                 if (running) {
+                    if(timerSecCounter >=20){//timeSecCounter = 1초마다 카운팅 +1
+                        if(winner == 1){
+                            //유저1 승리
+                            Text winnerText = new Text("player 1 win");
+                            winnerText.setUserData("level");
+                            winnerText.setStyle("-fx-font: 60 Lato;");
+                            winnerText.setY(350);
+                            winnerText.setX(XMAX + 60);
+                            winnerText.setFill(Color.GREEN);
+                            group1.getChildren().add(winnerText);
+                        }else{
+                            Text winnerText = new Text("player 2 win");
+                            winnerText.setUserData("level");
+                            winnerText.setStyle("-fx-font: 60 Lato;");
+                            winnerText.setY(350);
+                            winnerText.setX(XMAX + 60);
+                            winnerText.setFill(Color.GREEN);
+                            group1.getChildren().add(winnerText);
+                            //유저2 승리
+                        }
+                        running = false;
+                        GameOver();
+                    }
+
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
                         group1.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         group2.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
@@ -240,6 +267,9 @@ public class HelloApplication extends Application {
                             group2.getChildren().clear();
                         });
                         lastUpdate = now;
+                        timerSecCounter++;//1초마다 카운팅
+                        winner = meshTop < meshTop2 ?  1 : 2;//meshTop = 맨위의 블록 위치
+                        System.out.println(timerSecCounter); //그냥 확인용 나중에 제출때 지워야됨
 
                         if (object.a.getY() == 0 || object.b.getY() == 0 || object.c.getY() == 0 || object.d.getY() == 0)
                             top++;
@@ -247,6 +277,28 @@ public class HelloApplication extends Application {
                             top = 0;
 
                         if (top == 2) {
+
+                            if(winner == 1){
+                                //유저1 승리
+                                Text winnerText = new Text("player 1 win");
+                                winnerText.setUserData("level");
+                                winnerText.setStyle("-fx-font: 60 Lato;");
+                                winnerText.setY(350);
+                                winnerText.setX(XMAX + 60);
+                                winnerText.setFill(Color.GREEN);
+                                group1.getChildren().add(winnerText);
+                            }else{
+                                Text winnerText = new Text("player 2 win");
+                                winnerText.setUserData("level");
+                                winnerText.setStyle("-fx-font: 60 Lato;");
+                                winnerText.setY(350);
+                                winnerText.setX(XMAX + 60);
+                                winnerText.setFill(Color.GREEN);
+                                group1.getChildren().add(winnerText);
+                                //유저2 승리
+                            }
+
+
                             running = false;
                             GameOver();
 
