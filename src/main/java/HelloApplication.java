@@ -44,6 +44,7 @@ public class HelloApplication extends Application {
     private static Pane group2 = new Pane();
     private static Scene scene;
     private static int top;
+    private static int top2;
     private static boolean game = true;
     private ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
     private static char difficultylevel = LevelConstants.difficultyLevel;
@@ -234,7 +235,7 @@ public class HelloApplication extends Application {
             @Override
             public void handle(long now) {
                 if (running) {
-                    if(timerSecCounter >=20){//timeSecCounter = 1초마다 카운팅 +1
+                    if(timerSecCounter >=10000){//timeSecCounter = 1초마다 카운팅 +1
                         if(winner == 1){
                             //유저1 승리
                             Text winnerText = new Text("player 1 win");
@@ -276,7 +277,12 @@ public class HelloApplication extends Application {
                         else
                             top = 0;
 
-                        if (top == 2) {
+                        if (object2.a.getY() == 0 || object2.b.getY() == 0 || object2.c.getY() == 0 || object2.d.getY() == 0)
+                            top2++;
+                        else
+                            top2 = 0;
+
+                        if (top == 2 || top2 ==2) {
 
                             if(winner == 1){
                                 //유저1 승리
@@ -304,7 +310,7 @@ public class HelloApplication extends Application {
 
                         }
                         // Exit
-                        if (top == 15) {
+                        if (top == 15 || top2 ==15) {
                             running = false;
                             GameOver();
                             stage.close();
@@ -1062,15 +1068,14 @@ public class HelloApplication extends Application {
                 texts.clear();
                 miniMeshCountController--;
             } while (lines.size() > 0);//size->0
-
-
         if(constClearLineSize>1){
-            if(groupnumber == 0)
+            if(groupnumber == 0) {
                 miniMeshLineCounter2+=constClearLineSize;
-            else
+            }
+            else {
                 miniMeshLineCounter+=constClearLineSize;
+            }
         }
-
 
         for(Node node:pane.getChildren()){
             if(node.getUserData()=="current"){
@@ -1133,7 +1138,7 @@ public class HelloApplication extends Application {
         }if(groupnumber == 1 && (miniMeshLineCounter2>0)){
             //미니메쉬만큼 올라오는 기능필요
             if ((((int)(YMAX/SIZE)-meshTop2) + miniMeshLineCounter2) >= 20) {//meshtop 제일상단의 블록 mesh y값
-                top = 2;
+                top2 = 2;
             } else if(miniMeshLineCounter2>0){
                 ArrayList<Node> currentMeshText = new ArrayList<>();
                 for (Node node : pane.getChildren()) {
@@ -1259,11 +1264,15 @@ public class HelloApplication extends Application {
             form.c.setY(form.c.getY() + MOVE);
             form.d.setY(form.d.getY() + MOVE);
             // 실제로 이동했으므로 true로 설정
-            if(isGroupOne)
+            if(isGroupOne) {
                 score += scoreMultiplier;
-            else
-                score2 += scoreMultiplier;
-            top = 0;
+                top = 0;
+            }
+            else {
+                score2 += scoreMultiplier2;
+                top2 = 0;
+            }
+
             //directmovedown 호출시 object 겹침 버그 방지용
         }
         MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
