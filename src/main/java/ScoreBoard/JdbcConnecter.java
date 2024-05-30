@@ -206,7 +206,6 @@ public class JdbcConnecter {
                 String nickname = rs.getString("nickname");
                 User user = new User(loginId, nickname, password);
                 return user;
-
             } else {
                 return null;
             }
@@ -252,7 +251,7 @@ public class JdbcConnecter {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1; // 사용자를 찾지 못했거나 데이터베이스 연결에 실패한 경우
+        return -1;
     }
 
 }
