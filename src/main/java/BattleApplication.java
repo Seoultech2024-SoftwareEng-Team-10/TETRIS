@@ -372,7 +372,7 @@ public class BattleApplication extends Application {
                     }
                 }
                 else{
-                    if(event.getCode() == KeyCode.ESCAPE) {
+                    if(event.getCode() == KeyCode.ESCAPE&&!(top == 2 || top2 == 2)) {
                         startAnimation(hbox);
                     }
                 }
@@ -1868,14 +1868,17 @@ public class BattleApplication extends Application {
         running = false;
 
 
-        Label scoreLabel = new Label("score: " + score + "\n" + winner + "WIN!");
-        Label scoreLabel2 = new Label("score: " + score2 + "\n" + winner + "WIN!");
+        Label scoreLabel = new Label("score: " + score + "\n" + "player " +winner + "WIN!");
+        Label scoreLabel2 = new Label("score: " + score2 + "\n" + "player " + winner + "WIN!");
 
-        exitButton.setLayoutX(XMAX/2-220);
-        exitButton.setLayoutY(YMAX/2-30);
+
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
+
+        if (terminateButton != null)
+            terminateButton.toFront();
+        terminateButton.setVisible(true);
 
         scoreLabel.setLayoutX(XMAX/4 - 10);
         scoreLabel.setLayoutY(YMAX/4);
@@ -1899,7 +1902,6 @@ public class BattleApplication extends Application {
         scoreLabel.setVisible(true);
         scoreLabel2.setVisible(true);
     }
-
 
     private void GameStopped(Stage stage){
         timer.stop();

@@ -84,7 +84,7 @@ public class HelloApplication extends Application {
         this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, this.XMAX);
         this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel, this.XMAX);
         this.group = new Pane();
-        this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
+        this.scene = new Scene(group, XMAX + 250, YMAX - SIZE);
         this.running = true;
         this.user = TetrisWindow.user;
         this.linesNo = 0;
@@ -113,7 +113,7 @@ public class HelloApplication extends Application {
 
 
         group = new Pane();
-        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+        scene = new Scene(group, XMAX + 250, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
 
 
@@ -179,6 +179,7 @@ public class HelloApplication extends Application {
 
         // 그룹에 버튼 추가
         group.getChildren().addAll(restartButton, exitButton,terminateButton);
+        startAnimation();
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
@@ -1003,6 +1004,7 @@ public class HelloApplication extends Application {
     }
 
 
+
     public void GameOver(){
         running = false;    //멈추기
         User user = SessionManager.getCurrentUser(); //유저조회
@@ -1031,14 +1033,19 @@ public class HelloApplication extends Application {
 
         NameLabel.setVisible(true);
         Button yesButton = new Button("Yes");
-        yesButton.setLayoutX(XMAX / 2 - 50); //
-        yesButton.setLayoutY(YMAX / 2 + 50); //
+        yesButton.setLayoutX(XMAX / 2); //
+        yesButton.setLayoutY(YMAX / 2 + 30); //
+        terminateButton.setLayoutX(XMAX/2-100);
+        terminateButton.setLayoutY(YMAX/2+70);
+        if (terminateButton != null)
+            terminateButton.toFront();
+        terminateButton.setVisible(true);
+
         exitButton.setLayoutX(XMAX/2+50);
-        exitButton.setLayoutY(YMAX/2+50);
+        exitButton.setLayoutY(YMAX/2+70);
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
-
         Date date = new Date();
         long now = date.getTime();
         yesButton.setOnAction(e -> {

@@ -396,7 +396,7 @@ public class TimerApplication extends Application {
                     }
                 }
                 else{
-                    if(event.getCode() == KeyCode.ESCAPE) {
+                    if(event.getCode() == KeyCode.ESCAPE&&!(top == 2 || top2 == 2)) {
                         startAnimation(hbox);
                     }
                 }
@@ -1368,15 +1368,24 @@ public class TimerApplication extends Application {
     public void GameOver(){
         applyGrayscaleEffect(hbox);  // HBox에 흑백 효과 적용
         running = false;
+        Label scoreLabel;
+        Label scoreLabel2;
+        if (score > score2){
+            scoreLabel = new Label("score: " + score + "\n" + "player1 WIN!");
+            scoreLabel2 = new Label("score: " + score2 + "\n" + "player1 WIN!");
+        }
+        else{
+            scoreLabel = new Label("score: " + score + "\n" + "player2 WIN!");
+            scoreLabel2 = new Label("score: " + score2 + "\n" + "player2 WIN!");
+        }
 
-        Label scoreLabel = new Label("score: " + score + "\n" + "player " + winner + " WIN!");
-        Label scoreLabel2 = new Label("score: " + score2 + "\n" + "player " + winner + " WIN!");
-
-        exitButton.setLayoutX(XMAX/2-220);
-        exitButton.setLayoutY(YMAX/2-30);
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
+
+        if (terminateButton != null)
+            terminateButton.toFront();
+        terminateButton.setVisible(true);
 
         scoreLabel.setLayoutX(XMAX/4 - 10);
         scoreLabel.setLayoutY(YMAX/4);

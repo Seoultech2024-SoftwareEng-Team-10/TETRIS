@@ -98,7 +98,7 @@ public class ItemHelloApplication extends Application {
         this.waitObj = itemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
         this.nextObj = itemController.makeText(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
         this.group = new Pane();
-        this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
+        this.scene = new Scene(group, XMAX + 250, YMAX - SIZE);
         this.running = true;
         this.linesNo = 0;
     }
@@ -125,7 +125,7 @@ public class ItemHelloApplication extends Application {
 
 
         group = new Pane();
-        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
+        this.scene = new Scene(group, XMAX + 250, YMAX - SIZE);
         running = true;
 
 
@@ -191,6 +191,7 @@ public class ItemHelloApplication extends Application {
 
         // 그룹에 버튼 추가
         group.getChildren().addAll(restartButton, exitButton,terminateButton);
+
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
@@ -252,8 +253,8 @@ public class ItemHelloApplication extends Application {
             line.setStrokeWidth(0.2);
             group.getChildren().add(line);
         }
+        startAnimation();
     }
-
     private void moveOnKeyPress(ItemForm form) {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -1293,10 +1294,11 @@ public class ItemHelloApplication extends Application {
     }
 
 
+
     public void GameOver(){
-        running = false;
-        User user = SessionManager.getCurrentUser();
-        applyGrayscaleEffect();
+        running = false;    //멈추기
+        User user = SessionManager.getCurrentUser(); //유저조회
+        applyGrayscaleEffect();     //흑백적용
         Label scoreLabel = new Label("score: " + score);
         scoreLabel.setLayoutX(XMAX/2 - 10);
         scoreLabel.setLayoutY(YMAX/2);
@@ -1309,7 +1311,10 @@ public class ItemHelloApplication extends Application {
         nicknameTextArea.setLayoutY(YMAX / 3);
         nicknameTextArea.setPrefWidth(XMAX / 4);
         nicknameTextArea.setPrefHeight(XMAX / 10);
-
+        //1 코드정리와 함께UI 정리
+        //2. 스코어보드 띄워놓을 부분 냄겨주기
+        //3. GamePause에서 끄는거
+        //4.
         Label NameLabel = new Label("점수를 저장하시겠습니까?");
         NameLabel.setLayoutX(XMAX/2 - 10);
         NameLabel.setLayoutY(YMAX/2 - 40);
@@ -1317,12 +1322,17 @@ public class ItemHelloApplication extends Application {
         group.getChildren().addAll(nicknameTextArea, NameLabel);
 
         NameLabel.setVisible(true);
-
         Button yesButton = new Button("Yes");
-        yesButton.setLayoutX(XMAX / 2 - 50); //
-        yesButton.setLayoutY(YMAX / 2 + 50); //
+        yesButton.setLayoutX(XMAX / 2); //
+        yesButton.setLayoutY(YMAX / 2 + 30); //
+        terminateButton.setLayoutX(XMAX/2-100);
+        terminateButton.setLayoutY(YMAX/2+70);
+        if (terminateButton != null)
+            terminateButton.toFront();
+        terminateButton.setVisible(true);
+
         exitButton.setLayoutX(XMAX/2+50);
-        exitButton.setLayoutY(YMAX/2+50);
+        exitButton.setLayoutY(YMAX/2+70);
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
