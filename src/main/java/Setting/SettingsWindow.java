@@ -3,6 +3,7 @@ package Setting;
 
 import ScoreBoard.JdbcConnecter;
 import Tetris.BlockColor;
+import Tetris.ItemBlockColor;
 import User.SessionManager;
 import User.User;
 import javafx.event.ActionEvent;
@@ -25,12 +26,11 @@ import javafx.scene.control.ButtonType;
 
 
 public class SettingsWindow extends Stage {
-
-    private final Settings setttings;
+    private final Settings settings;
     private ToggleButton colorBlindModeToggle;
     private MenuButton resizeMenuButton;
     private Stage mainWindow;
-    private boolean isColorBlindModeOn;
+    private int isColorBlindModeOn;
     private Button[] buttons;
     private MenuButton levelButton;
     private LevelConstants levelConstants = new LevelConstants();
@@ -39,9 +39,9 @@ public class SettingsWindow extends Stage {
 
     public SettingsWindow(Stage mainWindow, Settings settings, SizeConstants sizeConstants) {
         this.mainWindow = mainWindow;
-        this.setttings = settings;
+        this.settings = settings;
         this.sizeConstants = sizeConstants;
-        this.keySettingsWindow = new KeySettingsWindow(this,this.setttings);
+        this.keySettingsWindow = new KeySettingsWindow(this,this.settings);
         setTitle("설정");
         setWidth(300);
         setHeight(400);
@@ -58,10 +58,12 @@ public class SettingsWindow extends Stage {
         modePanel.setHgap(10);
         Label colorBlindModeLabel = new Label("색맹 모드");
         colorBlindModeToggle = new ToggleButton("off");
+        colorBlindModeToggle.setText(isColorBlindModeOn == 100 ? "off" : "on");
+        BlockColor.setColorBlindMode(isColorBlindModeOn == 200); // BlockColor의 colorBlindMode 값 설정
+        ItemBlockColor.setColorBlindMode(isColorBlindModeOn == 200); // ItemBlockColor의 colorBlindMode 값 설정
         colorBlindModeToggle.setPrefSize(50, 25);
         colorBlindModeToggle.setOnAction(event -> handleButtonClick(event));
         colorBlindModeToggle.setFocusTraversable(false);
-        isColorBlindModeOn = false;
         modePanel.getChildren().addAll(colorBlindModeLabel, colorBlindModeToggle);
 
 
@@ -71,24 +73,33 @@ public class SettingsWindow extends Stage {
         Label levelLable = new Label("난이도 조절");
         levelButton = new MenuButton();
         levelButton.setFocusTraversable(false);
+        if (settings.getLevel() == 'E') {
+            levelButton.setText("Easy");
+        } else if (settings.getLevel() == 'H') {
+            levelButton.setText("Hard");
+        } else {
+            levelButton.setText("Normal");
+        }
         MenuItem leveItem1 = new MenuItem("Normal");
         leveItem1.setOnAction(event -> {
             levelButton.setText("Normal");
             LevelConstants.setLevel('N');
+            settings.updateAndSaveKey("level", "N");
         });
         MenuItem leveItem2 = new MenuItem("Easy");
         leveItem2.setOnAction(event -> {
             levelButton.setText("Easy");
             LevelConstants.setLevel('E');
+            settings.updateAndSaveKey("level", "E");
         });
         MenuItem leveItem3 = new MenuItem("Hard");
         leveItem3.setOnAction(event -> {
             levelButton.setText("Hard");
             LevelConstants.setLevel('H');
+            settings.updateAndSaveKey("level", "H");
         });
-        levelButton.getItems().addAll(leveItem1,leveItem2,leveItem3);
-        levelButton.setText("Easy");
-        levelPanel.getChildren().addAll(levelLable,levelButton);
+        levelButton.getItems().addAll(leveItem1, leveItem2, leveItem3);
+        levelPanel.getChildren().addAll(levelLable, levelButton);
 
 
         FlowPane resizePanel = new FlowPane();
@@ -109,22 +120,21 @@ public class SettingsWindow extends Stage {
         MenuItem item2 = new MenuItem("300 x 400");
         item2.setOnAction(event -> {
             resizeMenuButton.setText("300 x 400");
+            sizeConstants.setSize(300, 400);
             settings.updateAndSaveKey("windowWidth", "300");
             settings.updateAndSaveKey("windowHeight", "400");
-            sizeConstants.setSize(300, 400);
         });
         MenuItem item3 = new MenuItem("600 x 800");
         item3.setOnAction(event -> {
             resizeMenuButton.setText("600 x 800");
+            sizeConstants.setSize(600, 800);
             settings.updateAndSaveKey("windowWidth", "600");
             settings.updateAndSaveKey("windowHeight", "800");
-            sizeConstants.setSize(600, 800);
         });
         resizeMenuButton.getItems().addAll(item1, item2, item3);
 
-
         resizePanel.getChildren().addAll(resizeLabel, resizeMenuButton);
-        buttonBox.getChildren().addAll(modePanel,levelPanel, resizePanel);
+        buttonBox.getChildren().addAll(modePanel, levelPanel, resizePanel);
 
         Button keySettingsButton = new Button("키 설정");
         Button resetScoreButton = new Button("기록 초기화");
@@ -161,10 +171,10 @@ public class SettingsWindow extends Stage {
         setScene(scene);
 
         colorBlindModeToggle.setOnAction(event -> {
-            isColorBlindModeOn = !isColorBlindModeOn;
-            colorBlindModeToggle.setText(isColorBlindModeOn ? "on" : "off");
-            BlockColor.setColorBlindMode(isColorBlindModeOn); // BlockColor의 colorBlindMode 값 설정
-            //ItemBlockColor.setColorBlindMode(isColorBlindModeOn); // ItemBlockColor의 colorBlindMode 값 설정
+            isColorBlindModeOn = isColorBlindModeOn == 100 ? 200 : 100;
+            colorBlindModeToggle.setText(isColorBlindModeOn == 100 ? "off" : "on");
+            BlockColor.setColorBlindMode(isColorBlindModeOn == 200); // BlockColor의 colorBlindMode 값 설정
+            ItemBlockColor.setColorBlindMode(isColorBlindModeOn == 200); // ItemBlockColor의 colorBlindMode 값 설정
         });
     }
 
@@ -216,7 +226,7 @@ public class SettingsWindow extends Stage {
 
     private void resetSettings() {
         // 색맹 모드 초기화
-        isColorBlindModeOn = false;
+        isColorBlindModeOn = 100;
         colorBlindModeToggle.setSelected(false);
         colorBlindModeToggle.setText("off");
 
@@ -224,20 +234,37 @@ public class SettingsWindow extends Stage {
 
         resizeMenuButton.setText("450 x 600");
         sizeConstants.setSize(450, 600);
+        settings.updateAndSaveKey("windowWidth", "450");
+        settings.updateAndSaveKey("windowHeight", "600");
 
         // 키 설정 초기화
-        //KeySettings.setRightKey("RIGHT");
-        //KeySettings.setDownKey("DOWN");
-        //KeySettings.setLeftKey("LEFT");
-        //KeySettings.setUpKey("UP");
-        //KeySettings.setSpaceKey("SPACE");
+        settings.setP1rightKey("RIGHT");
+        settings.updateAndSaveKey("RIGHT", "RIGHT");
+        settings.setP1downKey("DOWN");
+        settings.updateAndSaveKey("DOWN", "DOWN");
+        settings.setP1leftKey("LEFT");
+        settings.updateAndSaveKey("LEFT", "LEFT");
+        settings.setP1upKey("UP");
+        settings.updateAndSaveKey("UP", "UP");
+        settings.setSpaceKey("SPACE");
+        settings.updateAndSaveKey("SPACE", "SPACE");
 
         // 난이도 설정 초기화
         levelButton.setText("Normal");
         LevelConstants.setLevel('N');
+        settings.updateAndSaveKey("level", "N");
 
         // 다른 설정들도 초기화하는 코드 추가
         System.out.println("기본 설정으로 되돌림");
+        settings.printSettings();
+        System.out.println(settings.getWindowWidth());
+        System.out.println(settings.getWindowHeight());
+        System.out.println(settings.getP1upKey());
+        System.out.println(settings.getP1downKey());
+        System.out.println(settings.getP1leftKey());
+        System.out.println(settings.getP1rightKey());
+        System.out.println(settings.getSpaceKey());
+        System.out.println(settings.getLevel());
     }
 
     private void resetScoreSettings() {
