@@ -1,3 +1,5 @@
+import Setting.SizeConstants;
+import Tetris.Controller;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -5,8 +7,10 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 public class BattleButton {
-    public static void show() {
+    public static void show(SizeConstants sizeConstants, Controller controller) {
         Stage stage = new Stage();
         stage.setTitle("2player");
 
@@ -22,6 +26,17 @@ public class BattleButton {
         root.setPadding(new Insets(20)); // 안쪽 여백 20
 
         Scene scene = new Scene(root, 400, 300); // 창 크기 400x300
+
+        normalModeButton.setOnAction(event -> {
+            try {
+                Stage gameStage = new Stage();
+                BattleApplication battleApp = new BattleApplication(sizeConstants, controller);
+                // HelloApplication의 start 메소드 호출
+                battleApp.start(gameStage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         stage.setScene(scene);
         stage.show();

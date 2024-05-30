@@ -40,11 +40,11 @@ public class TetrisWindow extends Application {
         settings.printSettings();
         SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
         Controller controller = new Controller(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
+        HelloApplication helloApp = new HelloApplication(sizeConstants, controller);
 
         primaryStage.setTitle("TETRIS GAME");
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: rgb(211, 211, 211);");
-        HelloApplication helloApp = new HelloApplication(sizeConstants, controller);
         //ItemHelloApplication itemHelloApp = new ItemHelloApplication();
 
         Pane bottomPane = new Pane();
@@ -55,8 +55,6 @@ public class TetrisWindow extends Application {
         Text textT = new Text("T ");
         textT.setFont(Font.font("Arial", FontWeight.BOLD, 60));
         textT.setFill(javafx.scene.paint.Color.web("#BC7566"));
-
-
 
         Text textE = new Text("E ");
         textE.setFont(Font.font("Arial", FontWeight.BOLD, 60));
@@ -132,7 +130,7 @@ public class TetrisWindow extends Application {
         );
 
         //battle-button
-        battleModeButton.setOnAction(event ->BattleButton.show());
+        battleModeButton.setOnAction(event ->BattleButton.show(sizeConstants, controller));
         battleModeButton.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 // 버튼에 대한 동작 수행
@@ -193,8 +191,6 @@ public class TetrisWindow extends Application {
                 if(user!=null) {
                     // 새 Stage 생성
                     Stage gameStage = new Stage();
-
-                    // HelloApplication의 start 메소드 호출
                     helloApp.start(gameStage);
                 }
             } catch (Exception e) {
