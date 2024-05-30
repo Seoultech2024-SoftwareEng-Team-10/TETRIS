@@ -9,14 +9,14 @@
     -fx-pref-height: 100px;
 }
 
-.game-start-button, .item-game-button, .score-board-button, .settings-button, .exit-button, .battle-button, .single-button, .timer-game-button{
+.game-start-button, .item-game-button, .score-board-button, .settings-button, .exit-button, .battle-button, .timer-game-button{
     -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-border-color: transparent;
     -fx-border-width: 2px;
 }
 
-.game-start-button:focused, .item-game-button:focused, .score-board-button:focused, .settings-button:focused, .exit-button:focused, .single-button:focused, .battle-button:focused, .timer-game-button:focused{
+.game-start-button:focused, .item-game-button:focused, .score-board-button:focused, .settings-button:focused, .exit-button:focused, .battle-button:focused, .timer-game-button:focused{
     -fx-background-color: white; /* 버튼 색상의 알파값을 조절하여 투명도를 변경합니다. */
         -fx-background-insets: 0, 1, 2;
         -fx-background-radius: 5, 4, 3;
@@ -29,7 +29,7 @@
         -fx-transition: background-color 0.3s;
 }
 
-.game-start-button:hover, .item-game-button:hover, .score-board-button:hover, .settings-button:hover, .exit-button:hover, .single-button:hover, .battle-button:hover, .timer-game-button:hover {
+.game-start-button:hover, .item-game-button:hover, .score-board-button:hover, .settings-button:hover, .exit-button:hover, .battle-button:hover, .timer-game-button:hover {
     /* 마우스 호버 시 색상 변경 효과를 줍니다. */
     -fx-background-color: white; /* 버튼 색상의 알파값을 조절하여 투명도를 변경합니다. */
             -fx-background-insets: 0, 1, 2;
@@ -74,16 +74,10 @@
     -fx-font-size: 19px;
 }
 
-.single-button{
-  -fx-background-color: #ffd700;
-  -fx-text-fill: white;
-  -fx-font-size: 19px;
-}
-
 .battle-button{
-  -fx-background-color: #ffa500;
+  -fx-background-color: #6a5acd;
   -fx-text-fill: white;
-  -fx-font-size: 19px;
+  -fx-font-size: 25px;
 }
 
 .timer-game-button{
