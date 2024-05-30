@@ -58,9 +58,15 @@ public class SettingsWindow extends Stage {
         modePanel.setHgap(10);
         Label colorBlindModeLabel = new Label("색맹 모드");
         colorBlindModeToggle = new ToggleButton("off");
-        colorBlindModeToggle.setText(isColorBlindModeOn == 100 ? "off" : "on");
-        BlockColor.setColorBlindMode(isColorBlindModeOn == 200); // BlockColor의 colorBlindMode 값 설정
-        ItemBlockColor.setColorBlindMode(isColorBlindModeOn == 200); // ItemBlockColor의 colorBlindMode 값 설정
+        if (isColorBlindModeOn == 100) {
+            colorBlindModeToggle.setText("off");
+            BlockColor.setColorBlindMode(false); // BlockColor의 colorBlindMode 값 설정
+            ItemBlockColor.setColorBlindMode(false); // ItemBlockColor의 colorBlindMode 값 설정
+        } else {
+            colorBlindModeToggle.setText("on");
+            BlockColor.setColorBlindMode(true); // BlockColor의 colorBlindMode 값 설정
+            ItemBlockColor.setColorBlindMode(true); // ItemBlockColor의 colorBlindMode 값 설정
+        }
         colorBlindModeToggle.setPrefSize(50, 25);
         colorBlindModeToggle.setOnAction(event -> handleButtonClick(event));
         colorBlindModeToggle.setFocusTraversable(false);
