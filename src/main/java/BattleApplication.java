@@ -2,7 +2,7 @@
 import Animation.Flash;
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
-import Setting.Settings;
+//import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.BlockColor;
 import Tetris.Controller;

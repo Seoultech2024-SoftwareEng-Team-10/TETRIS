@@ -1,21 +1,29 @@
 package Tetris;
 
-import Setting.LevelConstants;
-import Setting.SizeConstants;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import static Setting.SizeConstants.*;
 
 
 public class Controller {
-    // Getting the numbers and the MESH from HelloApplication
+    private int MOVE;
+    private int XMAX;
+    private int YMAX;
+    private int SIZE;
+    private double fontSize;
+    private int [][] MESH;
 
 
-    public static char difficultyLevel = LevelConstants.difficultyLevel;
+    public Controller(int Move, int Xmax, int Ymax , int Size, double fontSize, int [][] Mesh){
+        this.MOVE = Move;
+        this.XMAX = Xmax;
+        this.YMAX = Ymax;
+        this.SIZE = Size;
+        this.fontSize = fontSize;
+        this.MESH = Mesh;
+    }
 
-
-    public static void MoveRight(Form form) {
+    public void MoveRight(Form form) {
         if (form.a.getX() + MOVE <= XMAX - SIZE && form.b.getX() + MOVE <= XMAX - SIZE
                 && form.c.getX() + MOVE <= XMAX - SIZE && form.d.getX() + MOVE <= XMAX - SIZE) {
             int movea = MESH[((int) form.a.getX() / SIZE) + 1][((int) form.a.getY() / SIZE)];
@@ -31,7 +39,7 @@ public class Controller {
         }
     }
 
-    public static void MoveLeft(Form form) {
+    public void MoveLeft(Form form) {
         if (form.a.getX() - MOVE >= 0 && form.b.getX() - MOVE >= 0 && form.c.getX() - MOVE >= 0
                 && form.d.getX() - MOVE >= 0) {
             int movea = MESH[((int) form.a.getX() / SIZE) - 1][((int) form.a.getY() / SIZE)];
@@ -54,7 +62,15 @@ public class Controller {
         form.d.setUserData("current");
     }// 현재 운용중인 블록 userData 추가
 
-    public static Form makeText(boolean colorBlindMode, char difficultyLevel) {
+    public Text makeTextOne(int X, int Y){
+        Text a = new Text(X,Y,"O");
+        a.setFont(Font.font(fontSize));
+        a.setFill(Color.GRAY);
+        return a;
+    }
+
+
+    public Form makeText(boolean colorBlindMode, char difficultyLevel, int XMAX) {
         int block = 0;
         if(difficultyLevel == 'E'){
             block = (int) (Math.random() * 72);
@@ -224,7 +240,7 @@ public class Controller {
 
         return new Form(a, b, c, d, name);
     }
-    public static Form makeText(String name, boolean colorBlindMode) {
+    public Form makeText(String name, boolean colorBlindMode) {
         Text a = new Text(0, 0, "O"), b = new Text(0, 0, "O"), c = new Text(0, 0, "O"),
                 d = new Text(0, 0, "O");//Rectangle --> Text
         a.setFont(Font.font(fontSize));
@@ -377,8 +393,8 @@ public class Controller {
 
         return new Form(a, b, c, d, name);
     }
-    public static Form waitingTextMake(boolean colorBlindMode, char difficultyLevel){
-        Form waitObj = makeText(colorBlindMode, difficultyLevel);
+    public Form waitingTextMake(boolean colorBlindMode, char difficultyLevel, int XMAX){
+        Form waitObj = makeText(colorBlindMode, difficultyLevel, XMAX);
 
         waitObj.a.setX(waitObj.a.getX()+SIZE*7);
         waitObj.b.setX(waitObj.b.getX()+SIZE*7);
