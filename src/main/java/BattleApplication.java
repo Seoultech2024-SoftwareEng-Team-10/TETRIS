@@ -54,6 +54,8 @@ public class BattleApplication extends Application {
     private static int linesNo = 0;
     private int linesNo2 = 0;
     private Button restartButton;
+    private Button exitButton;
+    private Button terminateButton;
     private static double scoreMultiplier = 1.0;
     private static double scoreMultiplier2 = 1.0;
     private static double frameMultiplier = 0.8;
@@ -132,6 +134,8 @@ public class BattleApplication extends Application {
         this.linesNo = 0;
         this.linesNo2 = 0;
         this.Frame = 1000000000;
+
+
     }
     public Text styleScoretext(int Pos){
         Text scoretext = new Text();
@@ -213,6 +217,29 @@ public class BattleApplication extends Application {
         nextObj2 = controller.makeText(true,difficultylevel, 200);
         currentTextSetUserData(a);
         currentTextSetUserData(b);
+
+        restartButton = new Button("게임 재시작");
+        restartButton.setLayoutX(XMAX/2);
+        restartButton.setLayoutY(YMAX/2);
+        restartButton.setVisible(false); // 초기에는 보이지 않게 설정
+
+        exitButton = new Button("메뉴화면");
+        exitButton.setLayoutX(XMAX/2);
+        exitButton.setLayoutY(YMAX/2+30);
+        exitButton.setVisible(false); // 초기에는 보이지 않게 설정
+
+        terminateButton = new Button("게임 나가기");
+        terminateButton.setLayoutX(XMAX / 2);
+        terminateButton.setLayoutY(YMAX / 2 + 60);
+        terminateButton.setVisible(false);
+
+
+        // 버튼 이벤트 핸들러 설정
+        restartButton.setOnAction(e -> {startAnimation(hbox);});
+        exitButton.setOnAction(e -> GameStopped(stage));
+        terminateButton.setOnAction(e->System.exit(0));
+
+        group1.getChildren().addAll(restartButton,exitButton, terminateButton);
 
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
@@ -330,7 +357,7 @@ public class BattleApplication extends Application {
                 }
                 else{
                     if(event.getCode() == KeyCode.ESCAPE) {
-                        startAnimation();
+                        startAnimation(hbox);
                     }
                 }
             }
@@ -1266,9 +1293,9 @@ public class BattleApplication extends Application {
 
 
     public void stopAnimation(HBox hbox) {
-
+        running=false;
         applyGrayscaleEffect(hbox);
-        for (Node node : hbox.getChildren()) {
+        for (Node node : group1.getChildren()) {
             if (node instanceof Button) {
                 node.setVisible(true);
             }
@@ -1276,12 +1303,12 @@ public class BattleApplication extends Application {
         bringButtonsToFront();
     }
 
-    public void startAnimation() {
+    public void startAnimation(HBox hbox) {
         running = true;
 
         // 게임 재시작 및 종료 버튼 숨김
         // 흑백 효과 해제
-        clearGrayscaleEffect();
+        clearGrayscaleEffect(hbox);
         for (Node node : group1.getChildren()) {
             if (node instanceof Button) {
                 node.setVisible(false);
@@ -1332,11 +1359,13 @@ public class BattleApplication extends Application {
         stage.close();
     }
 
-    public void clearGrayscaleEffect() {
-        group1.setEffect(null); // 흑백 효과 해제
+    public void clearGrayscaleEffect(HBox hbox) {
+        hbox.setEffect(null); // 흑백 효과 해제
     }
     private void bringButtonsToFront() {
         if (restartButton != null) restartButton.toFront();
+        if (exitButton != null) exitButton.toFront();
+        if (terminateButton != null) terminateButton.toFront();
     }
 
     public void main(String[] args) {
