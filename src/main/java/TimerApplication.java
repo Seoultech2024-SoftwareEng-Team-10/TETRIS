@@ -25,9 +25,12 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import static Tetris.Controller.currentTextSetUserData;
 
@@ -69,7 +72,7 @@ public class TimerApplication extends Application {
     private static int meshTop = 0;
     private static int meshTop2 = 0;
     private static double fontSize;
-    private static int timerSecCounter = 0;
+    private static long timeDiff = 0;
     private static int winner = 0;
 
     //private final User user;
@@ -133,7 +136,7 @@ public class TimerApplication extends Application {
         this.miniMESH2 = new int[10][11];
         this.meshTop = 0;
         this.meshTop2 = 0;
-        this.timerSecCounter = 0;
+        this.timeDiff = 0;
         this.winner = 0;
 
         this.running = true;
@@ -254,6 +257,11 @@ public class TimerApplication extends Application {
 
         group1.getChildren().addAll(restartButton,exitButton, terminateButton);
 
+
+        Date date = new Date();
+        long startDate = date.getTime();
+
+
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -268,7 +276,7 @@ public class TimerApplication extends Application {
             @Override
             public void handle(long now) {
                 if (running) {
-                    if(timerSecCounter >=20){//timeSecCounter = 1초마다 카운팅 +1
+                    if(timeDiff/1000 >= 20){//timeSecCounter = 1초마다 카운팅 +1
                         if(winner == 1){
                             //유저1 승리
                             Text winnerText = new Text("player 1 win");
@@ -293,6 +301,8 @@ public class TimerApplication extends Application {
                     }
 
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
+                        Date currentTime = new Date();
+                        timeDiff = currentTime.getTime() - startDate;
                         group1.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         group2.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         stage.setOnCloseRequest(event -> {
@@ -300,10 +310,9 @@ public class TimerApplication extends Application {
                             group1.getChildren().clear();
                             group2.getChildren().clear();
                         });
-                        timerSecCounter++;
                         lastUpdate = now;
                         winner = meshTop < meshTop2 ?  1 : 2;//meshTop = 맨위의 블록 위치
-                        System.out.println(timerSecCounter); //그냥 확인용 나중에 제출때 지워야됨
+                        System.out.println(timeDiff/1000); //그냥 확인용 나중에 제출때 지워야됨
 
                         if (object.a.getY() == 0 || object.b.getY() == 0 || object.c.getY() == 0 || object.d.getY() == 0)
                             top++;
@@ -1468,6 +1477,11 @@ public class TimerApplication extends Application {
         if (restartButton != null) restartButton.toFront();
         if (exitButton != null) exitButton.toFront();
         if(terminateButton!=null) terminateButton.toFront();
+    }
+
+    public long getDateDiff(long startDate){
+        Date currentDate = new Date();
+        return currentDate.getTime() - startDate;
     }
 
     public void main(String[] args) {

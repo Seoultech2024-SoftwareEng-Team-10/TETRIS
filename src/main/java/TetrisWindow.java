@@ -89,6 +89,7 @@ public class TetrisWindow extends Application {
         VBox leftButtonPane = new VBox(15);
         leftButtonPane.setAlignment(Pos.CENTER);
         leftButtonPane.setTranslateY(80);
+        leftButtonPane.setTranslateX(70);
         leftButtonPane.setPadding(new Insets(30, 50, 20, 50));
         Button scoreBoardButton = new Button("스코어보드");
         Button settingsButton = new Button("설정");
@@ -105,28 +106,19 @@ public class TetrisWindow extends Application {
                 userInfoLabel
         );
 
-        VBox centerButtonPane = new VBox(15);
-        centerButtonPane.setPadding(new Insets(30, 50, 20, 50));
-        centerButtonPane.setAlignment(Pos.CENTER);
-        centerButtonPane.setTranslateY(60);
-        Button singleButton = new Button("싱글\n모드");
-        Button battleModeButton = new Button("배틀\n모드");
-
-        centerButtonPane.getChildren().addAll(
-                singleButton,
-                battleModeButton
-        );
-
         VBox rightButtonPane = new VBox(15);
         rightButtonPane.setPadding(new Insets(30, 50, 20, 50));
         rightButtonPane.setAlignment(Pos.CENTER);
-        rightButtonPane.setTranslateY(60);
+        rightButtonPane.setTranslateY(75);
+        rightButtonPane.setTranslateX(-70);
         Button gameStartButton = new Button("일반모드");
         Button itemgameButton = new Button("아이템모드");
+        Button battleModeButton = new Button("대전모드");
 
         rightButtonPane.getChildren().addAll(
                 gameStartButton,
-                itemgameButton
+                itemgameButton,
+                battleModeButton
         );
 
         //battle-button
@@ -243,7 +235,6 @@ public class TetrisWindow extends Application {
 
         root.setTop(logoPane);
         root.setLeft(leftButtonPane);
-        root.setCenter(centerButtonPane);
         root.setRight(rightButtonPane);
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -272,7 +263,6 @@ public class TetrisWindow extends Application {
         settingsButton.getStyleClass().add("button");
         exitButton.getStyleClass().add("button");
         battleModeButton.getStyleClass().add("button");
-        singleButton.getStyleClass().add("button");
 
         gameStartButton.getStyleClass().add("game-start-button");
         itemgameButton.getStyleClass().add("item-game-button");
@@ -280,7 +270,6 @@ public class TetrisWindow extends Application {
         settingsButton.getStyleClass().add("settings-button");
         exitButton.getStyleClass().add("exit-button");
         battleModeButton.getStyleClass().add("battle-button");
-        singleButton.getStyleClass().add("single-button");
 
         primaryStage.setScene(scene);
         primaryStage.show();
