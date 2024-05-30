@@ -47,7 +47,12 @@ public class Controller {
         }
     }
 
-
+    public static void currentTextSetUserData(Form form){
+        form.a.setUserData("current");
+        form.b.setUserData("current");
+        form.c.setUserData("current");
+        form.d.setUserData("current");
+    }// 현재 운용중인 블록 userData 추가
 
     public static Form makeText(boolean colorBlindMode, char difficultyLevel) {
         int block = 0;

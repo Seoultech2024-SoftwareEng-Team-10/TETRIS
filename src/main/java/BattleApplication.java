@@ -88,7 +88,7 @@ public class BattleApplication extends Application {
 
     private int score, score2;
     private double Frame;
-    public BattleApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
+    public BattleApplication(SizeConstants sizeConstants, /*Settings settings,*/ Controller controller){
         this.controller = controller;
         this.score = 0;
         this.score2 = 0;
@@ -98,11 +98,16 @@ public class BattleApplication extends Application {
         this.sKey = "S";
         this.shiftKey = "SHIFT";
         this.dKey = "D";
-        this.rightKey = settings.getRightKey();
+        this.rightKey = "RIGHT";
+        this.leftKey = "LEFT";
+        this.upKey = "UP";
+        this.downKey = "DOWN";
+        this.spaceKey  = "SPACE";
+        /*this.rightKey = settings.getRightKey();
         this.leftKey = settings.getLeftKey();
         this.upKey = settings.getUpKey();
         this.downKey = settings.getDownKey();
-        this.spaceKey  = settings.getSpaceKey();
+        this.spaceKey  = settings.getSpaceKey();*/
 
 
         this.MOVE = sizeConstants.getMOVE();
