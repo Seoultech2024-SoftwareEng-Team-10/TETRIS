@@ -1,6 +1,7 @@
+
 import ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
-//import Setting.Settings;
+import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.BlockColor;
 import Tetris.Controller;
@@ -27,17 +28,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import User.SessionManager;
 
-
 public class HelloApplication extends Application {
     private AnimationTimer timer;
-    public boolean running;
+    public boolean running = true;
     private static Form object;
     private static Pane group = new Pane();
     private static Scene scene;
-    public int score;
-    private static int top;
+    public int score = 0;
+    private static int top = 0;
     private static boolean game = true;
-    private ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
+    private ColorAdjust colorAdjust = new ColorAdjust();
     private static char difficultylevel = LevelConstants.difficultyLevel;
     private Form nextObj;
     private Form waitObj;
@@ -50,39 +50,34 @@ public class HelloApplication extends Application {
     private static double frameMultiplier = 0.8;
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
-    private final User user;
-    private final Controller controller;
-    private final int MOVE;
-    private final int SIZE;
-    private final int XMAX;
-    private final int YMAX;
-    private final int[][] MESH;
-    private final String rightKey;
-    private final String leftKey;
-    private final String spaceKey;
-    private final String upKey;
-    private final String downKey;
-    public HelloApplication(SizeConstants sizeConstants,/* Settings settings*/ Controller controller){
+    private User user;
+    private Controller controller;
+    private int MOVE;
+    private int SIZE;
+    private int XMAX;
+    private int YMAX;
+    private int[][] MESH;
+    private String rightKey;
+    private String leftKey;
+    private String spaceKey;
+    private String upKey;
+    private String downKey;
+    public HelloApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
         this.controller = controller;
         this.score = 0;
         this.running = true;
-        /*this.rightKey = settings.getRightKey();
-        this.leftKey = settings.getLeftKey();
-        this.upKey = settings.getUpKey();
-        this.downKey = settings.getDownKey();
-        this.spaceKey  = settings.getSpaceKey();*/
-        this.rightKey = "RIGHT";
-        this.leftKey = "LEFT";
-        this.upKey = "UP";
-        this.downKey = "DOWN";
-        this.spaceKey  = "SPACE";
+        this.rightKey = settings.getP1rightKey();
+        this.leftKey = settings.getP1leftKey();
+        this.upKey = settings.getP1upKey();
+        this.downKey = settings.getP1downKey();
+        this.spaceKey  = settings.getSpaceKey();
+        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
+        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel);
         this.MOVE = sizeConstants.getMOVE();
         this.SIZE = sizeConstants.getSIZE();
         this.XMAX = sizeConstants.getXMAX();
         this.YMAX = sizeConstants.getYMAX();
         this.MESH = sizeConstants.getMESH();
-        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, this.XMAX);
-        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel, this.XMAX);
         this.group = new Pane();
         this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
         this.running = true;
@@ -90,9 +85,12 @@ public class HelloApplication extends Application {
         this.linesNo = 0;
     }
 
-
     @Override
     public void start(Stage stage) throws IOException {
+        Settings settings = new Settings();
+        SizeConstants sizeConstants = new SizeConstants(settings.getWindowWidth(), settings.getWindowHeight());
+        Controller controller = new Controller(sizeConstants.getMOVE(), sizeConstants.getXMAX(),sizeConstants.getYMAX(), sizeConstants.getSIZE(), sizeConstants.getFontSize() ,sizeConstants.getMESH());
+
         User currentUser = SessionManager.getCurrentUser();
         System.out.println(currentUser.getNickname());
         stage.close();
@@ -112,10 +110,26 @@ public class HelloApplication extends Application {
         }
 
 
-        group = new Pane();
-        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
-        running = true;
-
+        this.controller = controller;
+        this.score = 0;
+        this.running = true;
+        this.rightKey = settings.getP1rightKey();
+        this.leftKey = settings.getP1leftKey();
+        this.upKey = settings.getP1upKey();
+        this.downKey = settings.getP1downKey();
+        this.spaceKey  = settings.getSpaceKey();
+        this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel);
+        this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel);
+        this.MOVE = sizeConstants.getMOVE();
+        this.SIZE = sizeConstants.getSIZE();
+        this.XMAX = sizeConstants.getXMAX();
+        this.YMAX = sizeConstants.getYMAX();
+        this.MESH = sizeConstants.getMESH();
+        this.group = new Pane();
+        this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
+        this.running = true;
+        this.user = TetrisWindow.user;
+        this.linesNo = 0;
 
         group.getChildren().clear();
 
@@ -145,7 +159,7 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(a.a, a.b, a.c, a.d);
         moveOnKeyPress(a);
         object = a;
-        nextObj = controller.makeText(true,difficultylevel, XMAX);//색맹 모드가 아님을 의미
+        nextObj = controller.makeText(true,difficultylevel);//색맹 모드가 아님을 의미
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
@@ -894,7 +908,7 @@ public class HelloApplication extends Application {
             // 새 블록 생성
             Form a = controller.makeText(waitObj.getName(), true);
             group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-            waitObj = controller.waitingTextMake(true,difficultylevel,XMAX);
+            waitObj = controller.waitingTextMake(true,difficultylevel);
             object = a;
             group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
             moveOnKeyPress(a);
@@ -909,8 +923,6 @@ public class HelloApplication extends Application {
             moved = true; // 실제로 이동했으므로 true로 설정
             score += scoreMultiplier;
         }
-
-
 
         return moved; // 이동 여부를 반환
     }
@@ -933,7 +945,7 @@ public class HelloApplication extends Application {
         RemoveRows(group);
         Form a = controller.makeText(waitObj.getName(), true);
         group.getChildren().removeAll(waitObj.a, waitObj.b, waitObj.c, waitObj.d);
-        waitObj = controller.waitingTextMake(true,difficultylevel,XMAX);
+        waitObj = controller.waitingTextMake(true,difficultylevel);
         object = a;
         group.getChildren().addAll(a.a, a.b, a.c, a.d, waitObj.a, waitObj.b, waitObj.c, waitObj.d);
         moveOnKeyPress(a);
@@ -1014,10 +1026,7 @@ public class HelloApplication extends Application {
         nicknameTextArea.setLayoutY(YMAX / 3);
         nicknameTextArea.setPrefWidth(XMAX / 4);
         nicknameTextArea.setPrefHeight(XMAX / 10);
-        //1 코드정리와 함께UI 정리
-        //2. 스코어보드 띄워놓을 부분 냄겨주기
-        //3. GamePause에서 끄는거
-        //4.
+
         Label NameLabel = new Label("점수를 저장하시겠습니까?");
         NameLabel.setLayoutX(XMAX/2 - 10);
         NameLabel.setLayoutY(YMAX/2 - 40);
@@ -1025,6 +1034,7 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(nicknameTextArea, NameLabel);
 
         NameLabel.setVisible(true);
+
         Button yesButton = new Button("Yes");
         yesButton.setLayoutX(XMAX / 2 - 50); //
         yesButton.setLayoutY(YMAX / 2 + 50); //
@@ -1039,12 +1049,12 @@ public class HelloApplication extends Application {
                 JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo);
                 yesButton.setVisible(false);
 
-                //여기서 Scoreboard 보여주기
             } catch (Exception ex) {
                 System.out.println("jdbc error");
             }
         });
         group.getChildren().addAll(yesButton);
+
     }
     private void GameStopped(Stage stage){
         timer.stop();
@@ -1061,6 +1071,8 @@ public class HelloApplication extends Application {
         if (restartButton != null) restartButton.toFront();
         if (exitButton != null) exitButton.toFront();
     }
+
+
 
     public void main(String[] args) {
         launch();

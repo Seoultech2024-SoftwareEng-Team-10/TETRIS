@@ -3,8 +3,11 @@ package Tetris;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import lombok.Getter;
+import lombok.Setter;
 
-
+@Getter
+@Setter
 public class Controller {
     private int MOVE;
     private int XMAX;
@@ -55,22 +58,9 @@ public class Controller {
         }
     }
 
-    public static void currentTextSetUserData(Form form){
-        form.a.setUserData("current");
-        form.b.setUserData("current");
-        form.c.setUserData("current");
-        form.d.setUserData("current");
-    }// 현재 운용중인 블록 userData 추가
-
-    public Text makeTextOne(int X, int Y){
-        Text a = new Text(X,Y,"O");
-        a.setFont(Font.font(fontSize));
-        a.setFill(Color.GRAY);
-        return a;
-    }
 
 
-    public Form makeText(boolean colorBlindMode, char difficultyLevel, int XMAX) {
+    public Form makeText(boolean colorBlindMode, char difficultyLevel) {
         int block = 0;
         if(difficultyLevel == 'E'){
             block = (int) (Math.random() * 72);
@@ -393,8 +383,8 @@ public class Controller {
 
         return new Form(a, b, c, d, name);
     }
-    public Form waitingTextMake(boolean colorBlindMode, char difficultyLevel, int XMAX){
-        Form waitObj = makeText(colorBlindMode, difficultyLevel, XMAX);
+    public Form waitingTextMake(boolean colorBlindMode, char difficultyLevel){
+        Form waitObj = makeText(colorBlindMode, difficultyLevel);
 
         waitObj.a.setX(waitObj.a.getX()+SIZE*7);
         waitObj.b.setX(waitObj.b.getX()+SIZE*7);

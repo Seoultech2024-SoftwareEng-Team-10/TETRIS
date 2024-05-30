@@ -14,13 +14,12 @@ public class SizeConstants {
     private int[][] MESH;
 
     public SizeConstants(int width, int height) {
-        if (width == 450 && height == 600) {
-            this.MOVE = MOVE_450x600;
-            this.SIZE = SIZE_450x600;
-            this.XMAX = XMAX_450x600;
-            this.YMAX = YMAX_450x600;
-            this.fontSize = FONTSIZE_450x600;
-        } else if (width == 300 && height == 400) {
+        this.MOVE = MOVE_450x600;
+        this.SIZE = SIZE_450x600;
+        this.XMAX = XMAX_450x600;
+        this.YMAX = YMAX_450x600;
+        this.fontSize = FONTSIZE_450x600;
+        if (width == 300 && height == 400) {
             this.MOVE = MOVE_300x400;
             this.SIZE = SIZE_300x400;
             this.XMAX = XMAX_300x400;
