@@ -23,6 +23,10 @@ public class Controller {
         this.MESH = Mesh;
     }
 
+    public Controller() {
+
+    }
+
     public void MoveRight(Form form) {
         if (form.a.getX() + MOVE <= XMAX - SIZE && form.b.getX() + MOVE <= XMAX - SIZE
                 && form.c.getX() + MOVE <= XMAX - SIZE && form.d.getX() + MOVE <= XMAX - SIZE) {

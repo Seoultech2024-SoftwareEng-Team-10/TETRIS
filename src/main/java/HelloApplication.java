@@ -1,3 +1,4 @@
+import Animation.Flash;
 import ScoreBoard.JdbcConnecter;
 import ScoreBoard.ScoreBoardWindow;
 import Setting.LevelConstants;
@@ -21,6 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -61,6 +63,7 @@ public class HelloApplication extends Application {
     private final int SIZE;
     private final int XMAX;
     private final int YMAX;
+    private final double fontSize;
     private final int[][] MESH;
     private final String rightKey;
     private final String leftKey;
@@ -81,6 +84,7 @@ public class HelloApplication extends Application {
         this.XMAX = sizeConstants.getXMAX();
         this.YMAX = sizeConstants.getYMAX();
         this.MESH = sizeConstants.getMESH();
+        this.fontSize = sizeConstants.getFontSize();
         this.waitObj = controller.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, this.XMAX);
         this.nextObj = controller.makeText(BlockColor.colorBlindMode, difficultylevel, this.XMAX);
         this.group = new Pane();
@@ -88,6 +92,7 @@ public class HelloApplication extends Application {
         this.running = true;
         this.user = TetrisWindow.user;
         this.linesNo = 0;
+        group.getChildren().clear();
     }
 
 
@@ -117,7 +122,6 @@ public class HelloApplication extends Application {
         running = true;
 
 
-        group.getChildren().clear();
 
         for (int[] a : MESH) {
             Arrays.fill(a, 0);
@@ -174,7 +178,10 @@ public class HelloApplication extends Application {
 
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {startAnimation();});
-        exitButton.setOnAction(e -> GameStopped(stage));
+        exitButton.setOnAction(e -> {
+            GameStopped(stage);
+            stage.close();
+        });
         terminateButton.setOnAction(e->System.exit(0));
 
         // 그룹에 버튼 추가
@@ -188,7 +195,7 @@ public class HelloApplication extends Application {
 
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
-
+                        group.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
                             group.getChildren().clear();
@@ -819,7 +826,8 @@ public class HelloApplication extends Application {
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                            node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                            node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                            node.getUserData()=="effectText")//예외설정//예외설정
                         continue;
                     if (node instanceof Text)
                         texts.add(node);
@@ -835,15 +843,28 @@ public class HelloApplication extends Application {
                     Text a = (Text) node;
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                        //////효과
+                        Text effectText = new Text("O");
+                        effectText.setX(a.getX());
+                        effectText.setY(a.getY());
+                        effectText.setUserData("effectText");
+                        effectText.setFill(Color.WHITE);
+                        effectText.setFont(Font.font(fontSize));
+                        pane.getChildren().add(effectText);
+                        new Flash(effectText).play();
+                        ///////효과
                         pane.getChildren().remove(node);
                     } else
                         newtexts.add(node);
                 }
 
                 for (Node node : newtexts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     if (a.getY() < lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+
                         a.setY(a.getY() + SIZE);
                     }//try-catch삭제
                 }
@@ -851,10 +872,14 @@ public class HelloApplication extends Application {
                 texts.clear();
                 newtexts.clear();
                 for (Node node : pane.getChildren()) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     if (node instanceof Text)
                         texts.add(node);
                 }
                 for (Node node : texts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     try {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 1;
@@ -1032,6 +1057,7 @@ public class HelloApplication extends Application {
         group.getChildren().addAll(nicknameTextArea, NameLabel);
 
         NameLabel.setVisible(true);
+
         Button yesButton = new Button("Yes");
         yesButton.setLayoutX(XMAX / 2); //
         yesButton.setLayoutY(YMAX / 2 + 30); //
@@ -1080,6 +1106,7 @@ public class HelloApplication extends Application {
     private void bringButtonsToFront() {
         if (restartButton != null) restartButton.toFront();
         if (exitButton != null) exitButton.toFront();
+        if (terminateButton!=null) terminateButton.toFront();
     }
 
     public void main(String[] args) {

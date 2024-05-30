@@ -140,6 +140,8 @@ public class TimerApplication extends Application {
         this.linesNo = 0;
         this.linesNo2 = 0;
         this.Frame = 1000000000;
+        group1.getChildren().clear();
+        group2.getChildren().clear();
     }
     public Text styleScoretext(int Pos){
         Text scoretext = new Text();
@@ -252,7 +254,10 @@ public class TimerApplication extends Application {
 
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {startAnimation(hbox);});
-        exitButton.setOnAction(e -> GameStopped(stage));
+        exitButton.setOnAction(e -> {
+            GameStopped(stage);
+            stage.close();
+        });
         terminateButton.setOnAction(e->System.exit(0));
 
         group1.getChildren().addAll(restartButton,exitButton, terminateButton);

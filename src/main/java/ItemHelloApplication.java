@@ -1,4 +1,4 @@
-
+import Animation.Flash;
 import ScoreBoard.JdbcConnecter;
 import ScoreBoard.ScoreBoardWindow;
 import Setting.LevelConstants;
@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class ItemHelloApplication extends Application {
     public int score;
     private static int top;
     private static boolean game = true;
+
     private ColorAdjust colorAdjust = new ColorAdjust(); //Color Adjust 조절
     private static char difficultylevel = LevelConstants.difficultyLevel;
 
@@ -61,6 +63,7 @@ public class ItemHelloApplication extends Application {
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     //private final User user;
+    private static double fontSize;
     private final int MOVE;
     private final int SIZE;
     private final int XMAX;
@@ -95,12 +98,14 @@ public class ItemHelloApplication extends Application {
         this.XMAX = sizeConstants.getXMAX();
         this.YMAX = sizeConstants.getYMAX();
         this.MESH = sizeConstants.getMESH();
+        this.fontSize = sizeConstants.getFontSize();
         this.waitObj = itemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
         this.nextObj = itemController.makeText(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
         this.group = new Pane();
         this.scene = new Scene(group, XMAX + 250, YMAX - SIZE);
         this.running = true;
         this.linesNo = 0;
+        group.getChildren().clear();
     }
 
     @Override
@@ -186,7 +191,10 @@ public class ItemHelloApplication extends Application {
 
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {startAnimation();});
-        exitButton.setOnAction(e -> GameStopped(stage));
+        exitButton.setOnAction(e -> {
+            GameStopped(stage);
+            stage.close();
+        });
         terminateButton.setOnAction(e->System.exit(0));
 
         // 그룹에 버튼 추가
@@ -200,7 +208,7 @@ public class ItemHelloApplication extends Application {
 
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
-
+                        group.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
                             group.getChildren().clear();
@@ -856,7 +864,8 @@ public class ItemHelloApplication extends Application {
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                            node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                            node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                            node.getUserData()=="effectText")//예외설정//예외설정
                         continue;
                     if (node instanceof Text)
                         texts.add(node);
@@ -873,12 +882,24 @@ public class ItemHelloApplication extends Application {
                     Text a = (Text) node;
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                        //////효과
+                        Text effectText = new Text("O");
+                        effectText.setX(a.getX());
+                        effectText.setY(a.getY());
+                        effectText.setUserData("effectText");
+                        effectText.setFill(Color.WHITE);
+                        effectText.setFont(Font.font(fontSize));
+                        pane.getChildren().add(effectText);
+                        new Flash(effectText).play();
+                        ///////효과
                         pane.getChildren().remove(node);
                     } else
                         newtexts.add(node);
                 }
 
                 for (Node node : newtexts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     if (a.getY() < lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
@@ -889,10 +910,14 @@ public class ItemHelloApplication extends Application {
                 texts.clear();
                 newtexts.clear();
                 for (Node node : pane.getChildren()) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     if (node instanceof Text)
                         texts.add(node);
                 }
                 for (Node node : texts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     try {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 1;
@@ -907,12 +932,15 @@ public class ItemHelloApplication extends Application {
         for (Node node : pane.getChildren()) {
             if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                     node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                    node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                    node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                    node.getUserData()=="effectText")//예외설정//예외설정
                 continue;
             if (node instanceof Text)
                 texts.add(node);
         }
         for (Node node : texts) {
+            if(node.getUserData()=="effectText")
+                continue;
             Text a = (Text) node;
             if ((a.getY() == form.a.getY()+SIZE&&a.getX()==form.a.getX())||
                     (a.getY() == form.b.getY()+SIZE&&a.getX()==form.b.getX())||
@@ -930,12 +958,15 @@ public class ItemHelloApplication extends Application {
         for (Node node : pane.getChildren()) {
             if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                     node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                    node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                    node.getUserData() == "waitc" || node.getUserData() == "waitd"||
+                    node.getUserData()=="effectText")//예외설정//예외설정
                 continue;
             if (node instanceof Text)
                 texts.add(node);
         }
         for (Node node : texts) {
+            if(node.getUserData()=="effectText")
+                continue;
             Text a = (Text) node;
             if(form.getItemRotate() == 1) {
                 if ((a.getY() == form.a.getY() - SIZE && a.getX() == form.a.getX() - SIZE) ||

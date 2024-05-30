@@ -245,7 +245,10 @@ public class BattleApplication extends Application {
 
         // 버튼 이벤트 핸들러 설정
         restartButton.setOnAction(e -> {startAnimation(hbox);});
-        exitButton.setOnAction(e -> GameStopped(stage));
+        exitButton.setOnAction(e -> {
+            GameStopped(stage);
+            stage.close();
+        });
         terminateButton.setOnAction(e->System.exit(0));
         group1.getChildren().addAll(restartButton,exitButton, terminateButton);
 
