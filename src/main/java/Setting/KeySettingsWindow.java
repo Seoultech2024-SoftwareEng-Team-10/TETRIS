@@ -237,6 +237,9 @@ public class KeySettingsWindow extends Application {
         } else if (oldKeyCode == KeyCode.valueOf(settings.getSpaceKey())) {
             spaceKeyLabel.setText(newKeyCode.getName());
             settings.setSpaceKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getP2upKey())) {
+            p2upKeyLabel.setText(newKeyCode.getName());
+            settings.setP2upKey(newKeyCode.toString());
         } else if (oldKeyCode == KeyCode.valueOf(settings.getP2leftKey())) {
             p2leftKeyLabel.setText(newKeyCode.getName());
             settings.setP2leftKey(newKeyCode.toString());
@@ -253,63 +256,49 @@ public class KeySettingsWindow extends Application {
     }
 
     public void updateKeySettings(KeyCode oldKeyCode, KeyCode newKeyCode) {
-        switch (oldKeyCode) {
-            case UP:
-                settings.setP1upKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
-                p1upKeyLabel.setText(settings.getP1upKey());
-                settings.updateAndSaveKey("UP", String.valueOf(newKeyCode));
-                break;
-            case LEFT:
-                settings.setP1leftKey(newKeyCode.toString());
-                p1leftKeyLabel.setText(settings.getP1leftKey());
-                settings.updateAndSaveKey("LEFT", String.valueOf(newKeyCode));
-                break;
-            case DOWN:
-                settings.setP1downKey(newKeyCode.toString());
-                p1downKeyLabel.setText(settings.getP1downKey());
-                settings.updateAndSaveKey("DOWN", String.valueOf(newKeyCode));
-                break;
-            case RIGHT:
-                settings.setP1rightKey(newKeyCode.toString());
-                p1rightKeyLabel.setText(settings.getP1rightKey());
-                settings.updateAndSaveKey("RIGHT", String.valueOf(newKeyCode));
-                break;
-            case SPACE:
-                settings.setSpaceKey(newKeyCode.toString());
-                spaceKeyLabel.setText(settings.getSpaceKey());
-                settings.updateAndSaveKey("SPACE", String.valueOf(newKeyCode));
-                break;
-            case W:
-                settings.setP2upKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
-                p2upKeyLabel.setText(settings.getP2upKey());
-                settings.updateAndSaveKey("W", String.valueOf(newKeyCode));
-                break;
-            case A:
-                settings.setP2leftKey(newKeyCode.toString());
-                p2leftKeyLabel.setText(settings.getP2leftKey());
-                settings.updateAndSaveKey("A", String.valueOf(newKeyCode));
-                break;
-            case S:
-                settings.setP2downKey(newKeyCode.toString());
-                p2downKeyLabel.setText(settings.getP2downKey());
-                settings.updateAndSaveKey("S", String.valueOf(newKeyCode));
-                break;
-            case D:
-                settings.setP2rightKey(newKeyCode.toString());
-                p2rightKeyLabel.setText(settings.getP2rightKey());
-                settings.updateAndSaveKey("D", String.valueOf(newKeyCode));
-                break;
-            case SHIFT:
-                settings.setShiftKey(newKeyCode.toString());
-                shiftKeyLabel.setText(settings.getShiftKey());
-                settings.updateAndSaveKey("SHIFT", String.valueOf(newKeyCode));
-                break;
-            default:
-                // 기타 키에 대한 처리 추가
-                break;
+        String oldKey = oldKeyCode.getName().toUpperCase();
+        if (oldKey.equals(settings.getP1upKey())) {
+            settings.setP1upKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
+            p1upKeyLabel.setText(settings.getP1upKey());
+            settings.updateAndSaveKey("UP", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getP1leftKey())) {
+            settings.setP1leftKey(newKeyCode.toString());
+            p1leftKeyLabel.setText(settings.getP1leftKey());
+            settings.updateAndSaveKey("LEFT", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getP1downKey())) {
+            settings.setP1downKey(newKeyCode.toString());
+            p1downKeyLabel.setText(settings.getP1downKey());
+            settings.updateAndSaveKey("DOWN", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getP1rightKey())) {
+            settings.setP1rightKey(newKeyCode.toString());
+            p1rightKeyLabel.setText(settings.getP1rightKey());
+            settings.updateAndSaveKey("RIGHT", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getSpaceKey())) {
+            settings.setSpaceKey(newKeyCode.toString());
+            spaceKeyLabel.setText(settings.getSpaceKey());
+            settings.updateAndSaveKey("SPACE", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getP2upKey())) {
+            settings.setP2upKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
+            p2upKeyLabel.setText(settings.getP2upKey());
+            settings.updateAndSaveKey("W", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getP2leftKey())) {
+            settings.setP2leftKey(newKeyCode.toString());
+            p2leftKeyLabel.setText(settings.getP2leftKey());
+            settings.updateAndSaveKey("A", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getP2downKey())) {
+            settings.setP2downKey(newKeyCode.toString());
+            p2downKeyLabel.setText(settings.getP2downKey());
+            settings.updateAndSaveKey("S", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getP2rightKey())) {
+            settings.setP2rightKey(newKeyCode.toString());
+            p2rightKeyLabel.setText(settings.getP2rightKey());
+            settings.updateAndSaveKey("D", String.valueOf(newKeyCode));
+        } else if (oldKey.equals(settings.getShiftKey())) {
+            settings.setShiftKey(newKeyCode.toString());
+            shiftKeyLabel.setText(settings.getShiftKey());
+            settings.updateAndSaveKey("SHIFT", String.valueOf(newKeyCode));
         }
     }
-
     public static void main(String[] args) {
         launch(args);
     }
