@@ -1,12 +1,14 @@
-
+import Animation.Flash;
 import ScoreBoard.JdbcConnecter;
 import ScoreBoard.ScoreBoardWindow;
 import Setting.LevelConstants;
 import Setting.Settings;
 import Setting.SizeConstants;
-import Tetris.*;
-import User.User;
+import Tetris.BlockColor;
+import Tetris.ItemController;
+import Tetris.ItemForm;
 import User.SessionManager;
+import User.User;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -21,6 +23,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -58,6 +61,8 @@ public class ItemHelloApplication extends Application {
     private double Frame = 1000000000;
     private static double scoreMultiplier = 1.0;
     private static double frameMultiplier = 0.8;
+    private static double fontSize;
+
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     //private final User user;
@@ -95,10 +100,12 @@ public class ItemHelloApplication extends Application {
         this.XMAX = sizeConstants.getXMAX();
         this.YMAX = sizeConstants.getYMAX();
         this.MESH = sizeConstants.getMESH();
+        this.fontSize = sizeConstants.getFontSize();
+
         this.waitObj = itemController.waitingTextMake(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
         this.nextObj = itemController.makeText(BlockColor.colorBlindMode, difficultylevel, item, itemRotate, this.XMAX);
         this.group = new Pane();
-        this.scene = new Scene(group, XMAX + 250, YMAX - SIZE);
+        this.scene = new Scene(group, XMAX + 150, YMAX - SIZE);
         this.running = true;
         this.linesNo = 0;
     }
@@ -125,7 +132,7 @@ public class ItemHelloApplication extends Application {
 
 
         group = new Pane();
-        this.scene = new Scene(group, XMAX + 250, YMAX - SIZE);
+        scene = new Scene(group, XMAX + 150, YMAX - SIZE);//Mesh 시점 맞추기 임시 y 에 - size
         running = true;
 
 
@@ -191,7 +198,6 @@ public class ItemHelloApplication extends Application {
 
         // 그룹에 버튼 추가
         group.getChildren().addAll(restartButton, exitButton,terminateButton);
-
         timer = new AnimationTimer() {
             private long lastUpdate = 0;
 
@@ -200,7 +206,7 @@ public class ItemHelloApplication extends Application {
 
                 if (running) {
                     if (now - lastUpdate >= Frame) { // 1초마다 실행
-
+                        group.getChildren().removeIf(node -> node.getUserData() == "effectText");//ㄴ임시로 넣어둠 이펙트텍스트 지우기
                         stage.setOnCloseRequest(event -> {
                             timer.stop();
                             group.getChildren().clear();
@@ -253,8 +259,8 @@ public class ItemHelloApplication extends Application {
             line.setStrokeWidth(0.2);
             group.getChildren().add(line);
         }
-        startAnimation();
     }
+
     private void moveOnKeyPress(ItemForm form) {
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -856,7 +862,8 @@ public class ItemHelloApplication extends Application {
                 for (Node node : pane.getChildren()) {
                     if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                             node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                            node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                            node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                            node.getUserData()=="effectText")//예외설정
                         continue;
                     if (node instanceof Text)
                         texts.add(node);
@@ -873,12 +880,24 @@ public class ItemHelloApplication extends Application {
                     Text a = (Text) node;
                     if (a.getY() == lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
+                        //////효과
+                        Text effectText = new Text("O");
+                        effectText.setX(a.getX());
+                        effectText.setY(a.getY());
+                        effectText.setUserData("effectText");
+                        effectText.setFill(Color.WHITE);
+                        effectText.setFont(Font.font(fontSize));
+                        pane.getChildren().add(effectText);
+                        new Flash(effectText).play();
+                        ///////효과
                         pane.getChildren().remove(node);
                     } else
                         newtexts.add(node);
                 }
 
                 for (Node node : newtexts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     if (a.getY() < lines.get(0) * SIZE) {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 0;
@@ -889,10 +908,14 @@ public class ItemHelloApplication extends Application {
                 texts.clear();
                 newtexts.clear();
                 for (Node node : pane.getChildren()) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     if (node instanceof Text)
                         texts.add(node);
                 }
                 for (Node node : texts) {
+                    if(node.getUserData()=="effectText")
+                        continue;
                     Text a = (Text) node;
                     try {
                         MESH[(int) a.getX() / SIZE][(int) a.getY() / SIZE] = 1;
@@ -907,12 +930,15 @@ public class ItemHelloApplication extends Application {
         for (Node node : pane.getChildren()) {
             if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                     node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                    node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                    node.getUserData() == "waitc" || node.getUserData() == "waitd" ||
+                    node.getUserData()=="effectText")//예외설정
                 continue;
             if (node instanceof Text)
                 texts.add(node);
         }
         for (Node node : texts) {
+            if(node.getUserData()=="effectText")
+                continue;
             Text a = (Text) node;
             if ((a.getY() == form.a.getY()+SIZE&&a.getX()==form.a.getX())||
                     (a.getY() == form.b.getY()+SIZE&&a.getX()==form.b.getX())||
@@ -930,12 +956,15 @@ public class ItemHelloApplication extends Application {
         for (Node node : pane.getChildren()) {
             if (node.getUserData() == "scoretext" || node.getUserData() == "level" ||
                     node.getUserData() == "waita" || node.getUserData() == "waitb" ||
-                    node.getUserData() == "waitc" || node.getUserData() == "waitd")//예외설정
+                    node.getUserData() == "waitc" || node.getUserData() == "waitd"||
+                    node.getUserData()=="effectText")//예외설정
                 continue;
             if (node instanceof Text)
                 texts.add(node);
         }
         for (Node node : texts) {
+            if(node.getUserData()=="effectText")
+                continue;
             Text a = (Text) node;
             if(form.getItemRotate() == 1) {
                 if ((a.getY() == form.a.getY() - SIZE && a.getX() == form.a.getX() - SIZE) ||
@@ -1294,11 +1323,10 @@ public class ItemHelloApplication extends Application {
     }
 
 
-
     public void GameOver(){
-        running = false;    //멈추기
-        User user = SessionManager.getCurrentUser(); //유저조회
-        applyGrayscaleEffect();     //흑백적용
+        running = false;
+        User user = SessionManager.getCurrentUser();
+        applyGrayscaleEffect();
         Label scoreLabel = new Label("score: " + score);
         scoreLabel.setLayoutX(XMAX/2 - 10);
         scoreLabel.setLayoutY(YMAX/2);
@@ -1311,10 +1339,7 @@ public class ItemHelloApplication extends Application {
         nicknameTextArea.setLayoutY(YMAX / 3);
         nicknameTextArea.setPrefWidth(XMAX / 4);
         nicknameTextArea.setPrefHeight(XMAX / 10);
-        //1 코드정리와 함께UI 정리
-        //2. 스코어보드 띄워놓을 부분 냄겨주기
-        //3. GamePause에서 끄는거
-        //4.
+
         Label NameLabel = new Label("점수를 저장하시겠습니까?");
         NameLabel.setLayoutX(XMAX/2 - 10);
         NameLabel.setLayoutY(YMAX/2 - 40);
@@ -1322,25 +1347,20 @@ public class ItemHelloApplication extends Application {
         group.getChildren().addAll(nicknameTextArea, NameLabel);
 
         NameLabel.setVisible(true);
-        Button yesButton = new Button("Yes");
-        yesButton.setLayoutX(XMAX / 2); //
-        yesButton.setLayoutY(YMAX / 2 + 30); //
-        terminateButton.setLayoutX(XMAX/2-100);
-        terminateButton.setLayoutY(YMAX/2+70);
-        if (terminateButton != null)
-            terminateButton.toFront();
-        terminateButton.setVisible(true);
 
+        Button yesButton = new Button("Yes");
+        yesButton.setLayoutX(XMAX / 2 - 50); //
+        yesButton.setLayoutY(YMAX / 2 + 50); //
         exitButton.setLayoutX(XMAX/2+50);
-        exitButton.setLayoutY(YMAX/2+70);
+        exitButton.setLayoutY(YMAX/2+50);
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
+        String newNickname = nicknameTextArea.getText();
         Date date = new Date();
         long now = date.getTime();
         yesButton.setOnAction(e -> {
             try {
-                String newNickname = nicknameTextArea.getText();
                 JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 1, LevelConstants.getLevel(), linesNo, now);
                 yesButton.setVisible(false);
                 System.out.println(newNickname);
