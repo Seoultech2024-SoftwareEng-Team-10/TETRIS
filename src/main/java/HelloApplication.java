@@ -7,11 +7,9 @@ import Setting.SizeConstants;
 import Tetris.BlockColor;
 import Tetris.Controller;
 import Tetris.Form;
-import User.User;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -183,9 +181,9 @@ public class HelloApplication extends Application {
 
         group1 = new Pane();
         group2 = new Pane();
-        hbox = new HBox(50);
+        hbox = new HBox(0);
         hbox.getChildren().addAll(group2,group1);
-        scene = new Scene(hbox, 1500, YMAX-40);
+        scene = new Scene(hbox,-1 , YMAX-30);
         running = true;
         group1.getChildren().clear();
         group2.getChildren().clear();
@@ -261,8 +259,8 @@ public class HelloApplication extends Application {
                         if (game) {
                             MoveDown(object, MESH, group1, true);
                             MoveDown(object2, MESH2, group2, false);
-                            scoretext1.setText("Score: " + score);
-                            scoretext2 .setText("Score: " + score2);
+                            scoretext1.setText("Score: " + score + "                    ");
+                            scoretext2 .setText("Score: " + score2+ "                    ");
                             linetext1.setText("Lines: " + linesNo);
                             linetext2.setText("Lines: " +linesNo2);
                         }
@@ -311,28 +309,28 @@ public class HelloApplication extends Application {
                         controller.MoveRight(form);
                     } else if (pressedKey.equals(downKey)) {
                         MoveDown(form, MESH, group1, true);
-                        scoretext1.setText("Score: " + score);
+                        scoretext1.setText("Score: " + score+"                  ");
                     } else if (pressedKey.equals(leftKey)) {
                         controller.MoveLeft(form);
                     } else if (pressedKey.equals(upKey)) {
                         MoveTurn(form);
                     } else if (pressedKey.equals(spaceKey)) {
                         DirectMoveDown(form, form2, group1, true, MESH);
-                        scoretext1.setText("Score: " + score);
+                        scoretext1.setText("Score: " + score+"                  ");
                     } else if (pressedKey.equals("ESCAPE")) {
                         stopAnimation();
                     } else if (pressedKey.equals(dKey)) {
                         controller.MoveRight(form2);
                     } else if (pressedKey.equals(sKey)) {
                         MoveDown(form2, MESH2, group2, false);
-                        scoretext1.setText("Score: " + score);
+                        scoretext1.setText("Score: " + score+"                  ");
                     } else if (pressedKey.equals(aKey)) {
                         controller.MoveLeft(form2);
                     } else if (pressedKey.equals(wKey)) {
                         MoveTurn(form2);
                     } else if (pressedKey.equals(shiftKey)) {
                         DirectMoveDown(form2, form, group2, false, MESH2);
-                        scoretext1.setText("Score: " + score);
+                        scoretext1.setText("Score: " + score+"                  ");
                     }
                 }
                 else{
