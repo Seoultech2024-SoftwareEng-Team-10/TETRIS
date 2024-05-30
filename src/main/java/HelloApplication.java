@@ -1038,11 +1038,12 @@ public class HelloApplication extends Application {
         if (exitButton != null)
             exitButton.toFront();
         exitButton.setVisible(true);
-        String newNickname = nicknameTextArea.getText();
+
         Date date = new Date();
         long now = date.getTime();
         yesButton.setOnAction(e -> {
             try {
+                String newNickname = nicknameTextArea.getText();
                 JdbcConnecter.insertData(user.getLoginId(), newNickname, score, 0, LevelConstants.getLevel(), linesNo, now);
                 yesButton.setVisible(false);
                 System.out.println(newNickname);

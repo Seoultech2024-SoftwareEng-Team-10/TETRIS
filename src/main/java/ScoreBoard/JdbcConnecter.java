@@ -216,13 +216,13 @@ public class JdbcConnecter {
         }
             return null;
     }
-    public static String deleteUserByNickname(String nickname) {
-        String query = "DELETE FROM scoreboard WHERE loginId = ?";
+    public static String deleteUserByNickname(String nickname2) {
+        String query = "DELETE FROM scoreboard WHERE nickname = ?";
 
         try (Connection conn = DriverManager.getConnection(props.getProperty("database.url"), props.getProperty("database.user"), props.getProperty("database.password"));
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            pstmt.setString(1, nickname);
+            pstmt.setString(1, nickname2);
             pstmt.executeUpdate();
 
             return "success";
