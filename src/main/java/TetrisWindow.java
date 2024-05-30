@@ -30,7 +30,7 @@ import java.util.Optional;
 import User.SessionManager;
 
 
-public class TetrisWindow extends Application {
+public class TetrisWindow extends Application {//
     private Label userInfoLabel;
     public static User user;
 
