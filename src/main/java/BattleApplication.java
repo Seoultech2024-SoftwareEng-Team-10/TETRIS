@@ -88,7 +88,7 @@ public class BattleApplication extends Application {
 
     private int score, score2;
     private double Frame;
-    public HelloApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
+    public BattleApplication(SizeConstants sizeConstants, Settings settings, Controller controller){
         this.controller = controller;
         this.score = 0;
         this.score2 = 0;
