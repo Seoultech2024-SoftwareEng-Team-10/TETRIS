@@ -1,0 +1,2 @@
+{windowWidth: 600, windowHeight: 800, rightKey: RIGHT, leftKey: LEFT, upKey: UP, downKey: DOWN,
+ spaceKey: SPACE, level: N}

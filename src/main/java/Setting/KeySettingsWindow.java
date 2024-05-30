@@ -20,17 +20,18 @@ import java.util.Set;
 
 public class KeySettingsWindow extends Application {
     private SettingsWindow settingsWindow;
+    private Settings settings;
 
-    private Label rightKeyLabel;
-    private Label downKeyLabel;
-    private Label leftKeyLabel;
-    private Label upKeyLabel;
-    private Label spaceKeyLabel;
-
+    public static Label rightKeyLabel;
+    public static Label downKeyLabel;
+    public static Label leftKeyLabel;
+    public static Label upKeyLabel;
+    public static Label spaceKeyLabel;
     private KeyCode currentlyEditingKeyCode;
 
-    public KeySettingsWindow(SettingsWindow settingsWindow) {
+    public KeySettingsWindow(SettingsWindow settingsWindow, Settings settings) {
         this.settingsWindow = settingsWindow;
+        this.settings = settings;
     }
 
     @Override
@@ -44,28 +45,28 @@ public class KeySettingsWindow extends Application {
 
         // 현재 설정된 키 정보를 표시하는 라벨 생성
         grid.add(new Label("Right Key:"), 0, 0);
-        rightKeyLabel = new Label(KeySettings.getRightKey());
-        rightKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.RIGHT));
+        rightKeyLabel = new Label(settings.getRightKey());
+        rightKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getRightKey())));
         grid.add(rightKeyLabel, 1, 0);
 
         grid.add(new Label("Down Key:"), 0, 1);
-        downKeyLabel = new Label(KeySettings.getDownKey());
-        downKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.DOWN));
+        downKeyLabel = new Label(settings.getDownKey());
+        downKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getDownKey())));
         grid.add(downKeyLabel, 1, 1);
 
         grid.add(new Label("Left Key:"), 0, 2);
-        leftKeyLabel = new Label(KeySettings.getLeftKey());
-        leftKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.LEFT));
+        leftKeyLabel = new Label(settings.getLeftKey());
+        leftKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getLeftKey())));
         grid.add(leftKeyLabel, 1, 2);
 
         grid.add(new Label("Up Key:"), 0, 3);
-        upKeyLabel = new Label(KeySettings.getUpKey());
-        upKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.UP));
+        upKeyLabel = new Label(settings.getUpKey());
+        upKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getUpKey())));
         grid.add(upKeyLabel, 1, 3);
 
         grid.add(new Label("Space Key:"), 0, 4);
-        spaceKeyLabel = new Label(KeySettings.getSpaceKey());
-        spaceKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.SPACE));
+        spaceKeyLabel = new Label(settings.getSpaceKey());
+        spaceKeyLabel.setOnMouseClicked(event -> startEditingKey(KeyCode.valueOf(settings.getSpaceKey())));
         grid.add(spaceKeyLabel, 1, 4);
 
         Button saveButton = new Button("Save");
@@ -89,6 +90,7 @@ public class KeySettingsWindow extends Application {
                 showDuplicateKeyAlert();
                 event.consume(); // 창 닫힘 이벤트를 소비하여 창이 닫히지 않도록 함
             } else {
+                //settings.saveSettings(); // 여기에 Settings 인스턴스 저장 코드 추가
                 event.consume(); // 창 닫힘 이벤트를 소비하여 창이 닫히도록 함
             }
         });
@@ -136,13 +138,9 @@ public class KeySettingsWindow extends Application {
     }
 
     private boolean isKeyCodeDuplicated() {
-        KeyCode rightKey = KeyCode.valueOf(KeySettings.getRightKey());
-        KeyCode downKey = KeyCode.valueOf(KeySettings.getDownKey());
-        KeyCode leftKey = KeyCode.valueOf(KeySettings.getLeftKey());
-        KeyCode upKey = KeyCode.valueOf(KeySettings.getUpKey());
-        KeyCode spaceKey = KeyCode.valueOf(KeySettings.getSpaceKey());
-
-        Set<KeyCode> keyCodes = new HashSet<>(Arrays.asList(rightKey, downKey, leftKey, upKey, spaceKey));
+        Set<String> keyCodes = new HashSet<>(Arrays.asList(
+                settings.getRightKey(), settings.getDownKey(), settings.getLeftKey(), settings.getUpKey(), settings.getSpaceKey()
+        ));
         return keyCodes.size() != 5;
     }
 
@@ -181,48 +179,48 @@ public class KeySettingsWindow extends Application {
     }
 
     private void updateKeyLabelText(KeyCode oldKeyCode, KeyCode newKeyCode) {
-        switch (oldKeyCode) {
-            case UP:
-                upKeyLabel.setText(newKeyCode.getName());
-                break;
-            case LEFT:
-                leftKeyLabel.setText(newKeyCode.getName());
-                break;
-            case DOWN:
-                downKeyLabel.setText(newKeyCode.getName());
-                break;
-            case RIGHT:
-                rightKeyLabel.setText(newKeyCode.getName());
-                break;
-            case SPACE:
-                spaceKeyLabel.setText(newKeyCode.getName());
-                break;
-            default:
-                break;
+        //Settings settings = Settings.getInstance();
+
+        if (oldKeyCode == KeyCode.valueOf(settings.getUpKey())) {
+            upKeyLabel.setText(newKeyCode.getName());
+            settings.setUpKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getLeftKey())) {
+            leftKeyLabel.setText(newKeyCode.getName());
+            settings.setLeftKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getDownKey())) {
+            downKeyLabel.setText(newKeyCode.getName());
+            settings.setDownKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getRightKey())) {
+            rightKeyLabel.setText(newKeyCode.getName());
+            settings.setRightKey(newKeyCode.toString());
+        } else if (oldKeyCode == KeyCode.valueOf(settings.getSpaceKey())) {
+            spaceKeyLabel.setText(newKeyCode.getName());
+            settings.setSpaceKey(newKeyCode.toString());
         }
     }
 
     public void updateKeySettings(KeyCode oldKeyCode, KeyCode newKeyCode) {
+        //Settings settings = Settings.getInstance(); // Settings 인스턴스를 가져옵니다.
         switch (oldKeyCode) {
             case UP:
-                KeySettings.setUpKey(newKeyCode.toString());
-                upKeyLabel.setText(KeySettings.getUpKey());
+                settings.setUpKey(newKeyCode.toString()); // Settings 인스턴스 업데이트
+                upKeyLabel.setText(settings.getUpKey());
                 break;
             case LEFT:
-                KeySettings.setLeftKey(newKeyCode.toString());
-                leftKeyLabel.setText(KeySettings.getLeftKey());
+                settings.setLeftKey(newKeyCode.toString());
+                leftKeyLabel.setText(settings.getLeftKey());
                 break;
             case DOWN:
-                KeySettings.setDownKey(newKeyCode.toString());
-                downKeyLabel.setText(KeySettings.getDownKey());
+                settings.setDownKey(newKeyCode.toString());
+                downKeyLabel.setText(settings.getDownKey());
                 break;
             case RIGHT:
-                KeySettings.setRightKey(newKeyCode.toString());
-                rightKeyLabel.setText(KeySettings.getRightKey());
+                settings.setRightKey(newKeyCode.toString());
+                rightKeyLabel.setText(settings.getRightKey());
                 break;
             case SPACE:
-                KeySettings.setSpaceKey(newKeyCode.toString());
-                spaceKeyLabel.setText(KeySettings.getSpaceKey());
+                settings.setSpaceKey(newKeyCode.toString());
+                spaceKeyLabel.setText(settings.getSpaceKey());
                 break;
             default:
                 // 기타 키에 대한 처리 추가

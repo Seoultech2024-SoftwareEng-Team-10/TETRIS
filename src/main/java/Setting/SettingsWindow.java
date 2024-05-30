@@ -3,7 +3,6 @@ package Setting;
 
 import ScoreBoard.JdbcConnecter;
 import Tetris.BlockColor;
-import Tetris.ItemBlockColor;
 import User.SessionManager;
 import User.User;
 import javafx.event.ActionEvent;
@@ -18,18 +17,16 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 
 
 public class SettingsWindow extends Stage {
 
+    private final Settings setttings;
     private ToggleButton colorBlindModeToggle;
     private MenuButton resizeMenuButton;
     private Stage mainWindow;
@@ -37,10 +34,14 @@ public class SettingsWindow extends Stage {
     private Button[] buttons;
     private MenuButton levelButton;
     private LevelConstants levelConstants = new LevelConstants();
+    private SizeConstants sizeConstants;
+    private KeySettingsWindow keySettingsWindow;
 
-    public SettingsWindow(Stage mainWindow) {
+    public SettingsWindow(Stage mainWindow, Settings settings, SizeConstants sizeConstants) {
         this.mainWindow = mainWindow;
-        SizeConstants sizeConstants = new SizeConstants();
+        this.setttings = settings;
+        this.sizeConstants = sizeConstants;
+        this.keySettingsWindow = new KeySettingsWindow(this,this.setttings);
         setTitle("설정");
         setWidth(300);
         setHeight(400);
@@ -97,27 +98,32 @@ public class SettingsWindow extends Stage {
         resizeMenuButton = new MenuButton();
 
         resizeMenuButton.setFocusTraversable(false); // 포커스 가능 여부 설정
+        resizeMenuButton.setText(settings.getWindowWidth()+"x"+settings.getWindowHeight());
         MenuItem item1 = new MenuItem("450 x 600");
         item1.setOnAction(event -> {
             resizeMenuButton.setText("450 x 600");
-            SizeConstants.setSize(450, 600);
+            sizeConstants.setSize(450, 600);
+            settings.updateAndSaveKey("windowWidth", "450");
+            settings.updateAndSaveKey("windowHeight", "600");
         });
         MenuItem item2 = new MenuItem("300 x 400");
         item2.setOnAction(event -> {
             resizeMenuButton.setText("300 x 400");
-            SizeConstants.setSize(300, 400);
+            settings.updateAndSaveKey("windowWidth", "300");
+            settings.updateAndSaveKey("windowHeight", "400");
+            sizeConstants.setSize(300, 400);
         });
         MenuItem item3 = new MenuItem("600 x 800");
         item3.setOnAction(event -> {
             resizeMenuButton.setText("600 x 800");
-            SizeConstants.setSize(600, 800);
+            settings.updateAndSaveKey("windowWidth", "600");
+            settings.updateAndSaveKey("windowHeight", "800");
+            sizeConstants.setSize(600, 800);
         });
         resizeMenuButton.getItems().addAll(item1, item2, item3);
-        resizeMenuButton.setText("450 x 600"); // 기본값 "450 x 600"로 설정
 
 
         resizePanel.getChildren().addAll(resizeLabel, resizeMenuButton);
-
         buttonBox.getChildren().addAll(modePanel,levelPanel, resizePanel);
 
         Button keySettingsButton = new Button("키 설정");
@@ -158,7 +164,7 @@ public class SettingsWindow extends Stage {
             isColorBlindModeOn = !isColorBlindModeOn;
             colorBlindModeToggle.setText(isColorBlindModeOn ? "on" : "off");
             BlockColor.setColorBlindMode(isColorBlindModeOn); // BlockColor의 colorBlindMode 값 설정
-            ItemBlockColor.setColorBlindMode(isColorBlindModeOn); // ItemBlockColor의 colorBlindMode 값 설정
+            //ItemBlockColor.setColorBlindMode(isColorBlindModeOn); // ItemBlockColor의 colorBlindMode 값 설정
         });
     }
 
@@ -168,7 +174,6 @@ public class SettingsWindow extends Stage {
             Button clickedButton = (Button) source;
             String buttonText = clickedButton.getText();
             if (buttonText.equals("키 설정")) {
-                KeySettingsWindow keySettingsWindow = new KeySettingsWindow(this);
                 keySettingsWindow.start(new Stage());
             } else if (buttonText.equals("뒤로가기")) {
                 hide();
@@ -218,14 +223,14 @@ public class SettingsWindow extends Stage {
         // 화면 크기 초기화
 
         resizeMenuButton.setText("450 x 600");
-        SizeConstants.setSize(450, 600);
+        sizeConstants.setSize(450, 600);
 
         // 키 설정 초기화
-        KeySettings.setRightKey("RIGHT");
-        KeySettings.setDownKey("DOWN");
-        KeySettings.setLeftKey("LEFT");
-        KeySettings.setUpKey("UP");
-        KeySettings.setSpaceKey("SPACE");
+        //KeySettings.setRightKey("RIGHT");
+        //KeySettings.setDownKey("DOWN");
+        //KeySettings.setLeftKey("LEFT");
+        //KeySettings.setUpKey("UP");
+        //KeySettings.setSpaceKey("SPACE");
 
         // 난이도 설정 초기화
         levelButton.setText("Normal");
