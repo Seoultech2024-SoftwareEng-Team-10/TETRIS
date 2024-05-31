@@ -1,5 +1,6 @@
 package Setting;
 
+
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -14,8 +15,6 @@ import java.util.Map;
 @Getter
 @Setter
 public class Settings {
-    private static final String CONFIG_PATH = System.getProperty("user.home") + File.separator + "myAppSettings.yml";
-
     private int isColorBlindModeOn;
     private int windowWidth;
     private int windowHeight;
@@ -34,48 +33,29 @@ public class Settings {
 
     public Settings() throws IOException {
         Yaml yaml = new Yaml(new Constructor(Config.class));
-        File configFile = new File(CONFIG_PATH);
-
-        if (configFile.exists()) {
-            // If the external file exists, load settings from the external file
-            loadSettingsFromFile(configFile, yaml);
-        } else {
-            // If the external file does not exist, load default settings from resource and create the file.
-            try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("key.yml")) {
-                if (inputStream == null) {
-                    throw new FileNotFoundException("key.yml not found in resources");
-                }
-                Config config = yaml.load(inputStream);
-                saveToYaml(config);  // Save default settings to the external file
-                loadSettingsFromFile(configFile, yaml);  // Load the newly created external file
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("key.yml")) {
+            if (inputStream == null) {
+                throw new FileNotFoundException("key.yml not found in resources");
             }
-        }
-    }
-
-    private void loadSettingsFromFile(File file, Yaml yaml) throws FileNotFoundException {
-        try (InputStream inputStream = new FileInputStream(file)) {
             Config config = yaml.load(inputStream);
-            assignSettings(config);
-        } catch (IOException e) {
-            throw new FileNotFoundException("Failed to load settings from external file: " + e.getMessage());
+            this.isColorBlindModeOn = config.getIsColorBlindModeOn();
+            this.windowWidth = config.getWindowWidth();
+            this.windowHeight = config.getWindowHeight();
+            this.p1rightKey = config.getP1rightKey();
+            this.p1leftKey = config.getP1leftKey();
+            this.p1upKey = config.getP1upKey();
+            this.p1downKey = config.getP1downKey();
+            this.spaceKey = config.getSpaceKey();
+            this.p2rightKey = config.getP2rightKey();
+            this.p2leftKey = config.getP2leftKey();
+            this.p2upKey = config.getP2upKey();
+            this.p2downKey = config.getP2downKey();
+            this.shiftKey = config.getShiftKey();
+            this.level = config.getLevel();
         }
-    }
-
-    private void assignSettings(Config config) {
-        this.isColorBlindModeOn = config.getIsColorBlindModeOn();
-        this.windowWidth = config.getWindowWidth();
-        this.windowHeight = config.getWindowHeight();
-        this.p1rightKey = config.getP1rightKey();
-        this.p1leftKey = config.getP1leftKey();
-        this.p1upKey = config.getP1upKey();
-        this.p1downKey = config.getP1downKey();
-        this.spaceKey = config.getSpaceKey();
-        this.p2rightKey = config.getP2rightKey();
-        this.p2leftKey = config.getP2leftKey();
-        this.p2upKey = config.getP2upKey();
-        this.p2downKey = config.getP2downKey();
-        this.shiftKey = config.getShiftKey();
-        this.level = config.getLevel();
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void updateAndSaveKey(String keyType, String newValue) {
@@ -127,37 +107,41 @@ public class Settings {
                     System.out.println("Unknown key type or screen setting: " + keyType);
                     return;
             }
-            saveToYaml(loadCurrentConfig());  // Save updated settings to the external file
-        } catch (NumberFormatException | IOException e) {
-            System.out.println("Error parsing number or saving file: " + e.getMessage());
+            saveToYaml();
+        } catch (NumberFormatException e) {
+            System.out.println("Error parsing number for screen settings: " + e.getMessage());
         }
     }
 
-    private void saveToYaml(Config config) throws IOException {
+    // 설정을 YAML 파일에 저장하는 메서드
+    private void saveToYaml() {
+        String userHome = System.getProperty("user.home");  // 사용자의 홈 디렉토리 경로를 얻음
+        File configFile = new File(userHome, "myAppSettings.yml");  // 설정 파일명을 myAppSettings.yml로 정의
+
+        Map<String, Object> data = new LinkedHashMap<>();  // 설정 데이터를 저장할 맵
+        data.put("isColorBlindModeOn", this.isColorBlindModeOn);
+        data.put("windowWidth", this.windowWidth);
+        data.put("windowHeight", this.windowHeight);
+        data.put("p1rightKey", this.p1rightKey);
+        data.put("p1leftKey", this.p1leftKey);
+        data.put("p1upKey", this.p1upKey);
+        data.put("p1downKey", this.p1downKey);
+        data.put("spaceKey", this.spaceKey);
+        data.put("p2rightKey", this.p2rightKey);
+        data.put("p2leftKey", this.p2leftKey);
+        data.put("p2upKey", this.p2upKey);
+        data.put("p2downKey", this.p2downKey);
+        data.put("shiftKey", this.shiftKey);
+        data.put("level", String.valueOf(this.level));
+
         Yaml yaml = new Yaml();
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(CONFIG_PATH))) {
-            yaml.dump(config, writer);
+        try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath())) {
+            yaml.dump(data, writer);  // 맵 데이터를 YAML 형식으로 변환하여 파일에 쓴다
+        } catch (IOException e) {
+            System.out.println("Failed to save settings: " + e.getMessage());  // 파일 저장 중 오류 발생 시 로그 출력
         }
     }
 
-    private Config loadCurrentConfig() {
-        Config config = new Config();
-        config.setIsColorBlindModeOn(this.isColorBlindModeOn);
-        config.setWindowWidth(this.windowWidth);
-        config.setWindowHeight(this.windowHeight);
-        config.setP1rightKey(this.p1rightKey);
-        config.setP1leftKey(this.p1leftKey);
-        config.setP1upKey(this.p1upKey);
-        config.setP1downKey(this.p1downKey);
-        config.setSpaceKey(this.spaceKey);
-        config.setP2rightKey(this.p2rightKey);
-        config.setP2leftKey(this.p2leftKey);
-        config.setP2upKey(this.p2upKey);
-        config.setP2downKey (this.p2downKey);
-        config.setShiftKey(this.shiftKey);
-        config.setLevel(this.level);
-        return config;
-    }
 
     public void printSettings() {
         System.out.println("Current Key Bindings:");
@@ -172,8 +156,8 @@ public class Settings {
         System.out.println("P2 Up Key: " + this.p2upKey);
         System.out.println("P2 Down Key: " + this.p2downKey);
         System.out.println("Shift Key: " + this.shiftKey);
-        System.out.println("width: " + this.windowWidth);
-        System.out.println("height: " + this.windowHeight);
-        System.out.println("Level: " + this.level);
+        System.out.println("width: "+this.windowWidth);
+        System.out.println("height: "+this.windowHeight);
+        System.out.println("Level: "+this.level);
     }
 }
