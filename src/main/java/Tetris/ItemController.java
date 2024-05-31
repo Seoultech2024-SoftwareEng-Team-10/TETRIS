@@ -39,8 +39,39 @@ public class ItemController {
             }
         }
     }
+    public void MoveRight(ItemForm form, int[][] MESH) {
+        if (form.a.getX() + MOVE <= XMAX - SIZE && form.b.getX() + MOVE <= XMAX - SIZE
+                && form.c.getX() + MOVE <= XMAX - SIZE && form.d.getX() + MOVE <= XMAX - SIZE) {
+            int movea = MESH[((int) form.a.getX() / SIZE) + 1][((int) form.a.getY() / SIZE)];
+            int moveb = MESH[((int) form.b.getX() / SIZE) + 1][((int) form.b.getY() / SIZE)];
+            int movec = MESH[((int) form.c.getX() / SIZE) + 1][((int) form.c.getY() / SIZE)];
+            int moved = MESH[((int) form.d.getX() / SIZE) + 1][((int) form.d.getY() / SIZE)];
+            if (movea == 0 && movea == moveb && moveb == movec && movec == moved) {
+                form.a.setX(form.a.getX() + MOVE);
+                form.b.setX(form.b.getX() + MOVE);
+                form.c.setX(form.c.getX() + MOVE);
+                form.d.setX(form.d.getX() + MOVE);
+            }
+        }
+    }
 
     public void MoveLeft(ItemForm form) {
+        if (form.a.getX() - MOVE >= 0 && form.b.getX() - MOVE >= 0 && form.c.getX() - MOVE >= 0
+                && form.d.getX() - MOVE >= 0) {
+            int movea = MESH[((int) form.a.getX() / SIZE) - 1][((int) form.a.getY() / SIZE)];
+            int moveb = MESH[((int) form.b.getX() / SIZE) - 1][((int) form.b.getY() / SIZE)];
+            int movec = MESH[((int) form.c.getX() / SIZE) - 1][((int) form.c.getY() / SIZE)];
+            int moved = MESH[((int) form.d.getX() / SIZE) - 1][((int) form.d.getY() / SIZE)];
+            if (movea == 0 && movea == moveb && moveb == movec && movec == moved) {
+                form.a.setX(form.a.getX() - MOVE);
+                form.b.setX(form.b.getX() - MOVE);
+                form.c.setX(form.c.getX() - MOVE);
+                form.d.setX(form.d.getX() - MOVE);
+            }
+        }
+    }
+
+    public void MoveLeft(ItemForm form,int[][] MESH) {
         if (form.a.getX() - MOVE >= 0 && form.b.getX() - MOVE >= 0 && form.c.getX() - MOVE >= 0
                 && form.d.getX() - MOVE >= 0) {
             int movea = MESH[((int) form.a.getX() / SIZE) - 1][((int) form.a.getY() / SIZE)];
@@ -463,5 +494,11 @@ public class ItemController {
         waitObj.d.setUserData("waitd");
 
         return new ItemForm(waitObj.a, waitObj.b, waitObj.c, waitObj.d, waitObj.getName(),colorBlindMode,item,itemRotate);
+    }
+    public static void currentTextSetUserData(ItemForm form){
+        form.a.setUserData("current");
+        form.b.setUserData("current");
+        form.c.setUserData("current");
+        form.d.setUserData("current");
     }
 }

@@ -1,6 +1,6 @@
 
 import Animation.Flash;
-import ScoreBoard.JdbcConnecter;
+import Animation.ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
 import Setting.Settings;
 import Setting.SizeConstants;
@@ -14,13 +14,11 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
@@ -29,7 +27,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import User.SessionManager;
 
 import static Tetris.Controller.currentTextSetUserData;
 
@@ -1760,12 +1757,15 @@ public class BattleApplication extends Application {
             form.c.setY(form.c.getY() + MOVE);
             form.d.setY(form.d.getY() + MOVE);
             // 실제로 이동했으므로 true로 설정
-            if(isGroupOne)
+            if(isGroupOne) {
                 score += scoreMultiplier;
-            else
+                top = 0;
+            }
+            else {
                 score2 += scoreMultiplier;
-            top = 0;
-            //directmovedown 호출시 object 겹침 버그 방지용
+                top2 = 0;
+                //directmovedown 호출시 object 겹침 버그 방지용
+            }
         }
         MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
         MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;

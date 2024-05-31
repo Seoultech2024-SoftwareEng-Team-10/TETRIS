@@ -1,4 +1,4 @@
-package ScoreBoard;
+package Animation.ScoreBoard;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.sql.Date;
 import java.util.List;
 
 public class ScoreBoardWindow {

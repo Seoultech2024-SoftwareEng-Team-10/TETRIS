@@ -1,4 +1,4 @@
-package ScoreBoard;
+package Animation.ScoreBoard;
 
 import User.User;
 

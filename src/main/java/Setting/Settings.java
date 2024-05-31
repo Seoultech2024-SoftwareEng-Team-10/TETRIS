@@ -32,9 +32,11 @@ public class Settings {
     private KeySettingsWindow keySettingsWindow;
 
     public Settings() throws IOException {
-        try{
-            InputStream inputStream = Files.newInputStream(Paths.get("src/main/resources/key.yml"));
-            Yaml yaml = new Yaml(new Constructor(Config.class));
+        Yaml yaml = new Yaml(new Constructor(Config.class));
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("key.yml")) {
+            if (inputStream == null) {
+                throw new FileNotFoundException("key.yml not found in resources");
+            }
             Config config = yaml.load(inputStream);
             this.isColorBlindModeOn = config.getIsColorBlindModeOn();
             this.windowWidth = config.getWindowWidth();
@@ -113,28 +115,33 @@ public class Settings {
 
     // 설정을 YAML 파일에 저장하는 메서드
     private void saveToYaml() {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("src/main/resources/key.yml"))) {
-            Yaml yaml = new Yaml();
-            Map<String, Object> data = new LinkedHashMap<>();
-            data.put("isColorBlindModeOn", this.isColorBlindModeOn);
-            data.put("windowWidth", this.windowWidth);
-            data.put("windowHeight", this.windowHeight);
-            data.put("p1rightKey", this.p1rightKey);
-            data.put("p1leftKey", this.p1leftKey);
-            data.put("p1upKey", this.p1upKey);
-            data.put("p1downKey", this.p1downKey);
-            data.put("spaceKey", this.spaceKey);
-            data.put("p2rightKey", this.p2rightKey);
-            data.put("p2leftKey", this.p2leftKey);
-            data.put("p2upKey", this.p2upKey);
-            data.put("p2downKey", this.p2downKey);
-            data.put("shiftKey", this.shiftKey);
-            data.put("level", String.valueOf(this.level));
-            yaml.dump(data, writer);
+        String userHome = System.getProperty("user.home");  // 사용자의 홈 디렉토리 경로를 얻음
+        File configFile = new File(userHome, "myAppSettings.yml");  // 설정 파일명을 myAppSettings.yml로 정의
+
+        Map<String, Object> data = new LinkedHashMap<>();  // 설정 데이터를 저장할 맵
+        data.put("isColorBlindModeOn", this.isColorBlindModeOn);
+        data.put("windowWidth", this.windowWidth);
+        data.put("windowHeight", this.windowHeight);
+        data.put("p1rightKey", this.p1rightKey);
+        data.put("p1leftKey", this.p1leftKey);
+        data.put("p1upKey", this.p1upKey);
+        data.put("p1downKey", this.p1downKey);
+        data.put("spaceKey", this.spaceKey);
+        data.put("p2rightKey", this.p2rightKey);
+        data.put("p2leftKey", this.p2leftKey);
+        data.put("p2upKey", this.p2upKey);
+        data.put("p2downKey", this.p2downKey);
+        data.put("shiftKey", this.shiftKey);
+        data.put("level", String.valueOf(this.level));
+
+        Yaml yaml = new Yaml();
+        try (BufferedWriter writer = Files.newBufferedWriter(configFile.toPath())) {
+            yaml.dump(data, writer);  // 맵 데이터를 YAML 형식으로 변환하여 파일에 쓴다
         } catch (IOException e) {
-            System.out.println("Failed to save settings: " + e.getMessage());
+            System.out.println("Failed to save settings: " + e.getMessage());  // 파일 저장 중 오류 발생 시 로그 출력
         }
     }
+
 
     public void printSettings() {
         System.out.println("Current Key Bindings:");

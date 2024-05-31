@@ -1,6 +1,6 @@
 
 import Animation.Flash;
-import ScoreBoard.JdbcConnecter;
+import Animation.ScoreBoard.JdbcConnecter;
 import Setting.LevelConstants;
 import Setting.Settings;
 import Setting.SizeConstants;
@@ -14,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -26,7 +25,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;

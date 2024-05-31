@@ -1,6 +1,6 @@
 import Animation.Flash;
-import ScoreBoard.JdbcConnecter;
-import ScoreBoard.ScoreBoardWindow;
+import Animation.ScoreBoard.JdbcConnecter;
+import Animation.ScoreBoard.ScoreBoardWindow;
 import Setting.LevelConstants;
 import Setting.Settings;
 import Setting.SizeConstants;
@@ -1216,6 +1216,7 @@ public class ItemHelloApplication extends Application {
             // 실제로 이동했으므로 true로 설정
             score += scoreMultiplier;
             top = 0; // directmovedown 호출시 object 겹침 버그 방지용
+
         }
         MESH[(int) form.a.getX() / SIZE][(int) form.a.getY() / SIZE] = 1;
         MESH[(int) form.b.getX() / SIZE][(int) form.b.getY() / SIZE] = 1;

@@ -1,6 +1,6 @@
 import Animation.Flash;
-import ScoreBoard.JdbcConnecter;
-import ScoreBoard.ScoreBoardWindow;
+import Animation.ScoreBoard.JdbcConnecter;
+import Animation.ScoreBoard.ScoreBoardWindow;
 import Setting.LevelConstants;
 import Setting.Settings;
 import Setting.SizeConstants;
@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import User.SessionManager;
 
@@ -153,6 +152,7 @@ public class HelloApplication extends Application {
         stage.setScene(scene);
         stage.setTitle("T E T R I S");
         stage.show();
+        stage.requestFocus();
 
 
         // 흑백 효과 초기 설정

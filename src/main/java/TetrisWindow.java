@@ -1,9 +1,6 @@
-import ScoreBoard.ScoreBoard;
-import ScoreBoard.ScoreBoardWindow;
-import ScoreBoard.ScoreRecord;
+import Animation.ScoreBoard.ScoreBoardWindow;
 import Setting.Settings;
-import ScoreBoard.JdbcConnecter;
-import Setting.Settings;
+import Animation.ScoreBoard.JdbcConnecter;
 import Setting.SettingsWindow;
 import Setting.SizeConstants;
 import Tetris.Controller;
@@ -19,7 +16,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -27,7 +23,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Optional;
 import User.SessionManager;
 
@@ -128,7 +123,8 @@ public class TetrisWindow extends Application {
                 Settings setting = new Settings();
                 SizeConstants sizeConstant = new SizeConstants(setting.getWindowWidth(), setting.getWindowHeight());
                 Controller controller = new Controller(sizeConstant.getMOVE(), sizeConstant.getXMAX(),sizeConstant.getYMAX(), sizeConstant.getSIZE(), sizeConstant.getFontSize() ,sizeConstant.getMESH());
-                BattleButton.show(sizeConstant, controller);
+                ItemController itemController = new ItemController(sizeConstant.getMOVE(), sizeConstant.getXMAX(),sizeConstant.getYMAX(), sizeConstant.getSIZE(), sizeConstant.getFontSize() ,sizeConstant.getMESH());
+                BattleButton.show(sizeConstant, controller,itemController);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

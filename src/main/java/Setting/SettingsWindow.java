@@ -1,7 +1,7 @@
 package Setting;
 
 
-import ScoreBoard.JdbcConnecter;
+import Animation.ScoreBoard.JdbcConnecter;
 import Tetris.BlockColor;
 import Tetris.ItemBlockColor;
 import User.SessionManager;

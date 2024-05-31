@@ -1,6 +1,7 @@
 import Setting.Settings;
 import Setting.SizeConstants;
 import Tetris.Controller;
+import Tetris.ItemController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,7 +13,7 @@ import javafx.scene.input.KeyCode;
 import java.io.IOException;
 
 public class BattleButton {
-    public static void show(SizeConstants sizeConstants, Controller controller) {
+    public static void show(SizeConstants sizeConstants, Controller controller, ItemController itemController) {
         Stage stage = new Stage();
         stage.setTitle("2player");
 
@@ -55,8 +56,7 @@ public class BattleButton {
         itemModeButton.setOnAction(event -> {
             try {
                 Stage gameStage = new Stage();
-                BattleApplication battleApp = new BattleApplication(sizeConstants,new Settings(), controller);
-                //item start 메소드 호출
+                ItemBattleApplication battleApp = new ItemBattleApplication(sizeConstants,new Settings(), itemController);
                 battleApp.start(gameStage);
             } catch (IOException e) {
                 throw new RuntimeException(e);
