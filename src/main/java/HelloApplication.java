@@ -53,7 +53,7 @@ public class HelloApplication extends Application {
     private Label scoreLabel;
     private double Frame = 1000000000;
     private static double scoreMultiplier = 1.0;
-    private static double frameMultiplier = 0.8;
+    private static double frameMultiplier = 1.0;
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
     private final User user;
@@ -103,17 +103,16 @@ public class HelloApplication extends Application {
         Frame = 1000000000;
         running = true;
         if(LevelConstants.getLevel()=='E'){
-            frameMultiplier = 0.8;
-            scoreMultiplier = 1.0;
+            Frame = 1200000000;
         }
         else if(LevelConstants.getLevel()=='N'){
-            frameMultiplier = 1.0;
-            scoreMultiplier = 1.2;
+            Frame = 1000000000;
         }
         else{
-            frameMultiplier = 1.2;
-            scoreMultiplier = 1.4;
+            Frame = 800000000;
         }
+        System.out.println(scoreMultiplier);
+        System.out.println(frameMultiplier);
 
 
         group = new Pane();

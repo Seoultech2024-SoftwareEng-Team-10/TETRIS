@@ -59,6 +59,7 @@ public class ItemHelloApplication extends Application {
     private Button terminateButton;
     private double Frame = 1000000000;
     private static double scoreMultiplier = 1.0;
+<<<<<<< HEAD
     private static double frameMultiplier = 0.8;
     private JdbcConnecter scoreboardDataInserter;
     private Text scoretext;
@@ -78,6 +79,9 @@ public class ItemHelloApplication extends Application {
     private final String upKey;
     private final String downKey;
     private ItemController itemController;
+=======
+    private static double frameMultiplier = 1.0;
+>>>>>>> parent of 78ace46 (Merge pull request #128 from Seoultech2024-SoftwareEng-Team-10/127)
 
     boolean WeightMove = true;
     int LineClearY = -1;
@@ -116,6 +120,7 @@ public class ItemHelloApplication extends Application {
         Frame = 1000000000;
         running = true;
         if(LevelConstants.getLevel()=='E'){
+<<<<<<< HEAD
             frameMultiplier = 0.8;
             scoreMultiplier = 1.0;
         }
@@ -126,6 +131,18 @@ public class ItemHelloApplication extends Application {
         else{
             frameMultiplier = 1.2;
             scoreMultiplier = 1.4;
+=======
+            scoreMultiplier = 1.0;
+            frameMultiplier = 1.0;
+        }
+        else if(LevelConstants.getLevel()=='N'){
+            scoreMultiplier = 1.2;
+            frameMultiplier = 1.2;
+        }
+        else{
+            scoreMultiplier = 1.4;
+            frameMultiplier = 1.4;
+>>>>>>> parent of 78ace46 (Merge pull request #128 from Seoultech2024-SoftwareEng-Team-10/127)
         }
 
 
